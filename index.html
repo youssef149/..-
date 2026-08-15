@@ -60,6 +60,7 @@
         .reveal-box { background: #fdf2f8; border: 2px solid var(--border-color); padding: 12px; border-radius: 12px; width: 45%; }
         .big-emoji { font-size: 2.5rem; margin: 8px 0; }
         .winner-announcement { font-size: 1.1rem; color: var(--primary-pink); margin: 10px 0; font-weight: bold; }
+        .qa-container { background: #fdf2f8; border: 2px solid var(--border-color); padding: 15px; border-radius: 16px; margin-top: 15px; text-align: right; }
     </style>
 </head>
 <body>
@@ -160,6 +161,40 @@
                     <h3 id="round-winner-text" class="winner-announcement">الفائز</h3>
                 </div>
 
+                <!-- منطقة الأسئلة والعقوبات بين الفائز والخاسر -->
+                <div id="qa-section" class="qa-container hidden">
+                    <div id="winner-question-box" class="hidden">
+                        <p style="color: var(--primary-pink); font-weight: bold; margin-bottom: 8px;">🎉 أنت الفائز! اسأل الخاسر سؤال أو اطلب منه طلب:</p>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <input type="text" id="winner-question-input" placeholder="اكتب السؤال أو الطلب هنا...">
+                        </div>
+                        <button class="primary-btn w-100" onclick="sendQuestion()">إرسال السؤال للخاسر 🎯</button>
+                    </div>
+
+                    <div id="loser-waiting-box" class="hidden">
+                        <p style="color: var(--danger); font-weight: bold;">⏳ في انتظار الفائز عشان يكتب لك سؤال...</p>
+                    </div>
+
+                    <div id="loser-answer-box" class="hidden">
+                        <p style="color: var(--danger); font-weight: bold; margin-bottom: 5px;" id="incoming-question-title">سؤال الفائز:</p>
+                        <p id="displayed-question" style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600;"></p>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <input type="text" id="loser-answer-input" placeholder="اكتب إجابتك هنا...">
+                        </div>
+                        <button class="primary-btn w-100" onclick="sendAnswer()">إرسال الإجابة ❤️</button>
+                    </div>
+
+                    <div id="winner-waiting-answer" class="hidden">
+                        <p style="color: var(--text-muted); font-weight: bold;">⏳ في انتظار رد الخاسر على سؤالك...</p>
+                    </div>
+
+                    <div id="qa-result-display" class="hidden" style="text-align: center;">
+                        <p style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px;">💬 الرد:</p>
+                        <p id="final-qa-summary" style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;"></p>
+                        <button class="primary-btn w-100" onclick="startNextRoundFromQA()">الجولة اللي بعدها 🚀</button>
+                    </div>
+                </div>
+
                 <div id="disconnect-msg" class="hidden" style="margin-top: 15px; color: var(--danger); font-weight: bold; font-size: 1.1rem; background: #fee2e2; padding: 12px; border-radius: 10px;">
                     ⚠️ الطرف الآخر قد خرج من اللعبة!
                 </div>
@@ -178,6 +213,7 @@
         let myChoice = null, opponentChoice = null;
         let roundActive = true;
         let resultShown = false;
+        let currentRoundWinner = ""; // 'p1' أو 'p2' أو 'tie'
 
         function showScreen(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
@@ -244,25 +280,25 @@
                 } else if(data.type === 'CHOICE') {
                     opponentChoice = data.choice;
                     checkRoundResult();
+                } else if(data.type === 'QUESTION') {
+                    showLoserQuestionPrompt(data.question);
+                } else if(data.type === 'ANSWER') {
+                    showQAResult(data.answer);
                 } else if(data.type === 'NEXT_ROUND') {
                     roundNum = data.round;
                     resetRoundUI();
                 }
             });
 
-            conn.on('close', () => {
-                handleDisconnect();
-            });
-            
-            conn.on('disconnected', () => {
-                handleDisconnect();
-            });
+            conn.on('close', () => { handleDisconnect(); });
+            conn.on('disconnected', () => { handleDisconnect(); });
         }
 
         function handleDisconnect() {
             document.getElementById('choice-area').classList.add('hidden');
             document.getElementById('waiting-choice-area').classList.add('hidden');
             document.getElementById('result-area').classList.add('hidden');
+            document.getElementById('qa-section').classList.add('hidden');
             document.getElementById('disconnect-msg').classList.remove('hidden');
         }
 
@@ -301,7 +337,6 @@
         function checkRoundResult() {
             if(resultShown) return;
 
-            // تظهر النتيجة فوراً بمجرد اختيار الطرفين
             if(myChoice !== null && opponentChoice !== null) {
                 resultShown = true;
                 document.getElementById('waiting-choice-area').classList.add('hidden');
@@ -317,15 +352,18 @@
 
                 let winText = "";
                 if(p1Move === p2Move) {
+                    currentRoundWinner = 'tie';
                     winText = "تعادل... محدش عايز يزعل التاني 😂❤️";
                 } else if(
                     (p1Move === 'حجر' && p2Move === 'مقص') ||
                     (p1Move === 'مقص' && p2Move === 'ورقة') ||
                     (p1Move === 'ورقة' && p2Move === 'حجر')
                 ) {
+                    currentRoundWinner = 'p1';
                     winText = `${document.getElementById('lbl-p1').innerText} كسب الجولة! 🎉`;
                     if(myRole === 'p1') myScore++; else opponentScore++;
                 } else {
+                    currentRoundWinner = 'p2';
                     winText = `${document.getElementById('lbl-p2').innerText} كسبت الجولة! ❤️`;
                     if(myRole === 'p2') myScore++; else opponentScore++;
                 }
@@ -333,15 +371,87 @@
                 document.getElementById('round-winner-text').innerText = winText;
                 updateUI();
 
-                // الانتقال التلقائي للجولة التالية بعد ثوانٍ قليلة
+                // لو حصل تعادل، ننتقل للجولة التالية بعد ثواني، لو فيه فائز يظهر صندوق الأسئلة
                 setTimeout(() => {
-                    roundNum++;
-                    if(myRole === 'p1' && conn && conn.open) {
-                        conn.send({ type: 'NEXT_ROUND', round: roundNum });
+                    if(currentRoundWinner === 'tie') {
+                        setTimeout(() => {
+                            roundNum++;
+                            if(myRole === 'p1' && conn && conn.open) {
+                                conn.send({ type: 'NEXT_ROUND', round: roundNum });
+                            }
+                            resetRoundUI();
+                        }, 2000);
+                    } else {
+                        setupQAStage();
                     }
-                    resetRoundUI();
-                }, 2500);
+                }, 1000);
             }
+        }
+
+        function setupQAStage() {
+            document.getElementById('qa-section').classList.remove('hidden');
+            
+            let iAmWinner = (myRole === currentRoundWinner);
+
+            document.getElementById('winner-question-box').classList.add('hidden');
+            document.getElementById('loser-waiting-box').classList.add('hidden');
+            document.getElementById('loser-answer-box').classList.add('hidden');
+            document.getElementById('winner-waiting-answer').classList.add('hidden');
+            document.getElementById('qa-result-display').classList.add('hidden');
+
+            if(iAmWinner) {
+                document.getElementById('winner-question-box').classList.remove('hidden');
+                document.getElementById('winner-question-input').value = "";
+            } else {
+                document.getElementById('loser-waiting-box').classList.remove('hidden');
+            }
+        }
+
+        function sendQuestion() {
+            let qText = document.getElementById('winner-question-input').value.trim();
+            if(!qText) qText = "قول بحبك قد ايه؟ 😂❤️";
+
+            if(conn && conn.open) {
+                conn.send({ type: 'QUESTION', question: qText });
+            }
+
+            document.getElementById('winner-question-box').classList.add('hidden');
+            document.getElementById('winner-waiting-answer').classList.remove('hidden');
+        }
+
+        function showLoserQuestionPrompt(qText) {
+            document.getElementById('qa-section').classList.remove('hidden');
+            document.getElementById('loser-waiting-box').classList.add('hidden');
+            document.getElementById('loser-answer-box').classList.remove('hidden');
+            document.getElementById('displayed-question').innerText = qText;
+            document.getElementById('loser-answer-input').value = "";
+        }
+
+        function sendAnswer() {
+            let aText = document.getElementById('loser-answer-input').value.trim();
+            if(!aText) aText = "ماشي خلاص 😂❤️";
+
+            if(conn && conn.open) {
+                conn.send({ type: 'ANSWER', answer: aText });
+            }
+
+            showQAResult(aText);
+        }
+
+        function showQAResult(answerText) {
+            document.getElementById('winner-waiting-answer').classList.add('hidden');
+            document.getElementById('loser-answer-box').classList.add('hidden');
+            document.getElementById('qa-result-display').classList.remove('hidden');
+            
+            document.getElementById('final-qa-summary').innerText = answerText;
+        }
+
+        function startNextRoundFromQA() {
+            roundNum++;
+            if(myRole === 'p1' && conn && conn.open) {
+                conn.send({ type: 'NEXT_ROUND', round: roundNum });
+            }
+            resetRoundUI();
         }
 
         function resetRoundUI() {
@@ -349,9 +459,10 @@
             opponentChoice = null;
             roundActive = true;
             resultShown = false;
+            currentRoundWinner = "";
 
             document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('waiting-choice-area').classList.add('hidden');
+            document.getElementById('qa-section').classList.add('hidden');
             document.getElementById('choice-area').classList.remove('hidden');
             updateUI();
         }
