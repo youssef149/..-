@@ -52,10 +52,7 @@
         .scoreboard-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 2px solid var(--border-color); margin-bottom: 12px; font-weight: bold; font-size: 0.9rem; }
         .round-badge { background: var(--primary-pink); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
         .versus-title { font-size: 1.1rem; color: var(--primary-pink); margin-bottom: 10px; font-weight: bold; }
-        
-        /* عداد الوقت والسريع */
         .timer-box { font-size: 1.2rem; font-weight: bold; color: var(--danger); background: #fee2e2; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
-        
         .choices-grid { display: flex; justify-content: center; gap: 12px; }
         .choice-btn { background: #fff; border: 2px solid var(--border-color); border-radius: 16px; padding: 12px 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .choice-btn:hover { border-color: var(--primary-pink); background: #fdf2f8; }
@@ -138,7 +135,7 @@
                 <div class="timer-box">⏱️ <span id="time-left">5</span> ثوانٍ</div>
                 
                 <div id="choice-area">
-                    <p style="margin-bottom: 12px; font-weight: bold;">اختر سرعاً:</p>
+                    <p style="margin-bottom: 12px; font-weight: bold;">اختر سريعاً:</p>
                     <div class="choices-grid">
                         <button class="choice-btn" onclick="makeChoice('حجر')"><span class="choice-icon">🪨</span>حجر</button>
                         <button class="choice-btn" onclick="makeChoice('ورقة')"><span class="choice-icon">📄</span>ورقة</button>
@@ -182,6 +179,7 @@
         let timerInterval = null;
         let timeLeft = 5;
         let roundActive = false;
+        let resultShown = false;
 
         function showScreen(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
@@ -241,7 +239,7 @@
                 if(data.type === 'INIT') {
                     opponentName = data.name;
                     updateUI();
-                    startNewRound(); // بدء أول جولة فور اكتمال الاتصال
+                    startNewRound();
                 } else if(data.type === 'CHOICE') {
                     opponentChoice = data.choice;
                     checkRoundResult();
@@ -277,6 +275,7 @@
             myChoice = null;
             opponentChoice = null;
             roundActive = true;
+            resultShown = false;
             timeLeft = 5;
             document.getElementById('time-left').innerText = timeLeft;
             
@@ -287,14 +286,16 @@
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
-                document.getElementById('time-left').innerText = timeLeft;
+                document.getElementById('time-left').innerText = Math.max(0, timeLeft);
                 if(timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    if(roundActive) {
-                        // لو الوقت خلص ومختارش يعتبر خسران الوقت
+                    if(roundActive && !resultShown) {
                         if(!myChoice) {
                             myChoice = 'timeout';
                             conn.send({ type: 'CHOICE', choice: 'timeout' });
+                        }
+                        if(!opponentChoice) {
+                            opponentChoice = 'timeout';
                         }
                         checkRoundResult();
                     }
@@ -313,12 +314,22 @@
             document.getElementById('choice-area').classList.add('hidden');
             document.getElementById('waiting-choice-area').classList.remove('hidden');
 
+            // إذا تتاخر الطرف الآخر لأكثر من ثانية بعد اختيارك، أظهر النتيجة تلقائياً بافتراض اختيار عشوائي أو انتهاء وقته
+            setTimeout(() => {
+                if(!resultShown && !opponentChoice) {
+                    opponentChoice = 'timeout';
+                    checkRoundResult();
+                }
+            }, 1200);
+
             checkRoundResult();
         }
 
         function checkRoundResult() {
-            // تظهر النتيجة فوراً بمجرد اختيار الطرفين أو انتهاء الوقت
+            if(resultShown) return;
+
             if((myChoice && opponentChoice) || (myChoice === 'timeout' && opponentChoice) || (opponentChoice === 'timeout' && myChoice)) {
+                resultShown = true;
                 roundActive = false;
                 clearInterval(timerInterval);
 
@@ -330,8 +341,8 @@
                 let p1Move = myRole === 'p1' ? myChoice : opponentChoice;
                 let p2Move = myRole === 'p2' ? myChoice : opponentChoice;
 
-                document.getElementById('res-p1-emoji').innerText = emojis[p1Move];
-                document.getElementById('res-p2-emoji').innerText = emojis[p2Move];
+                document.getElementById('res-p1-emoji').innerText = emojis[p1Move || 'timeout'];
+                document.getElementById('res-p2-emoji').innerText = emojis[p2Move || 'timeout'];
 
                 let winText = "";
                 
@@ -360,7 +371,6 @@
                 document.getElementById('round-winner-text').innerText = winText;
                 updateUI();
 
-                // الانتقال للجولة التالية بسرعة (بعد 1.5 ثانية فقط لتبدء بسرعة)
                 setTimeout(() => {
                     roundNum++;
                     startNewRound();
