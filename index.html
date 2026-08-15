@@ -219,7 +219,10 @@
                 
                 conn.on('open', () => {
                     setupConnection();
-                    conn.send({ type: 'INIT', name: myName });
+                    // إرسال الاسم فور الاتصال لضمان مزامنة الطرفين
+                    setTimeout(() => {
+                        conn.send({ type: 'INIT', name: myName });
+                    }, 300);
                 });
 
                 conn.on('error', () => {
@@ -232,7 +235,9 @@
             showScreen('screen-game');
 
             if(myRole === 'p1') {
-                conn.send({ type: 'INIT', name: myName });
+                setTimeout(() => {
+                    conn.send({ type: 'INIT', name: myName });
+                }, 300);
             }
 
             conn.on('data', (data) => {
@@ -243,6 +248,10 @@
                 } else if(data.type === 'CHOICE') {
                     opponentChoice = data.choice;
                     checkRoundResult();
+                } else if(data.type === 'START_ROUND') {
+                    // مزامنة بدء الجولة للطرفين بدقة
+                    roundNum = data.round;
+                    startNewRound(true);
                 }
             });
 
@@ -271,7 +280,7 @@
             document.getElementById('lbl-round').innerText = `الجولة ${roundNum}`;
         }
 
-        function startNewRound() {
+        function startNewRound(fromSync = false) {
             myChoice = null;
             opponentChoice = null;
             roundActive = true;
@@ -282,6 +291,12 @@
             document.getElementById('result-area').classList.add('hidden');
             document.getElementById('waiting-choice-area').classList.add('hidden');
             document.getElementById('choice-area').classList.remove('hidden');
+            updateUI();
+
+            // لو أنا صاحب الغرفة أبعت أمر بدء الجولة لسما عشان يبدأوا مع بعض في نفس الثانية
+            if(myRole === 'p1' && !fromSync && conn && conn.open) {
+                conn.send({ type: 'START_ROUND', round: roundNum });
+            }
 
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -309,12 +324,13 @@
             roundActive = false;
             clearInterval(timerInterval);
             
-            conn.send({ type: 'CHOICE', choice: move });
+            if(conn && conn.open) {
+                conn.send({ type: 'CHOICE', choice: move });
+            }
 
             document.getElementById('choice-area').classList.add('hidden');
             document.getElementById('waiting-choice-area').classList.remove('hidden');
 
-            // إذا تتاخر الطرف الآخر لأكثر من ثانية بعد اختيارك، أظهر النتيجة تلقائياً بافتراض اختيار عشوائي أو انتهاء وقته
             setTimeout(() => {
                 if(!resultShown && !opponentChoice) {
                     opponentChoice = 'timeout';
@@ -373,7 +389,9 @@
 
                 setTimeout(() => {
                     roundNum++;
-                    startNewRound();
+                    if(myRole === 'p1') {
+                        startNewRound();
+                    }
                 }, 1500);
             }
         }
