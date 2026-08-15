@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❤️ ورقة حجر مقص - يوسف وسما ❤️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary-pink: #db2777;
+            --accent-purple: #9333ea;
+            --text-main: #4a044e;
+            --text-muted: #86198f;
+            --border-color: #fbcfe8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 20px;
+            --shadow: 0 10px 30px rgba(219, 39, 119, 0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .app-container { width: 100%; max-width: 480px; }
+        .game-screen { display: none; }
+        .game-screen.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
+        .w-100 { width: 100%; }
+        .hero-card, .gameplay-card, .history-card {
+            background: var(--card-bg); border: 2px solid var(--border-color); border-radius: var(--radius);
+            padding: 25px 20px; text-align: center; box-shadow: var(--shadow); margin-bottom: 15px;
+        }
+        h1 { color: var(--primary-pink); font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: var(--primary-pink); font-size: 1.3rem; margin-bottom: 15px; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; font-weight: 600; }
+        .menu-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .primary-btn, .secondary-btn, .danger-btn {
+            padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; font-size: 1rem;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+        }
+        .primary-btn { background: linear-gradient(135deg, var(--primary-pink), var(--accent-purple)); color: #fff; }
+        .secondary-btn { background: #fbcfe8; color: var(--text-main); }
+        .danger-btn { background: #fee2e2; color: var(--danger); }
+        .text-btn { background: none; border: none; color: var(--text-muted); margin-top: 12px; cursor: pointer; text-decoration: underline; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; color: var(--text-muted); }
+        input { width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 10px; font-size: 1rem; text-align: center; outline: none; }
+        input:focus { border-color: var(--primary-pink); }
+        .room-code-box { font-size: 1.8rem; letter-spacing: 4px; font-weight: bold; color: var(--accent-purple); background: #f3e8ff; padding: 12px; border-radius: 12px; margin: 15px 0; border: 2px dashed var(--accent-purple); }
+        .scoreboard-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 2px solid var(--border-color); margin-bottom: 12px; font-weight: bold; font-size: 0.9rem; }
+        .round-badge { background: var(--primary-pink); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .versus-title { font-size: 1.1rem; color: var(--primary-pink); margin-bottom: 15px; font-weight: bold; }
+        .choices-grid { display: flex; justify-content: center; gap: 12px; }
+        .choice-btn { background: #fff; border: 2px solid var(--border-color); border-radius: 16px; padding: 12px 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .choice-btn:hover { border-color: var(--primary-pink); background: #fdf2f8; }
+        .choice-icon { font-size: 2rem; }
+        .reveal-grid { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
+        .reveal-box { background: #fdf2f8; border: 2px solid var(--border-color); padding: 12px; border-radius: 12px; width: 45%; }
+        .big-emoji { font-size: 2.5rem; margin: 8px 0; }
+        .winner-announcement { font-size: 1.1rem; color: var(--primary-pink); margin: 10px 0; font-weight: bold; }
+        .history-card { text-align: right; max-height: 150px; overflow-y: auto; }
+        .history-item { font-size: 0.8rem; padding: 5px 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; border-right: 3px solid var(--primary-pink); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- 1. الشاشة الرئيسية -->
+        <section id="screen-home" class="game-screen active">
+            <div class="hero-card">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">❤️</div>
+                <h1>ورقة حجر مقص</h1>
+                <p class="subtitle">لعبة يوسف وسما</p>
+                <div class="menu-buttons">
+                    <button class="primary-btn" onclick="showScreen('screen-create')"><i class="fa-solid fa-user-plus"></i> إنشاء لعبة</button>
+                    <button class="secondary-btn" onclick="showScreen('screen-join')"><i class="fa-solid fa-door-open"></i> الانضمام إلى لعبة</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. إنشاء لعبة -->
+        <section id="screen-create" class="game-screen">
+            <div class="hero-card">
+                <h2>🎮 إنشاء لعبة جديدة</h2>
+                <div class="form-group">
+                    <label>اسم اللاعب:</label>
+                    <input type="text" id="create-name" value="يوسف">
+                </div>
+                <button class="primary-btn w-100" onclick="createRoom()">إنشاء الغرفة</button>
+                <button class="text-btn" onclick="showScreen('screen-home')">رجوع</button>
+            </div>
+        </section>
+
+        <!-- 3. الانتظار -->
+        <section id="screen-waiting" class="game-screen">
+            <div class="hero-card">
+                <h2>🎮 تم إنشاء اللعبة</h2>
+                <p>كود الغرفة:</p>
+                <div class="room-code-box" id="code-display">------</div>
+                <p class="subtitle">ابعت الكود لسما ❤️</p>
+                <p>⏳ في انتظار انضمام سما...</p>
+                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="location.reload()">مغادرة</button>
+            </div>
+        </section>
+
+        <!-- 4. الانضمام -->
+        <section id="screen-join" class="game-screen">
+            <div class="hero-card">
+                <h2>👩 الانضمام إلى لعبة</h2>
+                <div class="form-group">
+                    <label>اسم اللاعب:</label>
+                    <input type="text" id="join-name" value="سما">
+                </div>
+                <div class="form-group">
+                    <label>كود الغرفة:</label>
+                    <input type="text" id="join-code" placeholder="أدخل الكود هنا" style="text-transform: uppercase;">
+                </div>
+                <button class="primary-btn w-100" onclick="joinRoom()">دخول الغرفة</button>
+                <p id="join-error" style="color:red; font-size:0.8rem; margin-top:8px;"></p>
+                <button class="text-btn" onclick="showScreen('screen-home')">رجوع</button>
+            </div>
+        </section>
+
+        <!-- 5. شاشة اللعب -->
+        <section id="screen-game" class="game-screen">
+            <div class="scoreboard-bar">
+                <div><span id="lbl-p1">يوسف</span>: <strong id="score-p1">0</strong></div>
+                <div class="round-badge" id="lbl-round">الجولة 1</div>
+                <div><span id="lbl-p2">سما</span>: <strong id="score-p2">0</strong></div>
+            </div>
+
+            <div class="gameplay-card">
+                <p class="versus-title">تحدي بين الأبطال ❤️</p>
+                
+                <div id="choice-area">
+                    <p style="margin-bottom: 12px; font-weight: bold;">اختر حركتك:</p>
+                    <div class="choices-grid">
+                        <button class="choice-btn" onclick="makeChoice('حجر')"><span class="choice-icon">🪨</span>حجر</button>
+                        <button class="choice-btn" onclick="makeChoice('ورقة')"><span class="choice-icon">📄</span>ورقة</button>
+                        <button class="choice-btn" onclick="makeChoice('مقص')"><span class="choice-icon">✂️</span>مقص</button>
+                    </div>
+                </div>
+
+                <div id="waiting-choice-area" class="hidden">
+                    <h3>🔒 تم اختيارك</h3>
+                    <p style="color:var(--text-muted); margin-top:8px;">في انتظار الطرف الآخر...</p>
+                </div>
+
+                <div id="result-area" class="hidden">
+                    <div class="reveal-grid">
+                        <div class="reveal-box">
+                            <h4 id="res-p1-name">يوسف</h4>
+                            <div class="big-emoji" id="res-p1-emoji">🪨</div>
+                        </div>
+                        <div class="reveal-box">
+                            <h4 id="res-p2-name">سما</h4>
+                            <div class="big-emoji" id="res-p2-emoji">✂️</div>
+                        </div>
+                    </div>
+                    <h3 id="round-winner-text" class="winner-announcement">الفائز</h3>
+                </div>
+            </div>
+
+            <div class="history-card">
+                <h3 style="font-size: 0.9rem; margin-bottom: 8px; color: var(--accent-purple);">📜 سجل الجولات</h3>
+                <div id="history-list"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let roomCode = "";
+        let myRole = ""; // 'p1' أو 'p2'
+        let myName = "";
+        
+        function showScreen(id) {
+            document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function createRoom() {
+            myName = document.getElementById('create-name').value || "يوسف";
+            roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            myRole = 'p1';
+            
+            const initialState = {
+                p1: { name: myName, choice: null, score: 0 },
+                p2: { name: "سما", choice: null, score: 0 },
+                round: 1,
+                status: 'waiting'
+            };
+            localStorage.setItem('game_' + roomCode, JSON.stringify(initialState));
+            
+            document.getElementById('code-display').innerText = roomCode;
+            showScreen('screen-waiting');
+            startPolling();
+        }
+
+        function joinRoom() {
+            myName = document.getElementById('join-name').value || "سما";
+            roomCode = document.getElementById('join-code').value.trim().toUpperCase();
+            myRole = 'p2';
+
+            let data = JSON.parse(localStorage.getItem('game_' + roomCode));
+            if(!data) {
+                document.getElementById('join-error').innerText = "❌ الغرفة غير موجودة!";
+                return;
+            }
+
+            data.p2.name = myName;
+            data.status = 'playing';
+            localStorage.setItem('game_' + roomCode, JSON.stringify(data));
+            
+            showScreen('screen-game');
+            startPolling();
+        }
+
+        function startPolling() {
+            setInterval(() => {
+                let data = JSON.parse(localStorage.getItem('game_' + roomCode));
+                if(!data) return;
+
+                // تحديث الشاشات لو دخل اللاعب الثاني
+                if(document.getElementById('screen-waiting').classList.contains('active') && data.status === 'playing') {
+                    showScreen('screen-game');
+                }
+
+                // تحديث الواجهة والنتائج
+                document.getElementById('lbl-p1').innerText = data.p1.name;
+                document.getElementById('lbl-p2').innerText = data.p2.name;
+                document.getElementById('score-p1').innerText = data.p1.score;
+                document.getElementById('score-p2').innerText = data.p2.score;
+                document.getElementById('lbl-round').innerText = `الجولة ${data.round}`;
+                document.getElementById('res-p1-name').innerText = data.p1.name;
+                document.getElementById('res-p2-name').innerText = data.p2.name;
+
+                // لو الاثنين اختاروا، اعرض النتيجة
+                if(data.p1.choice && data.p2.choice) {
+                    document.getElementById('choice-area').classList.add('hidden');
+                    document.getElementById('waiting-choice-area').classList.add('hidden');
+                    document.getElementById('result-area').classList.remove('hidden');
+
+                    const emojis = { 'حجر': '🪨', 'ورقة': '📄', 'مقص': '✂️' };
+                    document.getElementById('res-p1-emoji').innerText = emojis[data.p1.choice];
+                    document.getElementById('res-p2-emoji').innerText = emojis[data.p2.choice];
+
+                    // حساب الفائز للجولة
+                    let winText = "";
+                    if(data.p1.choice === data.p2.choice) {
+                        winText = "تعادل... محدش عايز يزعل التاني 😂❤️";
+                    } else if(
+                        (data.p1.choice === 'حجر' && data.p2.choice === 'مقص') ||
+                        (data.p1.choice === 'مقص' && data.p2.choice === 'ورقة') ||
+                        (data.p1.choice === 'ورقة' && data.p2.choice === 'حجر')
+                    ) {
+                        winText = `${data.p1.name} كسب الجولة! 😂❤️`;
+                        if(myRole === 'p1' && !data.counted) { data.p1.score++; data.counted = true; }
+                    } else {
+                        winText = `${data.p2.name} كسبت الجولة! ❤️😂`;
+                        if(myRole === 'p2' && !data.counted) { data.p2.score++; data.counted = true; }
+                    }
+                    document.getElementById('round-winner-text').innerText = winText;
+
+                    // إعادة تعيين للجولة التالية بعد 3 ثواني
+                    setTimeout(() => {
+                        if(myRole === 'p1') {
+                            data.p1.choice = null;
+                            data.p2.choice = null;
+                            data.round++;
+                            data.counted = false;
+                            localStorage.setItem('game_' + roomCode, JSON.stringify(data));
+                        }
+                    }, 3000);
+                } else {
+                    // إظهار مكان الاختيار أو الانتظار
+                    let myChoice = myRole === 'p1' ? data.p1.choice : data.p2.choice;
+                    if(myChoice) {
+                        document.getElementById('choice-area').classList.add('hidden');
+                        document.getElementById('waiting-choice-area').classList.remove('hidden');
+                    } else {
+                        document.getElementById('choice-area').classList.remove('hidden');
+                        document.getElementById('waiting-choice-area').classList.add('hidden');
+                        document.getElementById('result-area').classList.add('hidden');
+                    }
+                }
+            }, 1000);
+        }
+
+        function makeChoice(move) {
+            let data = JSON.parse(localStorage.getItem('game_' + roomCode));
+            if(myRole === 'p1') data.p1.choice = move;
+            if(myRole === 'p2') data.p2.choice = move;
+            localStorage.setItem('game_' + roomCode, JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
