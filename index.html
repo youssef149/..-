@@ -249,6 +249,18 @@
         let resultShown = false;
         let currentRoundWinner = "";
 
+        // إعدادات قوية تدعم تخطي شبكات الموبايل والواي فاي المختلفة (STUN Servers)
+        const peerIceConfig = {
+            config: {
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun.stunprotocol.org:3478' }
+                ]
+            }
+        };
+
         function showScreen(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -282,7 +294,8 @@
             myName = document.getElementById('create-name').value.trim() || "اللاعب 1";
             myRole = 'p1';
             const randomId = Math.floor(1000 + Math.random() * 9000).toString();
-            peer = new Peer('loveduel-' + randomId);
+            
+            peer = new Peer('loveduel-' + randomId, peerIceConfig);
 
             peer.on('open', () => {
                 document.getElementById('code-display').innerText = randomId;
@@ -292,6 +305,10 @@
             peer.on('connection', (connection) => {
                 conn = connection;
                 setupConnection();
+            });
+
+            peer.on('error', (err) => {
+                console.error(err);
             });
         }
 
@@ -305,9 +322,10 @@
                 return;
             }
 
-            peer = new Peer();
+            peer = new Peer(peerIceConfig);
+            
             peer.on('open', () => {
-                conn = peer.connect('loveduel-' + code);
+                conn = peer.connect('loveduel-' + code, { reliable: true });
                 
                 conn.on('open', () => {
                     setupConnection();
@@ -316,9 +334,14 @@
                     }, 300);
                 });
 
-                conn.on('error', () => {
-                    document.getElementById('join-error').innerText = "❌ الكود غير صحيح أو الغرفة غير مفتوحة!";
+                conn.on('error', (err) => {
+                    console.error(err);
+                    document.getElementById('join-error').innerText = "❌ تعذر الاتصال، تأكد من الكود أو جرب شبكة أخرى!";
                 });
+            });
+
+            peer.on('error', (err) => {
+                document.getElementById('join-error').innerText = "❌ خطأ في الاتصال بالسيرفر!";
             });
         }
 
