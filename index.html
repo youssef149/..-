@@ -79,8 +79,9 @@
         .chat-menu button:hover { background: #fdf2f8; color: var(--primary-pink); }
         .floating-chat-popup {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(74, 4, 78, 0.9); color: #fff; padding: 10px 20px; border-radius: 30px;
-            font-weight: bold; font-size: 0.95rem; z-index: 1000; animation: fadeInOut 2.5s ease-in-out forwards;
+            background: rgba(74, 4, 78, 0.95); color: #fff; padding: 12px 22px; border-radius: 30px;
+            font-weight: bold; font-size: 0.95rem; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: fadeInOut 2.8s ease-in-out forwards;
         }
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translate(-50%, 20px); }
@@ -274,7 +275,7 @@
             pop.className = 'floating-chat-popup';
             pop.innerText = msg;
             document.body.appendChild(pop);
-            setTimeout(() => pop.remove(), 2500);
+            setTimeout(() => pop.remove(), 2800);
         }
 
         function createRoom() {
@@ -344,8 +345,10 @@
                 } else if(data.type === 'NEXT_ROUND') {
                     roundNum = data.round;
                     resetRoundUI();
-                } else if(data.type === 'QUICK_CHAT') {
-                    showFloatingChat(opponentName + ": " + data.text);
+                } else if(data.type === 'QUICK_CHAT' || data.type === 'chat') {
+                    let msgText = data.text || data.message;
+                    let sender = opponentName || "الطرف الآخر";
+                    showFloatingChat(sender + ": " + msgText);
                 }
             });
 
