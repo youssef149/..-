@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveDuel</title>
+    <title>LoveDuel - Pro Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
@@ -53,7 +54,7 @@
         .round-badge { background: var(--primary-pink); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
         .versus-title { font-size: 1.1rem; color: var(--primary-pink); margin-bottom: 10px; font-weight: bold; }
         .choices-grid { display: flex; justify-content: center; gap: 12px; }
-        .choice-btn { background: #fff; border: 2px solid var(--border-color); border-radius: 16px; padding: 15px 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .choice-btn { background: #fff; border: 2px solid var(--border-color); border-radius: 16px; padding: 15px 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
         .choice-btn:hover { border-color: var(--primary-pink); background: #fdf2f8; }
         .choice-icon { font-size: 2.2rem; }
         .reveal-grid { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
@@ -94,12 +95,12 @@
 <body>
 
     <div class="app-container">
-        <!-- 1. الشاشة الرئيسية -->
+        <!-- الشاشة الرئيسية -->
         <section id="screen-home" class="game-screen active">
             <div class="hero-card">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">❤️</div>
                 <h1>LoveDuel</h1>
-                <p class="subtitle">لعبة التحدي والأسئلة</p>
+                <p class="subtitle">تحدي الأبطال أونلاين</p>
                 <div class="menu-buttons">
                     <button class="primary-btn" onclick="showScreen('screen-create')"><i class="fa-solid fa-user-plus"></i> إنشاء لعبة</button>
                     <button class="secondary-btn" onclick="showScreen('screen-join')"><i class="fa-solid fa-door-open"></i> الانضمام إلى لعبة</button>
@@ -107,50 +108,50 @@
             </div>
         </section>
 
-        <!-- 2. إنشاء لعبة -->
+        <!-- إنشاء لعبة -->
         <section id="screen-create" class="game-screen">
             <div class="hero-card">
-                <h2>🎮 إنشاء لعبة جديدة</h2>
+                <h2>🎮 إنشاء غرفة جديدة</h2>
                 <div class="form-group">
                     <label>اسمك:</label>
                     <input type="text" id="create-name" placeholder="اكتب اسمك هنا">
                 </div>
-                <button class="primary-btn w-100" onclick="createRoom()">إنشاء الغرفة</button>
+                <button class="primary-btn w-100" onclick="createRoom()">إنشاء الغرفة الآن</button>
+                <p id="create-error" style="color:red; font-size:0.85rem; margin-top:8px;"></p>
                 <button class="text-btn" onclick="showScreen('screen-home')">رجوع</button>
             </div>
         </section>
 
-        <!-- 3. الانتظار -->
+        <!-- الانتظار -->
         <section id="screen-waiting" class="game-screen">
             <div class="hero-card">
-                <h2>🎮 جاري تجهيز الغرفة...</h2>
+                <h2>⏳ تم إنشاء الغرفة!</h2>
                 <p>كود الغرفة:</p>
-                <div class="room-code-box" id="code-display">جاري التوليد...</div>
-                <p class="subtitle">ابعت الكود للطرف التاني ❤️</p>
-                <p>⏳ في انتظار انضمامه...</p>
-                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="location.reload()">مغادرة</button>
+                <div class="room-code-box" id="code-display">...</div>
+                <p class="subtitle">ابعت الكود للطرف التاني عشان يدخل معاك ❤️</p>
+                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="leaveGame()">إلغاء الغرفة</button>
             </div>
         </section>
 
-        <!-- 4. الانضمام -->
+        <!-- الانضمام -->
         <section id="screen-join" class="game-screen">
             <div class="hero-card">
-                <h2>👩 الانضمام إلى لعبة</h2>
+                <h2>👩 الانضمام للغرفة</h2>
                 <div class="form-group">
                     <label>اسمك:</label>
                     <input type="text" id="join-name" placeholder="اكتب اسمك هنا">
                 </div>
                 <div class="form-group">
                     <label>كود الغرفة:</label>
-                    <input type="text" id="join-code" placeholder="أدخل الكود المكون من أرقام" style="text-transform: uppercase;">
+                    <input type="text" id="join-code" placeholder="أدخل كود الأرقام">
                 </div>
                 <button class="primary-btn w-100" onclick="joinRoom()">دخول الغرفة</button>
-                <p id="join-error" style="color:red; font-size:0.8rem; margin-top:8px;"></p>
+                <p id="join-error" style="color:red; font-size:0.85rem; margin-top:8px;"></p>
                 <button class="text-btn" onclick="showScreen('screen-home')">رجوع</button>
             </div>
         </section>
 
-        <!-- 5. شاشة اللعب -->
+        <!-- شاشة اللعب -->
         <section id="screen-game" class="game-screen">
             <div class="scoreboard-bar">
                 <div><span id="lbl-p1">اللاعب 1</span>: <strong id="score-p1">0</strong></div>
@@ -166,7 +167,7 @@
                     <button onclick="sendQuickChat('اسأل أسئلة حلوة')">اسأل أسئلة حلوة 😉</button>
                 </div>
 
-                <p class="versus-title">تحدي بين الأبطال ❤️</p>
+                <p class="versus-title">اختبر حظك وتحدي التاني ❤️</p>
                 
                 <div id="choice-area">
                     <p style="margin-bottom: 12px; font-weight: bold;">اختار حركتك:</p>
@@ -198,19 +199,19 @@
 
                 <div id="qa-section" class="qa-container hidden">
                     <div id="winner-question-box" class="hidden">
-                        <p style="color: var(--primary-pink); font-weight: bold; margin-bottom: 8px;">🎉 أنت الفائز! اسأل الخاسر سؤال أو اطلب منه طلب:</p>
+                        <p style="color: var(--primary-pink); font-weight: bold; margin-bottom: 8px;">🎉 أنت الفائز! اسأل الخاسر سؤال:</p>
                         <div class="form-group" style="margin-bottom: 10px;">
                             <input type="text" id="winner-question-input" placeholder="اكتب السؤال أو الطلب هنا...">
                         </div>
-                        <button class="primary-btn w-100" onclick="sendQuestion()">إرسال السؤال للخاسر 🎯</button>
+                        <button class="primary-btn w-100" onclick="sendQuestion()">إرسال السؤال 🎯</button>
                     </div>
 
                     <div id="loser-waiting-box" class="hidden">
-                        <p style="color: var(--danger); font-weight: bold;">⏳ في انتظار الفائز عشان يكتب لك سؤال...</p>
+                        <p style="color: var(--danger); font-weight: bold;">⏳ في انتظار الفائز ليكتب السؤال...</p>
                     </div>
 
                     <div id="loser-answer-box" class="hidden">
-                        <p style="color: var(--danger); font-weight: bold; margin-bottom: 5px;" id="incoming-question-title">سؤال الفائز:</p>
+                        <p style="color: var(--danger); font-weight: bold; margin-bottom: 5px;">سؤال الفائز:</p>
                         <p id="displayed-question" style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600;"></p>
                         <div class="form-group" style="margin-bottom: 10px;">
                             <input type="text" id="loser-answer-input" placeholder="اكتب إجابتك هنا...">
@@ -219,7 +220,7 @@
                     </div>
 
                     <div id="winner-waiting-answer" class="hidden">
-                        <p style="color: var(--text-muted); font-weight: bold;">⏳ في انتظار رد الخاسر على سؤالك...</p>
+                        <p style="color: var(--text-muted); font-weight: bold;">⏳ في انتظار رد الخاسر...</p>
                     </div>
 
                     <div id="qa-result-display" class="hidden" style="text-align: center;">
@@ -228,38 +229,30 @@
                         <button class="primary-btn w-100" onclick="startNextRoundFromQA()">الجولة اللي بعدها 🚀</button>
                     </div>
                 </div>
-
-                <div id="disconnect-msg" class="hidden" style="margin-top: 15px; color: var(--danger); font-weight: bold; font-size: 1.1rem; background: #fee2e2; padding: 12px; border-radius: 10px;">
-                    ⚠️ الطرف الآخر قد خرج من اللعبة!
-                </div>
                 
-                <button class="danger-btn w-100" style="margin-top: 20px;" onclick="location.reload()">إنهاء والرجوع للرئيسية</button>
+                <button class="danger-btn w-100" style="margin-top: 20px;" onclick="leaveGame()">إنهاء والخروج</button>
             </div>
         </section>
     </div>
 
     <script>
-        let peer, conn;
-        let myRole = ""; 
-        let myName = "", opponentName = "";
-        let myScore = 0, opponentScore = 0;
-        let roundNum = 1;
-        let myChoice = null, opponentChoice = null;
-        let roundActive = true;
-        let resultShown = false;
-        let currentRoundWinner = "";
-
-        // إعدادات قوية تدعم تخطي شبكات الموبايل والواي فاي المختلفة (STUN Servers)
-        const peerIceConfig = {
-            config: {
-                'iceServers': [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun.stunprotocol.org:3478' }
-                ]
-            }
+        // ضع رابط قاعدة البيانات الخاصة بك هنا
+        const firebaseConfig = {
+            databaseURL: "https://YOUR-PROJECT-NAME-default-rtdb.firebaseio.com/"
         };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        let currentRoomCode = "";
+        let myRole = ""; 
+        let myName = "";
+        let roundNum = 1;
+        let myChoice = null;
+        let currentRoundWinner = "";
+        let isListening = false;
 
         function showScreen(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
@@ -273,9 +266,12 @@
 
         function sendQuickChat(text) {
             document.getElementById('chatMenu').style.display = 'none';
-            if(conn && conn.open) {
-                conn.send({ type: 'QUICK_CHAT', text: text });
-            }
+            if (!currentRoomCode) return;
+            db.ref('rooms/' + currentRoomCode + '/chat').set({
+                sender: myName,
+                text: text,
+                time: Date.now()
+            });
             showFloatingChat(myName + ": " + text);
         }
 
@@ -293,260 +289,248 @@
         function createRoom() {
             myName = document.getElementById('create-name').value.trim() || "اللاعب 1";
             myRole = 'p1';
-            const randomId = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            peer = new Peer('loveduel-' + randomId, peerIceConfig);
+            currentRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-            peer.on('open', () => {
-                document.getElementById('code-display').innerText = randomId;
-                showScreen('screen-waiting');
-            });
+            const roomData = {
+                p1: { name: myName, score: 0, choice: null },
+                p2: { name: "", score: 0, choice: null },
+                round: 1,
+                state: 'waiting', 
+                question: '',
+                answer: ''
+            };
 
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnection();
-            });
+            document.getElementById('create-error').innerText = "جاري إنشاء الغرفة...";
 
-            peer.on('error', (err) => {
-                console.error(err);
-            });
+            db.ref('rooms/' + currentRoomCode).set(roomData)
+                .then(() => {
+                    document.getElementById('create-error').innerText = "";
+                    document.getElementById('code-display').innerText = currentRoomCode;
+                    showScreen('screen-waiting');
+                    listenToRoom();
+                })
+                .catch((error) => {
+                    console.error(error);
+                    document.getElementById('create-error').innerText = "❌ تأكد من الاتصال وقواعد Firebase!";
+                });
         }
 
         function joinRoom() {
             myName = document.getElementById('join-name').value.trim() || "اللاعب 2";
-            myRole = 'p2';
             let code = document.getElementById('join-code').value.trim();
 
             if(!code) {
-                document.getElementById('join-error').innerText = "❌ اكتب الكود الأول!";
+                document.getElementById('join-error').innerText = "❌ ادخل الكود الأول!";
                 return;
             }
 
-            peer = new Peer(peerIceConfig);
-            
-            peer.on('open', () => {
-                conn = peer.connect('loveduel-' + code, { reliable: true });
-                
-                conn.on('open', () => {
-                    setupConnection();
-                    setTimeout(() => {
-                        conn.send({ type: 'INIT', name: myName });
-                    }, 300);
-                });
+            document.getElementById('join-error').innerText = "جاري الدخول...";
 
-                conn.on('error', (err) => {
-                    console.error(err);
-                    document.getElementById('join-error').innerText = "❌ تعذر الاتصال، تأكد من الكود أو جرب شبكة أخرى!";
+            db.ref('rooms/' + code).once('value')
+                .then((snapshot) => {
+                    if(snapshot.exists()) {
+                        let data = snapshot.val();
+                        currentRoomCode = code;
+                        myRole = 'p2';
+                        
+                        db.ref('rooms/' + code).update({
+                            'p2/name': myName,
+                            'state': 'playing'
+                        }).then(() => {
+                            document.getElementById('join-error').innerText = "";
+                            showScreen('screen-game');
+                            listenToRoom();
+                        });
+                    } else {
+                        document.getElementById('join-error').innerText = "❌ الغرفة غير موجودة أو انتهت!";
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    document.getElementById('join-error').innerText = "❌ خطأ في الاتصال بالشبكة!";
                 });
-            });
-
-            peer.on('error', (err) => {
-                document.getElementById('join-error').innerText = "❌ خطأ في الاتصال بالسيرفر!";
-            });
         }
 
-        function setupConnection() {
-            showScreen('screen-game');
+        function listenToRoom() {
+            if (isListening) return;
+            isListening = true;
 
-            if(myRole === 'p1') {
-                setTimeout(() => {
-                    conn.send({ type: 'INIT', name: myName });
-                }, 300);
-            }
+            db.ref('rooms/' + currentRoomCode).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(!data) return;
 
-            conn.on('data', (data) => {
-                if(data.type === 'INIT') {
-                    opponentName = data.name;
-                    updateUI();
-                } else if(data.type === 'CHOICE') {
-                    opponentChoice = data.choice;
-                    checkRoundResult();
-                } else if(data.type === 'QUESTION') {
-                    showLoserQuestionPrompt(data.question);
-                } else if(data.type === 'ANSWER') {
-                    showQAResult(data.answer);
-                } else if(data.type === 'NEXT_ROUND') {
-                    roundNum = data.round;
-                    resetRoundUI();
-                } else if(data.type === 'QUICK_CHAT' || data.type === 'chat') {
-                    let msgText = data.text || data.message;
-                    let sender = opponentName || "الطرف الآخر";
-                    showFloatingChat(sender + ": " + msgText);
+                let p1 = data.p1 || {};
+                let p2 = data.p2 || {};
+
+                let p1Name = p1.name || "اللاعب 1";
+                let p2Name = p2.name || "اللاعب 2";
+
+                document.getElementById('lbl-p1').innerText = p1Name;
+                document.getElementById('lbl-p2').innerText = p2Name;
+                document.getElementById('res-p1-name').innerText = p1Name;
+                document.getElementById('res-p2-name').innerText = p2Name;
+
+                document.getElementById('score-p1').innerText = p1.score || 0;
+                document.getElementById('score-p2').innerText = p2.score || 0;
+                document.getElementById('lbl-round').innerText = `الجولة ${data.round || 1}`;
+                roundNum = data.round || 1;
+
+                if(data.state === 'playing') {
+                    if(document.getElementById('screen-waiting').classList.contains('active') || 
+                       document.getElementById('screen-home').classList.contains('active') ||
+                       document.getElementById('screen-join').classList.contains('active')) {
+                        showScreen('screen-game');
+                        resetRoundUI();
+                    }
+                }
+
+                if(p1.choice && p2.choice && data.state === 'playing') {
+                    showResults(p1.choice, p2.choice, p1Name, p2Name);
+                }
+
+                if(data.state === 'qa') {
+                    handleQATrigger(data.question, data.answer);
                 }
             });
 
-            conn.on('close', () => { handleDisconnect(); });
-            conn.on('disconnected', () => { handleDisconnect(); });
-        }
-
-        function handleDisconnect() {
-            document.getElementById('choice-area').classList.add('hidden');
-            document.getElementById('waiting-choice-area').classList.add('hidden');
-            document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('qa-section').classList.add('hidden');
-            document.getElementById('disconnect-msg').classList.remove('hidden');
-        }
-
-        function updateUI() {
-            let p1Name = myRole === 'p1' ? myName : (opponentName || "اللاعب 1");
-            let p2Name = myRole === 'p2' ? myName : (opponentName || "اللاعب 2");
-
-            document.getElementById('lbl-p1').innerText = p1Name;
-            document.getElementById('lbl-p2').innerText = p2Name;
-            document.getElementById('res-p1-name').innerText = p1Name;
-            document.getElementById('res-p2-name').innerText = p2Name;
-
-            document.getElementById('score-p1').innerText = myRole === 'p1' ? myScore : opponentScore;
-            document.getElementById('score-p2').innerText = myRole === 'p2' ? myScore : opponentScore;
-            document.getElementById('lbl-round').innerText = `الجولة ${roundNum}`;
+            db.ref('rooms/' + currentRoomCode + '/chat').on('child_added', (snapshot) => {
+                const chatData = snapshot.val();
+                if(chatData && chatData.sender !== myName) {
+                    showFloatingChat(chatData.sender + ": " + chatData.text);
+                }
+            });
         }
 
         function makeChoice(move) {
-            if(!roundActive) return;
             myChoice = move;
-            roundActive = false;
-
-            if(conn && conn.open) {
-                conn.send({ type: 'CHOICE', choice: move });
-            }
+            db.ref('rooms/' + currentRoomCode + '/' + myRole).update({ choice: move });
 
             document.getElementById('choice-area').classList.add('hidden');
             document.getElementById('waiting-choice-area').classList.remove('hidden');
-
-            checkRoundResult();
         }
 
-        function checkRoundResult() {
-            if(resultShown) return;
-
-            if(myChoice !== null && opponentChoice !== null) {
-                resultShown = true;
-                document.getElementById('waiting-choice-area').classList.add('hidden');
-                document.getElementById('result-area').classList.remove('hidden');
-
-                const emojis = { 'حجر': '🪨', 'ورقة': '📄', 'مقص': '✂️' };
-                
-                let p1Move = myRole === 'p1' ? myChoice : opponentChoice;
-                let p2Move = myRole === 'p2' ? myChoice : opponentChoice;
-
-                document.getElementById('res-p1-emoji').innerText = emojis[p1Move];
-                document.getElementById('res-p2-emoji').innerText = emojis[p2Move];
-
-                let winText = "";
-                let p1Name = document.getElementById('lbl-p1').innerText;
-                let p2Name = document.getElementById('lbl-p2').innerText;
-
-                if(p1Move === p2Move) {
-                    currentRoundWinner = 'tie';
-                    winText = "تعادل... محدش عايز يزعل التاني 😂❤️";
-                } else if(
-                    (p1Move === 'حجر' && p2Move === 'مقص') ||
-                    (p1Move === 'مقص' && p2Move === 'ورقة') ||
-                    (p1Move === 'ورقة' && p2Move === 'حجر')
-                ) {
-                    currentRoundWinner = 'p1';
-                    winText = `${p1Name} كسب الجولة! 🎉`;
-                    if(myRole === 'p1') myScore++; else opponentScore++;
-                } else {
-                    currentRoundWinner = 'p2';
-                    winText = `${p2Name} كسب الجولة! ❤️`;
-                    if(myRole === 'p2') myScore++; else opponentScore++;
-                }
-
-                document.getElementById('round-winner-text').innerText = winText;
-                updateUI();
-
-                setTimeout(() => {
-                    if(currentRoundWinner === 'tie') {
-                        setTimeout(() => {
-                            roundNum++;
-                            if(myRole === 'p1' && conn && conn.open) {
-                                conn.send({ type: 'NEXT_ROUND', round: roundNum });
-                            }
-                            resetRoundUI();
-                        }, 2000);
-                    } else {
-                        setupQAStage();
-                    }
-                }, 1000);
-            }
-        }
-
-        function setupQAStage() {
-            document.getElementById('qa-section').classList.remove('hidden');
-            let iAmWinner = (myRole === currentRoundWinner);
-
+        function resetRoundUI() {
+            document.getElementById('choice-area').classList.remove('hidden');
+            document.getElementById('waiting-choice-area').classList.add('hidden');
+            document.getElementById('result-area').classList.add('hidden');
+            document.getElementById('qa-section').classList.add('hidden');
             document.getElementById('winner-question-box').classList.add('hidden');
             document.getElementById('loser-waiting-box').classList.add('hidden');
             document.getElementById('loser-answer-box').classList.add('hidden');
             document.getElementById('winner-waiting-answer').classList.add('hidden');
             document.getElementById('qa-result-display').classList.add('hidden');
+            myChoice = null;
+        }
 
-            if(iAmWinner) {
-                document.getElementById('winner-question-box').classList.remove('hidden');
-                document.getElementById('winner-question-input').value = "";
+        function showResults(p1Move, p2Move, p1Name, p2Name) {
+            document.getElementById('waiting-choice-area').classList.add('hidden');
+            document.getElementById('result-area').classList.remove('hidden');
+
+            const emojis = { 'حجر': '🪨', 'ورقة': '📄', 'مقص': '✂️' };
+            document.getElementById('res-p1-emoji').innerText = emojis[p1Move];
+            document.getElementById('res-p2-emoji').innerText = emojis[p2Move];
+
+            let winText = "";
+
+            if(p1Move === p2Move) {
+                currentRoundWinner = 'tie';
+                winText = "تعادل... محدش عايز يزعل التاني 😂❤️";
+            } else if(
+                (p1Move === 'حجر' && p2Move === 'مقص') ||
+                (p1Move === 'مقص' && p2Move === 'ورقة') ||
+                (p1Move === 'ورقة' && p2Move === 'حجر')
+            ) {
+                currentRoundWinner = 'p1';
+                winText = `${p1Name} كسب الجولة! 🎉`;
+                if(myRole === 'p1' && myChoice === p1Move) {
+                    db.ref('rooms/' + currentRoomCode + '/p1').update({ score: firebase.database.ServerValue.increment(1) });
+                }
             } else {
-                document.getElementById('loser-waiting-box').classList.remove('hidden');
+                currentRoundWinner = 'p2';
+                winText = `${p2Name} كسب الجولة! ❤️`;
+                if(myRole === 'p2' && myChoice === p2Move) {
+                    db.ref('rooms/' + currentRoomCode + '/p2').update({ score: firebase.database.ServerValue.increment(1) });
+                }
             }
+
+            document.getElementById('round-winner-text').innerText = winText;
+
+            setTimeout(() => {
+                if(currentRoundWinner === 'tie') {
+                    if(myRole === 'p1') {
+                        db.ref('rooms/' + currentRoomCode).update({
+                            'p1/choice': null,
+                            'p2/choice': null,
+                            'round': roundNum + 1,
+                            'state': 'playing'
+                        });
+                    }
+                } else {
+                    document.getElementById('qa-section').classList.remove('hidden');
+                    let iAmWinner = (myRole === currentRoundWinner);
+                    
+                    document.getElementById('winner-question-box').classList.toggle('hidden', !iAmWinner);
+                    document.getElementById('loser-waiting-box').classList.toggle('hidden', iAmWinner);
+                }
+            }, 1000);
         }
 
         function sendQuestion() {
-            let qText = document.getElementById('winner-question-input').value.trim();
-            if(!qText) qText = "قول بحبك قد ايه؟ 😂❤️";
-
-            if(conn && conn.open) {
-                conn.send({ type: 'QUESTION', question: qText });
-            }
-
-            document.getElementById('winner-question-box').classList.add('hidden');
-            document.getElementById('winner-waiting-answer').classList.remove('hidden');
+            let qText = document.getElementById('winner-question-input').value.trim() || "قول بحبك قد ايه؟ 😂❤️";
+            db.ref('rooms/' + currentRoomCode).update({
+                question: qText,
+                state: 'qa'
+            });
         }
 
-        function showLoserQuestionPrompt(qText) {
+        function handleQATrigger(qText, answerText) {
+            let iAmWinner = (myRole === currentRoundWinner);
+
             document.getElementById('qa-section').classList.remove('hidden');
+            document.getElementById('winner-question-box').classList.add('hidden');
             document.getElementById('loser-waiting-box').classList.add('hidden');
-            document.getElementById('loser-answer-box').classList.remove('hidden');
-            document.getElementById('displayed-question').innerText = qText;
-            document.getElementById('loser-answer-input').value = "";
+
+            if(iAmWinner) {
+                document.getElementById('winner-waiting-answer').classList.remove('hidden');
+                if(answerText) {
+                    document.getElementById('winner-waiting-answer').classList.add('hidden');
+                    document.getElementById('qa-result-display').classList.remove('hidden');
+                    document.getElementById('final-qa-summary').innerText = answerText;
+                }
+            } else {
+                document.getElementById('loser-answer-box').classList.remove('hidden');
+                document.getElementById('displayed-question').innerText = qText;
+                if(answerText) {
+                    document.getElementById('loser-answer-box').classList.add('hidden');
+                    document.getElementById('qa-result-display').classList.remove('hidden');
+                    document.getElementById('final-qa-summary').innerText = answerText;
+                }
+            }
         }
 
         function sendAnswer() {
-            let aText = document.getElementById('loser-answer-input').value.trim();
-            if(!aText) aText = "ماشي خلاص 😂❤️";
-
-            if(conn && conn.open) {
-                conn.send({ type: 'ANSWER', answer: aText });
-            }
-
-            showQAResult(aText);
-        }
-
-        function showQAResult(answerText) {
-            document.getElementById('winner-waiting-answer').classList.add('hidden');
-            document.getElementById('loser-answer-box').classList.add('hidden');
-            document.getElementById('qa-result-display').classList.remove('hidden');
-            document.getElementById('final-qa-summary').innerText = answerText;
+            let aText = document.getElementById('loser-answer-input').value.trim() || "ماشي خلاص 😂❤️";
+            db.ref('rooms/' + currentRoomCode).update({ answer: aText });
         }
 
         function startNextRoundFromQA() {
-            roundNum++;
-            if(myRole === 'p1' && conn && conn.open) {
-                conn.send({ type: 'NEXT_ROUND', round: roundNum });
+            if(myRole === 'p1') {
+                db.ref('rooms/' + currentRoomCode).update({
+                    'p1/choice': null,
+                    'p2/choice': null,
+                    'round': roundNum + 1,
+                    'question': '',
+                    'answer': '',
+                    'state': 'playing'
+                });
             }
-            resetRoundUI();
         }
 
-        function resetRoundUI() {
-            myChoice = null;
-            opponentChoice = null;
-            roundActive = true;
-            resultShown = false;
-            currentRoundWinner = "";
-
-            document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('qa-section').classList.add('hidden');
-            document.getElementById('choice-area').classList.remove('hidden');
-            updateUI();
+        function leaveGame() {
+            if(currentRoomCode && myRole === 'p1') {
+                db.ref('rooms/' + currentRoomCode).remove();
+            }
+            location.reload();
         }
     </script>
 </body>
