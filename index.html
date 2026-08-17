@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>youssef - Online</title>
+    <title>LoveDuel - Online</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- مكتبات Firebase السحابية القوية -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
@@ -96,7 +95,7 @@
 <body>
 
     <div class="app-container">
-        <!-- 1. الشاشة الرئيسية -->
+        <!-- الشاشة الرئيسية -->
         <section id="screen-home" class="game-screen active">
             <div class="hero-card">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">❤️</div>
@@ -109,7 +108,7 @@
             </div>
         </section>
 
-        <!-- 2. إنشاء لعبة -->
+        <!-- إنشاء لعبة -->
         <section id="screen-create" class="game-screen">
             <div class="hero-card">
                 <h2>🎮 إنشاء لعبة جديدة</h2>
@@ -123,10 +122,10 @@
             </div>
         </section>
 
-        <!-- 3. الانتظار -->
+        <!-- الانتظار -->
         <section id="screen-waiting" class="game-screen">
             <div class="hero-card">
-                <h2>🎮 جاري تجهيز الغرفة...</h2>
+                <h2>🎮 تم إنشاء الغرفة بنجاح!</h2>
                 <p>كود الغرفة:</p>
                 <div class="room-code-box" id="code-display">...</div>
                 <p class="subtitle">ابعت الكود للطرف التاني ❤️</p>
@@ -135,7 +134,7 @@
             </div>
         </section>
 
-        <!-- 4. الانضمام -->
+        <!-- الانضمام -->
         <section id="screen-join" class="game-screen">
             <div class="hero-card">
                 <h2>👩 الانضمام إلى لعبة</h2>
@@ -153,7 +152,7 @@
             </div>
         </section>
 
-        <!-- 5. شاشة اللعب -->
+        <!-- شاشة اللعب -->
         <section id="screen-game" class="game-screen">
             <div class="scoreboard-bar">
                 <div><span id="lbl-p1">اللاعب 1</span>: <strong id="score-p1">0</strong></div>
@@ -238,9 +237,9 @@
     </div>
 
     <script>
-        // تهيئة اتصال Firebase السحابي
+        // ضع رابط Realtime Database الخاص بمشروعك هنا بدلاً من الرابط التجريبي
         const firebaseConfig = {
-            databaseURL: "https://loveduel-online-default-rtdb.firebaseio.com/"
+            databaseURL: "https://YOUR-PROJECT-NAME-default-rtdb.firebaseio.com/"
         };
         
         if (!firebase.apps.length) {
@@ -253,9 +252,8 @@
         let myName = "", opponentName = "";
         let myScore = 0, opponentScore = 0;
         let roundNum = 1;
-        let myChoice = null, opponentChoice = null;
+        let myChoice = null;
         let currentRoundWinner = "";
-        let isEventListenerActive = false;
 
         function showScreen(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
@@ -314,7 +312,7 @@
                 })
                 .catch((error) => {
                     console.error(error);
-                    document.getElementById('create-error').innerText = "❌ حدث خطأ، جرب مرة أخرى!";
+                    document.getElementById('create-error').innerText = "❌ حدث خطأ في الاتصال، تأكد من إعداد قواعد Firebase!";
                 });
         }
 
@@ -355,9 +353,6 @@
         }
 
         function listenToRoom() {
-            if (isEventListenerActive) return;
-            isEventListenerActive = true;
-
             db.ref('rooms/' + currentRoomCode).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(!data) return;
@@ -373,9 +368,6 @@
                 document.getElementById('lbl-p2').innerText = p2Name;
                 document.getElementById('res-p1-name').innerText = p1Name;
                 document.getElementById('res-p2-name').innerText = p2Name;
-
-                myScore = (myRole === 'p1') ? (p1.score || 0) : (p2.score || 0);
-                opponentScore = (myRole === 'p1') ? (p2.score || 0) : (p1.score || 0);
 
                 document.getElementById('score-p1').innerText = p1.score || 0;
                 document.getElementById('score-p2').innerText = p2.score || 0;
