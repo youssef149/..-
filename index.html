@@ -128,7 +128,7 @@
                 <div class="room-code-box" id="code-display">جاري التوليد...</div>
                 <p class="subtitle">ابعت الكود للطرف التاني ❤️</p>
                 <p>⏳ في انتظار انضمامه...</p>
-                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="location.reload()">مغادرة</button>
+                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="leaveGame()">مغادرة</button>
             </div>
         </section>
 
@@ -233,7 +233,7 @@
                     ⚠️ الطرف الآخر قد خرج من اللعبة!
                 </div>
                 
-                <button class="danger-btn w-100" style="margin-top: 20px;" onclick="location.reload()">إنهاء والرجوع للرئيسية</button>
+                <button class="danger-btn w-100" style="margin-top: 20px;" onclick="leaveGame()">إنهاء والرجوع للرئيسية</button>
             </div>
         </section>
     </div>
@@ -249,7 +249,7 @@
         let resultShown = false;
         let currentRoundWinner = "";
 
-        // إعدادات قوية تدعم تخطي شبكات الموبايل والواي فاي المختلفة (STUN Servers)
+        // إعدادات الـ STUN servers القوية لتجاوز شبكات الموبايل والواي فاي
         const peerIceConfig = {
             config: {
                 'iceServers': [
@@ -295,11 +295,14 @@
             myRole = 'p1';
             const randomId = Math.floor(1000 + Math.random() * 9000).toString();
             
+            // ملاحظة: إذا قمت بإنشاء سيرفر خاص بك مستقبلاً، استبدل إعدادات peer هنا بـ host و port الخاص بك
             peer = new Peer('loveduel-' + randomId, peerIceConfig);
 
             peer.on('open', () => {
                 document.getElementById('code-display').innerText = randomId;
                 showScreen('screen-waiting');
+                localStorage.setItem('loveduel_room', randomId);
+                localStorage.setItem('loveduel_role', 'p1');
             });
 
             peer.on('connection', (connection) => {
@@ -547,6 +550,12 @@
             document.getElementById('qa-section').classList.add('hidden');
             document.getElementById('choice-area').classList.remove('hidden');
             updateUI();
+        }
+
+        function leaveGame() {
+            localStorage.removeItem('loveduel_room');
+            localStorage.removeItem('loveduel_role');
+            location.reload();
         }
     </script>
 </body>
