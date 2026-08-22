@@ -654,11 +654,6 @@
 
       }
 
-      /*
-        Transaction تمنع دخول لاعبين اثنين
-        في نفس اللحظة إلى نفس المكان.
-      */
-
       const transaction =
         await runTransaction(roomRef, currentData => {
 
@@ -820,8 +815,6 @@
       room[opponentPlayer];
 
 
-    /* اللاعب الثاني لم يدخل */
-
     if(!opponent) {
 
       status.textContent =
@@ -843,8 +836,6 @@
         : "يفكر...";
 
 
-    /* بداية الجولة */
-
     if(
       room.status === "playing" &&
       !room.result
@@ -863,8 +854,6 @@
 
     }
 
-
-    /* النتيجة */
 
     if(room.result) {
 
@@ -905,10 +894,6 @@
         try {
 
           await set(choiceRef, choice);
-
-          /*
-            بعد اختيار اللاعب، نحاول حساب النتيجة.
-          */
 
           await calculateResult();
 
@@ -1002,10 +987,6 @@
 
     }
 
-
-    /*
-      Transaction تمنع حساب النتيجة مرتين.
-    */
 
     await runTransaction(
       ref(
@@ -1151,11 +1132,6 @@
 
     try {
 
-      /*
-        تصفير الاختيارات والنتيجة
-        وبدء جولة جديدة.
-      */
-
       await update(roomRef, {
 
         "player1/choice": null,
@@ -1197,8 +1173,7 @@
 
   function disableChoices(disabled) {
 
-    document
-      .querySelectorAll(".choice")
+    document.querySelectorAll(".choice")
       .forEach(button => {
 
         button.disabled = disabled;
@@ -1209,36 +1184,28 @@
 
 
   /* =====================================================
-     COPY ROOM
+     COPY ROOM CODE
      ===================================================== */
 
-  copyBtn.addEventListener("click", async () => {
+  copyBtn.addEventListener("click", () => {
 
-    try {
+    navigator.clipboard.writeText(currentRoom)
+      .then(() => {
 
-      await navigator.clipboard.writeText(
-        currentRoom
-      );
+        copyBtn.textContent = "✅ تم النسخ!";
 
-      copyBtn.textContent =
-        "✅ تم نسخ الكود";
+        setTimeout(() => {
 
-      setTimeout(() => {
+          copyBtn.textContent = "📋 نسخ كود الغرفة";
 
-        copyBtn.textContent =
-          "📋 نسخ كود الغرفة";
+        }, 2000);
 
-      }, 1500);
+      })
+      .catch(err => {
 
-    }
-    catch {
+        console.error("فشل النسخ: ", err);
 
-      alert(
-        "كود الغرفة: " +
-        currentRoom
-      );
-
-    }
+      });
 
   });
 
@@ -1249,32 +1216,11 @@
 
   leaveBtn.addEventListener("click", async () => {
 
-    if(!currentRoom) {
+    if(confirm("هل أنت متأكد من الخروج من الغرفة؟")) {
 
       location.reload();
 
-      return;
-
     }
-
-    const playerRef =
-      ref(
-        db,
-        `rooms/${currentRoom}/${myPlayer}`
-      );
-
-    try {
-
-      await remove(playerRef);
-
-    }
-    catch(error) {
-
-      console.error(error);
-
-    }
-
-    location.reload();
 
   });
 
