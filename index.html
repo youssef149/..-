@@ -3,614 +3,2699 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة واحد ضد واحد - حجرة ورقة مقص</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <title>LoveDuel</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a, #1e1b4b, #311042);
-            --card-bg: rgba(30, 41, 59, 0.95);
-            --pink: #ec4899;
-            --purple: #8b5cf6;
-            --white: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
+            --card-bg: rgba(255,255,255,.95);
+            --primary-pink: #db2777;
+            --accent-purple: #9333ea;
+            --text-main: #4a044e;
+            --text-muted: #86198f;
+            --border-color: #fbcfe8;
             --danger: #ef4444;
+            --success: #16a34a;
             --radius: 20px;
-            --shadow: 0 15px 35px rgba(0,0,0,0.5);
+            --shadow: 0 10px 30px rgba(219,39,119,.15);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
 
         body {
             background: var(--bg-gradient);
-            color: var(--white);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 15px;
-            overflow-x: hidden;
         }
 
-        .app-container { width: 100%; max-width: 480px; position: relative; z-index: 2; }
-        .game-screen { display: none; }
-        .game-screen.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+        }
+
+        .game-screen {
+            display: none;
+        }
+
+        .game-screen.active {
+            display: block;
+            animation: fadeIn .2s ease;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .hidden { display: none !important; }
-        .w-100 { width: 100%; }
+        .hidden {
+            display: none !important;
+        }
 
-        .hero-card, .gameplay-card {
+        .w-100 {
+            width: 100%;
+        }
+
+        .hero-card,
+        .gameplay-card {
             background: var(--card-bg);
-            border: 2px solid var(--border);
+            border: 2px solid var(--border-color);
             border-radius: var(--radius);
             padding: 25px 20px;
             text-align: center;
             box-shadow: var(--shadow);
             margin-bottom: 15px;
             position: relative;
-            backdrop-filter: blur(10px);
         }
 
-        h1 { color: var(--pink); font-size: 2.2rem; margin-bottom: 5px; }
-        h2 { color: var(--pink); font-size: 1.4rem; margin-bottom: 15px; }
-        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; font-weight: 600; }
-
-        .menu-buttons { display: flex; flex-direction: column; gap: 12px; }
-        .primary-btn, .secondary-btn, .danger-btn {
-            padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; font-size: 1rem;
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.15s;
+        h1 {
+            color: var(--primary-pink);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
-        .primary-btn { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; box-shadow: 0 4px 15px rgba(236,72,153,0.3); }
-        .secondary-btn { background: #334155; color: var(--white); border: 1px solid var(--border); }
-        .danger-btn { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
-        .text-btn { background: none; border: none; color: var(--text-muted); margin-top: 12px; cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
 
-        .form-group { margin-bottom: 15px; text-align: right; }
-        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; color: var(--text-muted); }
+        h2 {
+            color: var(--primary-pink);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: .9rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .danger-btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: .15s;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-purple));
+            color: #fff;
+        }
+
+        .secondary-btn {
+            background: #fbcfe8;
+            color: var(--text-main);
+        }
+
+        .danger-btn {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .primary-btn:active,
+        .secondary-btn:active,
+        .danger-btn:active {
+            transform: scale(.98);
+        }
+
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            margin-top: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: .85rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
         input {
-            width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px;
-            font-size: 1rem; text-align: center; outline: none; background: #0f172a; color: var(--white);
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
         }
-        input:focus { border-color: var(--pink); }
+
+        input:focus {
+            border-color: var(--primary-pink);
+        }
 
         .room-code-box {
-            font-size: 1.8rem; letter-spacing: 4px; font-weight: bold; color: var(--pink);
-            background: #0f172a; padding: 12px; border-radius: 12px; margin: 15px 0; border: 2px dashed var(--pink);
-            text-transform: uppercase;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            font-weight: bold;
+            color: var(--accent-purple);
+            background: #f3e8ff;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px dashed var(--accent-purple);
         }
 
-        .scoreboard-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 15px; border-radius: 12px; border: 2px solid var(--border); margin-bottom: 12px; font-weight: bold; font-size: 0.9rem; }
-        .round-badge { background: var(--pink); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
-        .versus-title { font-size: 1.1rem; color: var(--pink); margin-bottom: 10px; font-weight: bold; }
-        .choices-grid { display: flex; justify-content: center; gap: 12px; }
-        .choice-btn { background: #1e293b; color: var(--white); border: 2px solid var(--border); border-radius: 16px; padding: 15px 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: 0.2s; }
-        .choice-btn:hover { border-color: var(--pink); background: #26354a; }
-        .choice-icon { font-size: 2.2rem; }
-        .reveal-grid { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
-        .reveal-box { background: #1e293b; border: 2px solid var(--border); padding: 12px; border-radius: 12px; width: 45%; }
-        .big-emoji { font-size: 2.5rem; margin: 8px 0; }
-        .winner-announcement { font-size: 1.1rem; color: var(--pink); margin: 10px 0; font-weight: bold; }
-        .qa-container { background: #1e293b; border: 2px solid var(--border); padding: 15px; border-radius: 16px; margin-top: 15px; text-align: right; }
-        
+        .scoreboard-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 12px;
+            font-weight: bold;
+            font-size: .9rem;
+        }
+
+        .round-badge {
+            background: var(--primary-pink);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: .8rem;
+        }
+
+        .versus-title {
+            font-size: 1.1rem;
+            color: var(--primary-pink);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .choices-grid {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 90px;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--primary-pink);
+            background: #fdf2f8;
+        }
+
+        .choice-icon {
+            font-size: 2.2rem;
+        }
+
+        .reveal-grid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .reveal-box {
+            background: #fdf2f8;
+            border: 2px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            width: 45%;
+        }
+
+        .big-emoji {
+            font-size: 2.5rem;
+            margin: 8px 0;
+        }
+
+        .winner-announcement {
+            font-size: 1.1rem;
+            color: var(--primary-pink);
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .qa-container {
+            background: #fdf2f8;
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            border-radius: 16px;
+            margin-top: 15px;
+            text-align: right;
+        }
+
         .chat-float-btn {
-            position: absolute; top: 15px; left: 15px; background: #334155; border: 2px solid var(--purple);
-            color: var(--purple); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #f3e8ff;
+            border: 2px solid var(--accent-purple);
+            color: var(--accent-purple);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
         }
+
         .chat-menu {
-            display: none; position: absolute; top: 60px; left: 15px; background: #1e293b;
-            border: 2px solid var(--border); border-radius: 14px; padding: 8px; box-shadow: var(--shadow);
-            z-index: 20; text-align: right; width: 210px;
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 15px;
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: var(--shadow);
+            z-index: 20;
+            text-align: right;
+            width: 210px;
         }
+
         .chat-menu button {
-            background: none; border: none; width: 100%; padding: 8px 10px; text-align: right;
-            font-size: 0.9rem; font-weight: bold; color: var(--white); border-radius: 8px; cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            padding: 8px 10px;
+            text-align: right;
+            font-size: .9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
         }
-        .chat-menu button:hover { background: #26354a; color: var(--pink); }
+
+        .chat-menu button:hover {
+            background: #fdf2f8;
+            color: var(--primary-pink);
+        }
+
         .floating-chat-popup {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(30, 41, 59, 0.95); color: #fff; padding: 12px 22px; border-radius: 30px;
-            font-weight: bold; font-size: 0.95rem; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(74,4,78,.95);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: .95rem;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,.2);
             animation: fadeInOut 2.8s ease-in-out forwards;
         }
+
         @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, 20px); }
-            15% { opacity: 1; transform: translate(-50%, 0); }
-            85% { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, -20px); }
+            0% {
+                opacity: 0;
+                transform: translate(-50%,20px);
+            }
+
+            15% {
+                opacity: 1;
+                transform: translate(-50%,0);
+            }
+
+            85% {
+                opacity: 1;
+                transform: translate(-50%,0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%,-20px);
+            }
+        }
+
+        .connection-status {
+            font-size: .8rem;
+            color: var(--success);
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 15px;
+            color: var(--text-muted);
+        }
+
+        @media(max-width:360px) {
+            .choice-btn {
+                padding: 12px 10px;
+                min-width: 75px;
+            }
+
+            .choice-icon {
+                font-size: 1.8rem;
+            }
+
+            .scoreboard-bar {
+                font-size: .75rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="app-container">
-        <!-- القائمة الرئيسية -->
-        <section id="screen-rps-menu" class="game-screen active">
-            <div class="hero-card">
-                <h1>واحد ضد واحد</h1>
-                <p class="subtitle">حجرة ورقة مقص عبر السحابة (تشتغل علي أي شبكة)</p>
-                <div class="menu-buttons">
-                    <button class="primary-btn" onclick="showScreen('screen-rps-create')"><i class="fa-solid fa-user-plus"></i> إنشاء لعبة</button>
-                    <button class="secondary-btn" onclick="showScreen('screen-rps-join')"><i class="fa-solid fa-door-open"></i> الانضمام إلى لعبة</button>
-                </div>
-            </div>
-        </section>
+<div class="app-container">
 
-        <!-- إنشاء غرفة -->
-        <section id="screen-rps-create" class="game-screen">
-            <div class="hero-card">
-                <h2>🎮 إنشاء لعبة جديدة</h2>
-                <div class="form-group">
-                    <label>اسمك:</label>
-                    <input type="text" id="rps-create-name" placeholder="اكتب اسمك هنا">
-                </div>
-                <button class="primary-btn w-100" onclick="createRPSRoom()">إنشاء الغرفة</button>
-                <button class="text-btn" onclick="showScreen('screen-rps-menu')">رجوع</button>
-            </div>
-        </section>
+    <!-- HOME -->
+    <section id="screen-home" class="game-screen active">
 
-        <!-- شاشة الانتظار -->
-        <section id="screen-rps-waiting" class="game-screen">
-            <div class="hero-card">
-                <h2>🎮 جاري تجهيز الغرفة...</h2>
-                <p>كود الغرفة:</p>
-                <div class="room-code-box" id="rps-code-display">جاري التوليد...</div>
-                <p class="subtitle">ابعت الكود للطرف التاني ❤️</p>
-                <p>⏳ في انتظار انضمامه...</p>
-                <button class="danger-btn w-100" style="margin-top: 15px;" onclick="location.reload()">مغادرة</button>
-            </div>
-        </section>
+        <div class="hero-card">
 
-        <!-- انضمام لغرفة -->
-        <section id="screen-rps-join" class="game-screen">
-            <div class="hero-card">
-                <h2>🚪 الانضمام إلى لعبة</h2>
-                <div class="form-group">
-                    <label>اسمك:</label>
-                    <input type="text" id="rps-join-name" placeholder="اكتب اسمك هنا">
-                </div>
-                <div class="form-group">
-                    <label>كود الغرفة:</label>
-                    <input type="text" id="rps-join-code" placeholder="أدخل الكود (حروف وأرقام)" style="text-transform: uppercase;">
-                </div>
-                <button class="primary-btn w-100" onclick="joinRPSRoom()">دخول الغرفة</button>
-                <p id="rps-join-error" style="color:var(--danger); font-size:0.8rem; margin-top:8px;"></p>
-                <button class="text-btn" onclick="showScreen('screen-rps-menu')">رجوع</button>
-            </div>
-        </section>
+            <div style="font-size:2.5rem;margin-bottom:10px;">❤️</div>
 
-        <!-- ساحة اللعب -->
-        <section id="screen-rps-game" class="game-screen">
-            <div class="scoreboard-bar">
-                <div><span id="lbl-p1">اللاعب 1</span>: <strong id="score-p1">0</strong></div>
-                <div class="round-badge" id="lbl-round">الجولة 1</div>
-                <div><span id="lbl-p2">اللاعب 2</span>: <strong id="score-p2">0</strong></div>
+            <h1>LoveDuel</h1>
+
+            <p class="subtitle">
+                لعبة التحدي والأسئلة
+            </p>
+
+            <div class="menu-buttons">
+
+                <button class="primary-btn"
+                        onclick="showScreen('screen-create')">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    إنشاء لعبة
+
+                </button>
+
+                <button class="secondary-btn"
+                        onclick="showScreen('screen-join')">
+
+                    <i class="fa-solid fa-door-open"></i>
+
+                    الانضمام إلى لعبة
+
+                </button>
+
             </div>
 
-            <div class="gameplay-card">
-                <button class="chat-float-btn" onclick="toggleChatMenu()"><i class="fa-solid fa-comments"></i></button>
-                <div id="chatMenu" class="chat-menu">
-                    <button onclick="sendQuickChat('العب بسرعة!')">العب بسرعة! ⚡</button>
-                    <button onclick="sendQuickChat('دي آخر جولة!')">دي آخر جولة! 🏁</button>
-                    <button onclick="sendQuickChat('تحدي قوي!')">تحدي قوي! 🔥</button>
+        </div>
+
+    </section>
+
+
+    <!-- CREATE -->
+    <section id="screen-create" class="game-screen">
+
+        <div class="hero-card">
+
+            <h2>🎮 إنشاء لعبة جديدة</h2>
+
+            <div class="form-group">
+
+                <label>اسمك:</label>
+
+                <input
+                    type="text"
+                    id="create-name"
+                    placeholder="اكتب اسمك هنا">
+
+            </div>
+
+            <button
+                class="primary-btn w-100"
+                onclick="createRoom()">
+
+                إنشاء الغرفة
+
+            </button>
+
+            <button
+                class="text-btn"
+                onclick="showScreen('screen-home')">
+
+                رجوع
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- WAITING -->
+    <section id="screen-waiting" class="game-screen">
+
+        <div class="hero-card">
+
+            <h2>🎮 الغرفة جاهزة</h2>
+
+            <p>كود الغرفة:</p>
+
+            <div
+                class="room-code-box"
+                id="code-display">
+
+                ----
+
+            </div>
+
+            <p class="subtitle">
+
+                ابعت الكود للطرف التاني ❤️
+
+            </p>
+
+            <p id="waiting-text">
+
+                ⏳ في انتظار انضمامه...
+
+            </p>
+
+            <div class="connection-status">
+
+                🟢 متصل بقاعدة البيانات
+
+            </div>
+
+            <button
+                class="danger-btn w-100"
+                style="margin-top:15px;"
+                onclick="leaveGame()">
+
+                مغادرة
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- JOIN -->
+    <section id="screen-join" class="game-screen">
+
+        <div class="hero-card">
+
+            <h2>👩 الانضمام إلى لعبة</h2>
+
+            <div class="form-group">
+
+                <label>اسمك:</label>
+
+                <input
+                    type="text"
+                    id="join-name"
+                    placeholder="اكتب اسمك هنا">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>كود الغرفة:</label>
+
+                <input
+                    type="text"
+                    id="join-code"
+                    placeholder="أدخل الكود"
+                    maxlength="6"
+                    style="text-transform:uppercase;">
+
+            </div>
+
+            <button
+                class="primary-btn w-100"
+                onclick="joinRoom()">
+
+                دخول الغرفة
+
+            </button>
+
+            <p
+                id="join-error"
+                style="color:red;font-size:.8rem;margin-top:8px;">
+            </p>
+
+            <button
+                class="text-btn"
+                onclick="showScreen('screen-home')">
+
+                رجوع
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- GAME -->
+    <section id="screen-game" class="game-screen">
+
+        <div class="scoreboard-bar">
+
+            <div>
+
+                <span id="lbl-p1">اللاعب 1</span>:
+
+                <strong id="score-p1">0</strong>
+
+            </div>
+
+            <div
+                class="round-badge"
+                id="lbl-round">
+
+                الجولة 1
+
+            </div>
+
+            <div>
+
+                <span id="lbl-p2">اللاعب 2</span>:
+
+                <strong id="score-p2">0</strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="gameplay-card">
+
+            <!-- CHAT -->
+            <button
+                class="chat-float-btn"
+                onclick="toggleChatMenu()">
+
+                <i class="fa-solid fa-comments"></i>
+
+            </button>
+
+            <div
+                id="chatMenu"
+                class="chat-menu">
+
+                <button onclick="sendQuickChat('العب بسرعة!')">
+                    العب بسرعة! ⚡
+                </button>
+
+                <button onclick="sendQuickChat('دي آخر جولة!')">
+                    دي آخر جولة! 🏁
+                </button>
+
+                <button onclick="sendQuickChat('اسأل أسئلة حلوة')">
+                    اسأل أسئلة حلوة 😉
+                </button>
+
+            </div>
+
+
+            <p class="versus-title">
+                تحدي بين الأبطال ❤️
+            </p>
+
+
+            <!-- CHOICE -->
+            <div id="choice-area">
+
+                <p
+                    style="margin-bottom:12px;font-weight:bold;">
+
+                    اختار حركتك:
+
+                </p>
+
+                <div class="choices-grid">
+
+                    <button
+                        class="choice-btn"
+                        onclick="makeChoice('حجر')">
+
+                        <span class="choice-icon">
+                            🪨
+                        </span>
+
+                        حجر
+
+                    </button>
+
+                    <button
+                        class="choice-btn"
+                        onclick="makeChoice('ورقة')">
+
+                        <span class="choice-icon">
+                            📄
+                        </span>
+
+                        ورقة
+
+                    </button>
+
+                    <button
+                        class="choice-btn"
+                        onclick="makeChoice('مقص')">
+
+                        <span class="choice-icon">
+                            ✂️
+                        </span>
+
+                        مقص
+
+                    </button>
+
                 </div>
 
-                <p class="versus-title">تحدي بين الأبطال ❤️</p>
-                
-                <div id="choice-area">
-                    <p style="margin-bottom: 12px; font-weight: bold;">اختار حركتك:</p>
-                    <div class="choices-grid">
-                        <button class="choice-btn" onclick="makeRPSChoice('حجر')"><span class="choice-icon">🪨</span>حجر</button>
-                        <button class="choice-btn" onclick="makeRPSChoice('ورقة')"><span class="choice-icon">📄</span>ورقة</button>
-                        <button class="choice-btn" onclick="makeRPSChoice('مقص')"><span class="choice-icon">✂️</span>مقص</button>
-                    </div>
-                </div>
+            </div>
 
-                <div id="waiting-choice-area" class="hidden">
-                    <h3>🔒 تم اختيارك بنجاح!</h3>
-                    <p style="color:var(--text-muted); margin-top:8px;">في انتظار اختيار الطرف الآخر...</p>
-                </div>
 
-                <div id="result-area" class="hidden">
-                    <div class="reveal-grid">
-                        <div class="reveal-box">
-                            <h4 id="res-p1-name">اللاعب 1</h4>
-                            <div class="big-emoji" id="res-p1-emoji">🪨</div>
+            <!-- WAIT -->
+            <div
+                id="waiting-choice-area"
+                class="hidden">
+
+                <h3>
+                    🔒 تم اختيارك بنجاح!
+                </h3>
+
+                <p
+                    style="color:var(--text-muted);margin-top:8px;">
+
+                    في انتظار اختيار الطرف الآخر...
+
+                </p>
+
+            </div>
+
+
+            <!-- RESULT -->
+            <div
+                id="result-area"
+                class="hidden">
+
+                <div class="reveal-grid">
+
+                    <div class="reveal-box">
+
+                        <h4 id="res-p1-name">
+                            اللاعب 1
+                        </h4>
+
+                        <div
+                            class="big-emoji"
+                            id="res-p1-emoji">
+
+                            🪨
+
                         </div>
-                        <div class="reveal-box">
-                            <h4 id="res-p2-name">اللاعب 2</h4>
-                            <div class="big-emoji" id="res-p2-emoji">✂️</div>
-                        </div>
+
                     </div>
-                    <h3 id="round-winner-text" class="winner-announcement">الفائز</h3>
+
+                    <div class="reveal-box">
+
+                        <h4 id="res-p2-name">
+                            اللاعب 2
+                        </h4>
+
+                        <div
+                            class="big-emoji"
+                            id="res-p2-emoji">
+
+                            ✂️
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div id="qa-section" class="qa-container hidden">
-                    <div id="winner-question-box" class="hidden">
-                        <p style="color: var(--pink); font-weight: bold; margin-bottom: 8px;">🎉 أنت الفائز! اسأل الخاسر سؤال أو اطلب منه طلب:</p>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <input type="text" id="winner-question-input" placeholder="اكتب السؤال أو الطلب هنا...">
-                        </div>
-                        <button class="primary-btn w-100" onclick="sendRPSQuestion()">إرسال السؤال للخاسر 🎯</button>
-                    </div>
+                <h3
+                    id="round-winner-text"
+                    class="winner-announcement">
 
-                    <div id="loser-waiting-box" class="hidden">
-                        <p style="color: var(--danger); font-weight: bold;">⏳ في انتظار الفائز عشان يكتب لك سؤال...</p>
-                    </div>
+                    الفائز
 
-                    <div id="loser-answer-box" class="hidden">
-                        <p style="color: var(--danger); font-weight: bold; margin-bottom: 5px;" id="incoming-question-title">سؤال الفائز:</p>
-                        <p id="displayed-question" style="background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 600;"></p>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <input type="text" id="loser-answer-input" placeholder="اكتب إجابتك هنا...">
-                        </div>
-                        <button class="primary-btn w-100" onclick="sendRPSAnswer()">إرسال الإجابة ❤️</button>
-                    </div>
+                </h3>
 
-                    <div id="winner-waiting-answer" class="hidden">
-                        <p style="color: var(--text-muted); font-weight: bold;">⏳ في انتظار رد الخاسر على سؤالك...</p>
-                    </div>
-
-                    <div id="qa-result-display" class="hidden" style="text-align: center;">
-                        <p style="color: var(--purple); font-weight: bold; margin-bottom: 5px;">💬 الرد:</p>
-                        <p id="final-qa-summary" style="background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;"></p>
-                        <button class="primary-btn w-100" onclick="startNextRoundFromQA()">الجولة اللي بعدها 🚀</button>
-                    </div>
-                </div>
-
-                <div id="disconnect-msg" class="hidden" style="margin-top: 15px; color: var(--danger); font-weight: bold; font-size: 1.1rem; background: rgba(239,68,68,0.2); padding: 12px; border-radius: 10px;">
-                    ⚠️ الطرف الآخر قد خرج من اللعبة!
-                </div>
-                
-                <button class="danger-btn w-100" style="margin-top: 20px;" onclick="location.reload()">إنهاء والرجوع</button>
             </div>
-        </section>
-    </div>
 
-    <!-- سكربت اللعبة وربط Firebase وإتاحة الدوال للعامة -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
-            authDomain: "rps-online-785fc.firebaseapp.com",
-            databaseURL: "https://rps-online-785fc-default-rtdb.firebaseio.com",
-            projectId: "rps-online-785fc",
-            storageBucket: "rps-online-785fc.firebasestorage.app",
-            messagingSenderId: "832559985038",
-            appId: "1:832559985038:web:ebdc8da7c7f4c7a9ef34df",
-            measurementId: "G-76XM3GND1Y"
+            <!-- QA -->
+            <div
+                id="qa-section"
+                class="qa-container hidden">
+
+
+                <!-- WINNER -->
+                <div
+                    id="winner-question-box"
+                    class="hidden">
+
+                    <p
+                        style="color:var(--primary-pink);font-weight:bold;margin-bottom:8px;">
+
+                        🎉 أنت الفائز!
+                        اسأل الخاسر سؤال أو اطلب منه طلب:
+
+                    </p>
+
+                    <div
+                        class="form-group"
+                        style="margin-bottom:10px;">
+
+                        <input
+                            type="text"
+                            id="winner-question-input"
+                            placeholder="اكتب السؤال أو الطلب هنا...">
+
+                    </div>
+
+                    <button
+                        class="primary-btn w-100"
+                        onclick="sendQuestion()">
+
+                        إرسال السؤال للخاسر 🎯
+
+                    </button>
+
+                </div>
+
+
+                <!-- LOSER WAIT -->
+                <div
+                    id="loser-waiting-box"
+                    class="hidden">
+
+                    <p
+                        style="color:var(--danger);font-weight:bold;">
+
+                        ⏳ في انتظار الفائز عشان يكتب لك سؤال...
+
+                    </p>
+
+                </div>
+
+
+                <!-- LOSER ANSWER -->
+                <div
+                    id="loser-answer-box"
+                    class="hidden">
+
+                    <p
+                        style="color:var(--danger);font-weight:bold;margin-bottom:5px;">
+
+                        سؤال الفائز:
+
+                    </p>
+
+                    <p
+                        id="displayed-question"
+                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:600;">
+                    </p>
+
+                    <div
+                        class="form-group"
+                        style="margin-bottom:10px;">
+
+                        <input
+                            type="text"
+                            id="loser-answer-input"
+                            placeholder="اكتب إجابتك هنا...">
+
+                    </div>
+
+                    <button
+                        class="primary-btn w-100"
+                        onclick="sendAnswer()">
+
+                        إرسال الإجابة ❤️
+
+                    </button>
+
+                </div>
+
+
+                <!-- WINNER WAIT ANSWER -->
+                <div
+                    id="winner-waiting-answer"
+                    class="hidden">
+
+                    <p
+                        style="color:var(--text-muted);font-weight:bold;">
+
+                        ⏳ في انتظار رد الخاسر على سؤالك...
+
+                    </p>
+
+                </div>
+
+
+                <!-- QA RESULT -->
+                <div
+                    id="qa-result-display"
+                    class="hidden"
+                    style="text-align:center;">
+
+                    <p
+                        style="color:var(--accent-purple);font-weight:bold;margin-bottom:5px;">
+
+                        💬 الرد:
+
+                    </p>
+
+                    <p
+                        id="final-qa-summary"
+                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:600;">
+                    </p>
+
+                    <button
+                        class="primary-btn w-100"
+                        onclick="startNextRoundFromQA()">
+
+                        الجولة اللي بعدها 🚀
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- DISCONNECT -->
+            <div
+                id="disconnect-msg"
+                class="hidden"
+                style="margin-top:15px;color:var(--danger);font-weight:bold;font-size:1.1rem;background:#fee2e2;padding:12px;border-radius:10px;">
+
+                ⚠️ الطرف الآخر قد خرج من اللعبة!
+
+            </div>
+
+
+            <button
+                class="danger-btn w-100"
+                style="margin-top:20px;"
+                onclick="leaveGame()">
+
+                إنهاء والرجوع للرئيسية
+
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- FIREBASE -->
+<!-- ========================================================= -->
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    update,
+    onValue,
+    onDisconnect,
+    runTransaction
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+/* =========================================================
+   إعداد Firebase بتاعك
+   ========================================================= */
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
+
+    authDomain: "rps-online-785fc.firebaseapp.com",
+
+    databaseURL:
+        "https://rps-online-785fc-default-rtdb.firebaseio.com",
+
+    projectId: "rps-online-785fc",
+
+    storageBucket:
+        "rps-online-785fc.firebasestorage.app",
+
+    messagingSenderId:
+        "832559985038",
+
+    appId:
+        "1:832559985038:web:ebdc8da7c7f4c7a9ef34df",
+
+    measurementId:
+        "G-76XM3GND1Y"
+};
+
+
+/* =========================================================
+   تشغيل Firebase
+   ========================================================= */
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+/* =========================================================
+   متغيرات اللعبة
+   ========================================================= */
+
+let myRole = "";
+
+let myName = "";
+
+let opponentName = "";
+
+let roomCode = "";
+
+let roomListener = null;
+
+let currentRoomData = null;
+
+let myChoice = null;
+
+let currentRound = 1;
+
+let roundAlreadyDisplayed = false;
+
+let currentWinner = "";
+
+
+/* =========================================================
+   الوصول للـ DOM
+   ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================================================
+   تغيير الشاشة
+   ========================================================= */
+
+window.showScreen = function(id) {
+
+    document
+        .querySelectorAll(".game-screen")
+        .forEach(screen =>
+            screen.classList.remove("active")
+        );
+
+    $(id).classList.add("active");
+};
+
+
+/* =========================================================
+   توليد كود غرفة
+   ========================================================= */
+
+function generateRoomCode() {
+
+    return Math.floor(
+        100000 + Math.random() * 900000
+    ).toString();
+
+}
+
+
+/* =========================================================
+   إنشاء غرفة
+   ========================================================= */
+
+window.createRoom = async function() {
+
+    myName =
+        $("create-name").value.trim() ||
+        "اللاعب 1";
+
+    myRole = "p1";
+
+    $("code-display").innerText =
+        "جاري الإنشاء...";
+
+    showScreen("screen-waiting");
+
+    let attempts = 0;
+
+    while(attempts < 10) {
+
+        attempts++;
+
+        const code =
+            generateRoomCode();
+
+        const roomRef =
+            ref(db, "rooms/" + code);
+
+        try {
+
+            const snapshot =
+                await get(roomRef);
+
+            if(snapshot.exists()) {
+                continue;
+            }
+
+            roomCode = code;
+
+            await set(roomRef, {
+
+                createdAt:
+                    Date.now(),
+
+                status:
+                    "waiting",
+
+                round:
+                    1,
+
+                phase:
+                    "choosing",
+
+                scores: {
+                    p1: 0,
+                    p2: 0
+                },
+
+                players: {
+
+                    p1: {
+                        name: myName,
+                        online: true
+                    }
+
+                },
+
+                choices: {},
+
+                qa: {}
+
+            });
+
+
+            $("code-display").innerText =
+                roomCode;
+
+
+            const myConnectionRef =
+                ref(
+                    db,
+                    "rooms/" +
+                    roomCode +
+                    "/players/p1/online"
+                );
+
+            onDisconnect(
+                myConnectionRef
+            ).set(false);
+
+
+            listenToRoom();
+
+            return;
+
+        } catch(error) {
+
+            console.error(error);
+
+            alert(
+                "حصل خطأ في إنشاء الغرفة."
+            );
+
+            showScreen("screen-home");
+
+            return;
+        }
+    }
+
+    alert(
+        "لم نستطع إنشاء غرفة، حاول مرة أخرى."
+    );
+
+};
+
+
+/* =========================================================
+   الانضمام لغرفة
+   ========================================================= */
+
+window.joinRoom = async function() {
+
+    myName =
+        $("join-name").value.trim() ||
+        "اللاعب 2";
+
+    roomCode =
+        $("join-code").value.trim();
+
+    $("join-error").innerText = "";
+
+    if(!roomCode) {
+
+        $("join-error").innerText =
+            "❌ اكتب كود الغرفة الأول!";
+
+        return;
+    }
+
+
+    try {
+
+        const roomRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            );
+
+        const snapshot =
+            await get(roomRef);
+
+
+        if(!snapshot.exists()) {
+
+            $("join-error").innerText =
+                "❌ الغرفة غير موجودة.";
+
+            return;
+        }
+
+
+        const room =
+            snapshot.val();
+
+
+        if(
+            room.players &&
+            room.players.p2 &&
+            room.players.p2.online
+        ) {
+
+            $("join-error").innerText =
+                "❌ الغرفة ممتلئة بالفعل.";
+
+            return;
+        }
+
+
+        /*
+         * Transaction لمنع دخول شخصين
+         * في نفس اللحظة.
+         */
+
+        const playersRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/players"
+            );
+
+
+        const transactionResult =
+            await runTransaction(
+                playersRef,
+                players => {
+
+                    if(players === null) {
+
+                        return {
+                            p2: {
+                                name: myName,
+                                online: true
+                            }
+                        };
+
+                    }
+
+                    if(
+                        players.p2 &&
+                        players.p2.online
+                    ) {
+
+                        return;
+
+                    }
+
+                    players.p2 = {
+
+                        name: myName,
+
+                        online: true
+
+                    };
+
+                    return players;
+
+                }
+            );
+
+
+        if(!transactionResult.committed) {
+
+            $("join-error").innerText =
+                "❌ الغرفة ممتلئة.";
+
+            return;
+        }
+
+
+        myRole = "p2";
+
+
+        await update(
+            roomRef,
+            {
+                status: "playing"
+            }
+        );
+
+
+        const myConnectionRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/players/p2/online"
+            );
+
+
+        onDisconnect(
+            myConnectionRef
+        ).set(false);
+
+
+        listenToRoom();
+
+        showScreen("screen-game");
+
+
+    } catch(error) {
+
+        console.error(error);
+
+        $("join-error").innerText =
+            "❌ حصل خطأ في الاتصال بقاعدة البيانات.";
+
+    }
+
+};
+
+
+/* =========================================================
+   الاستماع للغرفة
+   ========================================================= */
+
+function listenToRoom() {
+
+    if(roomListener) {
+        roomListener();
+    }
+
+
+    const roomRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        );
+
+
+    roomListener =
+        onValue(
+            roomRef,
+            snapshot => {
+
+                if(!snapshot.exists()) {
+
+                    handleDisconnect();
+
+                    return;
+                }
+
+
+                const data =
+                    snapshot.val();
+
+                currentRoomData =
+                    data;
+
+
+                updateNames(data);
+
+                updateScore(data);
+
+                updateRound(data);
+
+                handlePlayers(data);
+
+                handleGameState(data);
+
+
+                /*
+                 * اللاعب الأول هو المسؤول
+                 * عن إنهاء الجولة.
+                 */
+
+                if(myRole === "p1") {
+
+                    processRoundAsHost(data);
+
+                }
+
+            },
+            error => {
+
+                console.error(error);
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   أسماء اللاعبين
+   ========================================================= */
+
+function updateNames(data) {
+
+    const p1 =
+        data.players?.p1?.name ||
+        "اللاعب 1";
+
+    const p2 =
+        data.players?.p2?.name ||
+        "في انتظار اللاعب";
+
+
+    opponentName =
+        myRole === "p1"
+            ? p2
+            : p1;
+
+
+    $("lbl-p1").innerText =
+        p1;
+
+    $("lbl-p2").innerText =
+        p2;
+
+    $("res-p1-name").innerText =
+        p1;
+
+    $("res-p2-name").innerText =
+        p2;
+
+}
+
+
+/* =========================================================
+   النقاط
+   ========================================================= */
+
+function updateScore(data) {
+
+    const scores =
+        data.scores || {
+            p1: 0,
+            p2: 0
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
 
-        let currentRoomCode = "";
-        let rpsRole = ""; // 'p1' or 'p2'
-        let rpsMyName = "";
-        let rpsOpponentName = "";
-        let rpsMyScore = 0;
-        let rpsOpponentScore = 0;
-        let rpsRoundNum = 1;
-        let rpsMyChoice = null;
-        let rpsOpponentChoice = null;
-        let rpsRoundActive = true;
-        let rpsResultShown = false;
-        let rpsCurrentRoundWinner = "";
+    $("score-p1").innerText =
+        scores.p1 || 0;
 
-        window.showScreen = function(id) {
-            document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+    $("score-p2").innerText =
+        scores.p2 || 0;
 
-        window.toggleChatMenu = function() {
-            let menu = document.getElementById('chatMenu');
-            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-        }
+}
 
-        window.sendQuickChat = function(text) {
-            document.getElementById('chatMenu').style.display = 'none';
-            if (!currentRoomCode) return;
-            const chatRef = ref(db, 'rooms/' + currentRoomCode + '/chat');
-            set(chatRef, { sender: rpsMyName, text: text, timestamp: Date.now() });
-            showFloatingChat(rpsMyName + ": " + text);
-        }
 
-        function showFloatingChat(msg) {
-            let existing = document.querySelector('.floating-chat-popup');
-            if(existing) existing.remove();
-            let pop = document.createElement('div');
-            pop.className = 'floating-chat-popup';
-            pop.innerText = msg;
-            document.body.appendChild(pop);
-            setTimeout(() => pop.remove(), 2800);
-        }
+/* =========================================================
+   الجولة
+   ========================================================= */
 
-        function generateAlphaNumericCode(length = 5) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
+function updateRound(data) {
+
+    currentRound =
+        data.round || 1;
+
+    $("lbl-round").innerText =
+        "الجولة " +
+        currentRound;
+
+}
+
+
+/* =========================================================
+   متابعة اللاعبين
+   ========================================================= */
+
+function handlePlayers(data) {
+
+    const p1Online =
+        data.players?.p1?.online;
+
+    const p2Online =
+        data.players?.p2?.online;
+
+
+    if(
+        myRole === "p1" &&
+        p2Online
+    ) {
+
+        $("waiting-text").innerText =
+            "❤️ اللاعب الثاني دخل! جاري بدء اللعبة...";
+
+        setTimeout(() => {
+
+            showScreen("screen-game");
+
+        }, 300);
+
+    }
+
+
+    if(
+        myRole === "p2" &&
+        p1Online
+    ) {
+
+        showScreen("screen-game");
+
+    }
+
+
+    if(
+        myRole === "p1" &&
+        !p2Online &&
+        data.status === "playing"
+    ) {
+
+        /*
+         * لا نعتبر الغرفة منتهية مباشرة
+         * عند تحديث بسيط.
+         */
+
+    }
+
+}
+
+
+/* =========================================================
+   معالجة الجولة من اللاعب الأول
+   ========================================================= */
+
+async function processRoundAsHost(data) {
+
+    if(data.phase !== "choosing") {
+        return;
+    }
+
+
+    const choices =
+        data.choices?.[currentRound];
+
+
+    if(!choices) {
+        return;
+    }
+
+
+    const p1Choice =
+        choices.p1;
+
+    const p2Choice =
+        choices.p2;
+
+
+    if(!p1Choice || !p2Choice) {
+        return;
+    }
+
+
+    /*
+     * منع المعالجة أكثر من مرة.
+     */
+
+    const processingRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/rounds/" +
+            currentRound +
+            "/processed"
+        );
+
+
+    const result =
+        await runTransaction(
+            processingRef,
+            value => {
+
+                if(value === true) {
+                    return;
+                }
+
+                return true;
+
             }
-            return result;
+        );
+
+
+    if(!result.committed) {
+        return;
+    }
+
+
+    let winner = "tie";
+
+
+    if(p1Choice === p2Choice) {
+
+        winner = "tie";
+
+    } else if(
+
+        (p1Choice === "حجر" &&
+         p2Choice === "مقص") ||
+
+        (p1Choice === "مقص" &&
+         p2Choice === "ورقة") ||
+
+        (p1Choice === "ورقة" &&
+         p2Choice === "حجر")
+
+    ) {
+
+        winner = "p1";
+
+    } else {
+
+        winner = "p2";
+
+    }
+
+
+    const oldScores =
+        data.scores || {
+            p1: 0,
+            p2: 0
+        };
+
+
+    let newP1 =
+        Number(oldScores.p1 || 0);
+
+    let newP2 =
+        Number(oldScores.p2 || 0);
+
+
+    if(winner === "p1") {
+        newP1++;
+    }
+
+    if(winner === "p2") {
+        newP2++;
+    }
+
+
+    await update(
+
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        ),
+
+        {
+
+            phase:
+                winner === "tie"
+                    ? "result"
+                    : "qa",
+
+            winner:
+                winner,
+
+            scores: {
+
+                p1: newP1,
+
+                p2: newP2
+
+            },
+
+            resultReady:
+                true
+
         }
 
-        // إنشاء غرفة جديدة
-        window.createRPSRoom = async function() {
-            rpsMyName = document.getElementById('rps-create-name').value.trim() || "اللاعب 1";
-            rpsRole = 'p1';
-            currentRoomCode = generateAlphaNumericCode(5);
+    );
 
-            const roomRef = ref(db, 'rooms/' + currentRoomCode);
-            await set(roomRef, {
-                p1Name: rpsMyName,
-                p2Name: "",
-                status: "waiting",
-                round: 1,
-                p1Choice: null,
-                p2Choice: null,
-                question: "",
-                answer: ""
-            });
 
-            document.getElementById('rps-code-display').innerText = currentRoomCode;
-            window.showScreen('screen-rps-waiting');
+    if(winner === "tie") {
 
-            // الاستماع لدخول الطرف التاني
-            onValue(roomRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.p2Name && data.status === "playing") {
-                    rpsOpponentName = data.p2Name;
-                    startZGamePlay();
+        setTimeout(
+            () => {
+
+                startNextRoundHost();
+
+            },
+            2200
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   بداية الجولة التالية من اللاعب الأول
+   ========================================================= */
+
+async function startNextRoundHost() {
+
+    if(myRole !== "p1") {
+        return;
+    }
+
+
+    const nextRound =
+        currentRound + 1;
+
+
+    await update(
+
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        ),
+
+        {
+
+            round:
+                nextRound,
+
+            phase:
+                "choosing",
+
+            winner:
+                null,
+
+            resultReady:
+                false,
+
+            qa:
+                {},
+
+            [`rounds/${nextRound}`]:
+                {
+                    processed: false
+                }
+
+        }
+
+    );
+
+
+    resetRoundUI();
+
+}
+
+
+/* =========================================================
+   عرض حالة اللعبة
+   ========================================================= */
+
+function handleGameState(data) {
+
+    if(!data.players?.p2) {
+
+        showScreen("screen-waiting");
+
+        return;
+
+    }
+
+
+    if(data.phase === "choosing") {
+
+        showScreen("screen-game");
+
+        resetRoundUI(false);
+
+        return;
+
+    }
+
+
+    if(data.phase === "result") {
+
+        showScreen("screen-game");
+
+        displayRoundResult(data);
+
+        return;
+
+    }
+
+
+    if(data.phase === "qa") {
+
+        showScreen("screen-game");
+
+        displayRoundResult(data);
+
+        setupQAStageFromFirebase(data);
+
+        return;
+
+    }
+
+
+    if(data.phase === "question") {
+
+        showScreen("screen-game");
+
+        displayRoundResult(data);
+
+        showQuestionStage(data);
+
+        return;
+
+    }
+
+
+    if(data.phase === "answer") {
+
+        showScreen("screen-game");
+
+        displayRoundResult(data);
+
+        showAnswerStage(data);
+
+        return;
+
+    }
+
+
+    if(data.phase === "qaDone") {
+
+        showScreen("screen-game");
+
+        displayRoundResult(data);
+
+        showQAResultFromFirebase(data);
+
+    }
+
+}
+
+
+/* =========================================================
+   اختيار الحركة
+   ========================================================= */
+
+window.makeChoice = async function(move) {
+
+    if(!roomCode) {
+        return;
+    }
+
+
+    if(currentRoomData?.phase !== "choosing") {
+        return;
+    }
+
+
+    myChoice = move;
+
+
+    $("choice-area")
+        .classList
+        .add("hidden");
+
+
+    $("waiting-choice-area")
+        .classList
+        .remove("hidden");
+
+
+    const choiceRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/choices/" +
+            currentRound +
+            "/" +
+            myRole
+        );
+
+
+    try {
+
+        await set(
+            choiceRef,
+            move
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert(
+            "حصل خطأ أثناء تسجيل اختيارك."
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   عرض النتيجة
+   ========================================================= */
+
+function displayRoundResult(data) {
+
+    const choices =
+        data.choices?.[data.round];
+
+
+    if(!choices) {
+        return;
+    }
+
+
+    const p1Move =
+        choices.p1;
+
+    const p2Move =
+        choices.p2;
+
+
+    if(!p1Move || !p2Move) {
+        return;
+    }
+
+
+    const emojis = {
+
+        "حجر": "🪨",
+
+        "ورقة": "📄",
+
+        "مقص": "✂️"
+
+    };
+
+
+    $("res-p1-emoji").innerText =
+        emojis[p1Move];
+
+    $("res-p2-emoji").innerText =
+        emojis[p2Move];
+
+
+    let text = "";
+
+
+    if(data.winner === "tie") {
+
+        text =
+            "تعادل... محدش عايز يزعل التاني 😂❤️";
+
+    } else {
+
+        const winnerName =
+            data.winner === "p1"
+                ? data.players.p1.name
+                : data.players.p2.name;
+
+        text =
+            winnerName +
+            " كسب الجولة! 🎉";
+
+    }
+
+
+    $("round-winner-text").innerText =
+        text;
+
+
+    $("choice-area")
+        .classList
+        .add("hidden");
+
+
+    $("waiting-choice-area")
+        .classList
+        .add("hidden");
+
+
+    $("result-area")
+        .classList
+        .remove("hidden");
+
+
+    if(
+        data.winner !== "tie"
+    ) {
+
+        try {
+
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: {
+                    y: .6
                 }
             });
+
+        } catch(e) {}
+
+    }
+
+}
+
+
+/* =========================================================
+   مرحلة السؤال
+   ========================================================= */
+
+function setupQAStageFromFirebase(data) {
+
+    $("qa-section")
+        .classList
+        .remove("hidden");
+
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
+
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+    $("qa-result-display")
+        .classList
+        .add("hidden");
+
+
+    if(
+        data.winner === myRole
+    ) {
+
+        $("winner-question-box")
+            .classList
+            .remove("hidden");
+
+    } else {
+
+        $("loser-waiting-box")
+            .classList
+            .remove("hidden");
+
+    }
+
+}
+
+
+/* =========================================================
+   إرسال السؤال
+   ========================================================= */
+
+window.sendQuestion = async function() {
+
+    let question =
+        $("winner-question-input")
+        .value
+        .trim();
+
+
+    if(!question) {
+
+        question =
+            "قول بحبك قد ايه؟ 😂❤️";
+
+    }
+
+
+    await update(
+
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        ),
+
+        {
+
+            phase:
+                "question",
+
+            "qa/question":
+                question
+
         }
 
-        // الانضمام لغرفة
-        window.joinRPSRoom = async function() {
-            rpsMyName = document.getElementById('rps-join-name').value.trim() || "اللاعب 2";
-            rpsRole = 'p2';
-            let code = document.getElementById('rps-join-code').value.trim().toUpperCase();
+    );
 
-            if(!code) {
-                document.getElementById('rps-join-error').innerText = "❌ اكتب الكود الأول!";
+};
+
+
+/* =========================================================
+   عرض السؤال للخاسر
+   ========================================================= */
+
+function showQuestionStage(data) {
+
+    $("qa-section")
+        .classList
+        .remove("hidden");
+
+
+    const question =
+        data.qa?.question || "";
+
+
+    if(data.winner === myRole) {
+
+        $("winner-question-box")
+            .classList
+            .add("hidden");
+
+        $("winner-waiting-answer")
+            .classList
+            .remove("hidden");
+
+        return;
+
+    }
+
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+    $("loser-answer-box")
+        .classList
+        .remove("hidden");
+
+
+    $("displayed-question")
+        .innerText =
+        question;
+
+
+    $("loser-answer-input")
+        .value = "";
+
+}
+
+
+/* =========================================================
+   إرسال الإجابة
+   ========================================================= */
+
+window.sendAnswer = async function() {
+
+    let answer =
+        $("loser-answer-input")
+        .value
+        .trim();
+
+
+    if(!answer) {
+
+        answer =
+            "ماشي خلاص 😂❤️";
+
+    }
+
+
+    await update(
+
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        ),
+
+        {
+
+            phase:
+                "qaDone",
+
+            "qa/answer":
+                answer
+
+        }
+
+    );
+
+};
+
+
+/* =========================================================
+   عرض الإجابة
+   ========================================================= */
+
+function showAnswerStage(data) {
+
+    showQuestionStage(data);
+
+}
+
+
+/* =========================================================
+   عرض نتيجة السؤال
+   ========================================================= */
+
+function showQAResultFromFirebase(data) {
+
+    $("qa-section")
+        .classList
+        .remove("hidden");
+
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
+
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+
+    $("qa-result-display")
+        .classList
+        .remove("hidden");
+
+
+    $("final-qa-summary")
+        .innerText =
+        data.qa?.answer ||
+        "تم إرسال الإجابة ❤️";
+
+}
+
+
+/* =========================================================
+   الجولة التالية
+   ========================================================= */
+
+window.startNextRoundFromQA =
+async function() {
+
+    /*
+     * نخلي اللاعب الأول فقط
+     * يبدأ الجولة الجديدة.
+     */
+
+    if(myRole !== "p1") {
+
+        showFloatingChat(
+            "استنى اللاعب الأول يبدأ الجولة ❤️"
+        );
+
+        return;
+
+    }
+
+
+    await startNextRoundHost();
+
+};
+
+
+/* =========================================================
+   إعادة الجولة
+   ========================================================= */
+
+function resetRoundUI(showChoice = true) {
+
+    myChoice = null;
+
+    roundAlreadyDisplayed =
+        false;
+
+    $("result-area")
+        .classList
+        .add("hidden");
+
+    $("qa-section")
+        .classList
+        .add("hidden");
+
+    $("waiting-choice-area")
+        .classList
+        .add("hidden");
+
+
+    if(showChoice) {
+
+        $("choice-area")
+            .classList
+            .remove("hidden");
+
+    }
+
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
+
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+    $("qa-result-display")
+        .classList
+        .add("hidden");
+
+}
+
+
+/* =========================================================
+   الشات السريع
+   ========================================================= */
+
+window.toggleChatMenu =
+function() {
+
+    const menu =
+        $("chatMenu");
+
+    menu.style.display =
+        menu.style.display === "block"
+            ? "none"
+            : "block";
+
+};
+
+
+window.sendQuickChat =
+async function(text) {
+
+    $("chatMenu").style.display =
+        "none";
+
+
+    showFloatingChat(
+        myName +
+        ": " +
+        text
+    );
+
+
+    const chatRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/chat/" +
+            Date.now()
+        );
+
+
+    try {
+
+        await set(
+            chatRef,
+            {
+
+                sender:
+                    myRole,
+
+                name:
+                    myName,
+
+                text:
+                    text,
+
+                time:
+                    Date.now()
+
+            }
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+    }
+
+};
+
+
+/* =========================================================
+   متابعة الشات
+   ========================================================= */
+
+function listenToChat() {
+
+    const chatRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/chat"
+        );
+
+
+    onValue(
+        chatRef,
+        snapshot => {
+
+            const data =
+                snapshot.val();
+
+            if(!data) {
                 return;
             }
 
-            const roomRef = ref(db, 'rooms/' + code);
-            const snapshot = await get(roomRef);
 
-            if(!snapshot.exists()) {
-                document.getElementById('rps-join-error').innerText = "❌ الغرفة غير موجودة أو انتهت!";
+            const messages =
+                Object.values(data);
+
+
+            if(messages.length === 0) {
                 return;
             }
 
-            const roomData = snapshot.val();
-            currentRoomCode = code;
-            rpsOpponentName = roomData.p1Name;
 
-            await update(roomRef, {
-                p2Name: rpsMyName,
-                status: "playing"
-            });
+            const last =
+                messages[messages.length - 1];
 
-            startZGamePlay();
-        }
 
-        function startZGamePlay() {
-            window.showScreen('screen-rps-game');
-            updateRPSUI();
+            if(
+                last.sender !== myRole
+            ) {
 
-            const roomRef = ref(db, 'rooms/' + currentRoomCode);
-            onValue(roomRef, (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
+                showFloatingChat(
 
-                if(rpsRole === 'p1') rpsOpponentName = data.p2Name || "اللاعب 2";
-                else rpsOpponentName = data.p1Name || "اللاعب 1";
-                updateRPSUI();
+                    (last.name ||
+                     opponentName ||
+                     "الطرف الآخر") +
 
-                if(rpsRole === 'p1') rpsOpponentChoice = data.p2Choice;
-                else rpsOpponentChoice = data.p1Choice;
+                    ": " +
 
-                checkRPSRoundResult();
+                    last.text
 
-                if(data.round !== rpsRoundNum && data.round > rpsRoundNum) {
-                    rpsRoundNum = data.round;
-                    resetRPSRoundUI();
-                }
+                );
 
-                if(data.question && data.question !== window.lastProcessedQuestion) {
-                    window.lastProcessedQuestion = data.question;
-                    if(rpsRole === 'p2') showLoserQuestionPrompt(data.question);
-                }
-
-                if(data.answer && data.answer !== window.lastProcessedAnswer) {
-                    window.lastProcessedAnswer = data.answer;
-                    showQAResult(data.answer);
-                }
-            });
-
-            const chatRef = ref(db, 'rooms/' + currentRoomCode + '/chat');
-            onValue(chatRef, (snapshot) => {
-                const chat = snapshot.val();
-                if(chat && chat.sender !== rpsMyName && chat.timestamp > (window.lastChatTime || 0)) {
-                    window.lastChatTime = chat.timestamp;
-                    showFloatingChat(chat.sender + ": " + chat.text);
-                }
-            });
-        }
-
-        window.makeRPSChoice = async function(move) {
-            if(!rpsRoundActive) return;
-            rpsMyChoice = move;
-            rpsRoundActive = false;
-
-            const roomRef = ref(db, 'rooms/' + currentRoomCode);
-            if(rpsRole === 'p1') {
-                await update(roomRef, { p1Choice: move });
-            } else {
-                await update(roomRef, { p2Choice: move });
             }
 
-            document.getElementById('choice-area').classList.add('hidden');
-            document.getElementById('waiting-choice-area').classList.remove('hidden');
-            checkRPSRoundResult();
         }
+    );
 
-        function checkRPSRoundResult() {
-            if(rpsResultShown) return;
+}
 
-            if(rpsMyChoice !== null && rpsOpponentChoice !== null) {
-                rpsResultShown = true;
-                document.getElementById('waiting-choice-area').classList.add('hidden');
-                document.getElementById('result-area').classList.remove('hidden');
 
-                const emojis = { 'حجر': '🪨', 'ورقة': '📄', 'مقص': '✂️' };
-                let p1Move = rpsRole === 'p1' ? rpsMyChoice : rpsOpponentChoice;
-                let p2Move = rpsRole === 'p2' ? rpsMyChoice : rpsOpponentChoice;
+/* =========================================================
+   إظهار رسالة
+   ========================================================= */
 
-                document.getElementById('res-p1-emoji').innerText = emojis[p1Move];
-                document.getElementById('res-p2-emoji').innerText = emojis[p2Move];
+function showFloatingChat(msg) {
 
-                let winText = "";
-                let p1Name = document.getElementById('lbl-p1').innerText;
-                let p2Name = document.getElementById('lbl-p2').innerText;
+    const existing =
+        document.querySelector(
+            ".floating-chat-popup"
+        );
 
-                if(p1Move === p2Move) {
-                    rpsCurrentRoundWinner = 'tie';
-                    winText = "تعادل... محدش عايز يزعل التاني 😂❤️";
-                } else if(
-                    (p1Move === 'حجر' && p2Move === 'مقص') ||
-                    (p1Move === 'مقص' && p2Move === 'ورقة') ||
-                    (p1Move === 'ورقة' && p2Move === 'حجر')
-                ) {
-                    rpsCurrentRoundWinner = 'p1';
-                    winText = `${p1Name} كسب الجولة! 🎉`;
-                    if(rpsRole === 'p1') rpsMyScore++; else rpsOpponentScore++;
-                } else {
-                    rpsCurrentRoundWinner = 'p2';
-                    winText = `${p2Name} كسب الجولة! ❤️`;
-                    if(rpsRole === 'p2') rpsMyScore++; else rpsOpponentScore++;
+
+    if(existing) {
+        existing.remove();
+    }
+
+
+    const pop =
+        document.createElement("div");
+
+
+    pop.className =
+        "floating-chat-popup";
+
+
+    pop.innerText =
+        msg;
+
+
+    document.body.appendChild(pop);
+
+
+    setTimeout(
+        () => pop.remove(),
+        2800
+    );
+
+}
+
+
+/* =========================================================
+   قطع الاتصال
+   ========================================================= */
+
+function handleDisconnect() {
+
+    $("choice-area")
+        .classList
+        .add("hidden");
+
+    $("waiting-choice-area")
+        .classList
+        .add("hidden");
+
+    $("result-area")
+        .classList
+        .add("hidden");
+
+    $("qa-section")
+        .classList
+        .add("hidden");
+
+    $("disconnect-msg")
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* =========================================================
+   مغادرة اللعبة
+   ========================================================= */
+
+window.leaveGame =
+async function() {
+
+    try {
+
+        if(roomCode && myRole) {
+
+            await update(
+
+                ref(
+                    db,
+                    "rooms/" +
+                    roomCode +
+                    "/players/" +
+                    myRole
+                ),
+
+                {
+                    online: false
                 }
 
-                document.getElementById('round-winner-text').innerText = winText;
-                updateRPSUI();
+            );
 
-                setTimeout(() => {
-                    if(rpsCurrentRoundWinner === 'tie') {
-                        setTimeout(() => {
-                            rpsRoundNum++;
-                            if(rpsRole === 'p1') {
-                                const roomRef = ref(db, 'rooms/' + currentRoomCode);
-                                update(roomRef, { round: rpsRoundNum, p1Choice: null, p2Choice: null });
-                            }
-                            resetRPSRoundUI();
-                        }, 2000);
-                    } else {
-                        setupQAStage();
-                    }
-                }, 1000);
-            }
         }
 
-        function setupQAStage() {
-            document.getElementById('qa-section').classList.remove('hidden');
-            let iAmWinner = (rpsRole === rpsCurrentRoundWinner);
+    } catch(error) {
 
-            document.getElementById('winner-question-box').classList.add('hidden');
-            document.getElementById('loser-waiting-box').classList.add('hidden');
-            document.getElementById('loser-answer-box').classList.add('hidden');
-            document.getElementById('winner-waiting-answer').classList.add('hidden');
-            document.getElementById('qa-result-display').classList.add('hidden');
+        console.error(error);
 
-            if(iAmWinner) {
-                document.getElementById('winner-question-box').classList.remove('hidden');
-                document.getElementById('winner-question-input').value = "";
-            } else {
-                document.getElementById('loser-waiting-box').classList.remove('hidden');
-            }
+    }
+
+
+    location.reload();
+
+};
+
+
+/* =========================================================
+   تشغيل الشات عند دخول الغرفة
+   ========================================================= */
+
+const originalListenToRoom =
+    listenToRoom;
+
+
+/*
+ * ملاحظة:
+ * يتم استدعاء listenToChat من هنا
+ * بعد تحميل الصفحة.
+ */
+
+
+/* =========================================================
+   مراقبة الاتصال بقاعدة البيانات
+   ========================================================= */
+
+const connectedRef =
+    ref(
+        db,
+        ".info/connected"
+    );
+
+
+onValue(
+    connectedRef,
+    snapshot => {
+
+        if(snapshot.val() === true) {
+
+            console.log(
+                "Firebase Connected"
+            );
+
+        } else {
+
+            console.log(
+                "Firebase Disconnected"
+            );
+
         }
 
-        window.sendRPSQuestion = async function() {
-            let qToken = document.getElementById('winner-question-input').value.trim() || "قول بحبك قد ايه؟ 😂❤️";
-            const roomRef = ref(db, 'rooms/' + currentRoomCode);
-            await update(roomRef, { question: qToken });
+    }
+);
 
-            document.getElementById('winner-question-box').classList.add('hidden');
-            document.getElementById('winner-waiting-answer').classList.remove('hidden');
+
+/* =========================================================
+   إصلاح تشغيل الشات بعد إنشاء/دخول الغرفة
+   ========================================================= */
+
+const oldCreateRoom =
+    window.createRoom;
+
+const oldJoinRoom =
+    window.joinRoom;
+
+
+/*
+ * مراقبة بسيطة لتشغيل Listener الشات
+ */
+
+setInterval(() => {
+
+    if(roomCode) {
+
+        if(!window.__chatStarted) {
+
+            window.__chatStarted = true;
+
+            listenToChat();
+
         }
 
-        function showLoserQuestionPrompt(qText) {
-            document.getElementById('qa-section').classList.remove('hidden');
-            document.getElementById('loser-waiting-box').classList.add('hidden');
-            document.getElementById('loser-answer-box').classList.remove('hidden');
-            document.getElementById('displayed-question').innerText = qText;
-            document.getElementById('loser-answer-input').value = "";
-        }
+    }
 
-        window.sendRPSAnswer = async function() {
-            let aText = document.getElementById('loser-answer-input').value.trim() || "ماشي خلاص 😂❤️";
-            const roomRef = ref(db, 'rooms/' + currentRoomCode);
-            await update(roomRef, { answer: aText });
-            showQAResult(aText);
-        }
+}, 1000);
 
-        function showQAResult(answerText) {
-            document.getElementById('winner-waiting-answer').classList.add('hidden');
-            document.getElementById('loser-answer-box').classList.add('hidden');
-            document.getElementById('qa-section').classList.remove('hidden');
-            document.getElementById('qa-result-display').classList.remove('hidden');
-            document.getElementById('final-qa-summary').innerText = answerText;
-        }
+</script>
 
-        window.startNextRoundFromQA = async function() {
-            rpsRoundNum++;
-            if(rpsRole === 'p1') {
-                const roomRef = ref(db, 'rooms/' + currentRoomCode);
-                await update(roomRef, {
-                    round: rpsRoundNum,
-                    p1Choice: null,
-                    p2Choice: null,
-                    question: "",
-                    answer: ""
-                });
-            }
-            resetRPSRoundUI();
-        }
-
-        function resetRPSRoundUI() {
-            rpsMyChoice = null;
-            rpsOpponentChoice = null;
-            rpsRoundActive = true;
-            rpsResultShown = false;
-            rpsCurrentRoundWinner = "";
-            document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('qa-section').classList.add('hidden');
-            document.getElementById('choice-area').classList.remove('hidden');
-            updateRPSUI();
-        }
-
-        function updateRPSUI() {
-            let p1Name = rpsRole === 'p1' ? rpsMyName : (rpsOpponentName || "اللاعب 1");
-            let p2Name = rpsRole === 'p2' ? rpsMyName : (rpsOpponentName || "اللاعب 2");
-
-            document.getElementById('lbl-p1').innerText = p1Name;
-            document.getElementById('lbl-p2').innerText = p2Name;
-            document.getElementById('res-p1-name').innerText = p1Name;
-            document.getElementById('res-p2-name').innerText = p2Name;
-
-            document.getElementById('score-p1').innerText = rpsRole === 'p1' ? rpsMyScore : rpsOpponentScore;
-            document.getElementById('score-p2').innerText = rpsRole === 'p2' ? rpsMyScore : rpsOpponentScore;
-            document.getElementById('lbl-round').innerText = `الجولة ${rpsRoundNum}`;
-        }
-    </script>
 </body>
 </html>
