@@ -654,47 +654,24 @@
 
       }
 
-      const transaction =
-        await runTransaction(roomRef, currentData => {
+      if(room.player1.uid === currentUser.uid) {
 
-          if(currentData === null) {
-
-            return;
-
-          }
-
-          if(currentData.player2) {
-
-            return;
-
-          }
-
-          currentData.player2 = {
-
-            uid: currentUser.uid,
-
-            choice: null,
-
-            ready: true
-
-          };
-
-          currentData.status = "playing";
-
-          return currentData;
-
-        });
-
-
-      if(!transaction.committed) {
-
-        alert("لم نستطع دخول الغرفة، حاول مرة أخرى");
+        alert("لا يمكنك الانضمام إلى الغرفة التي قمت بإنشائها بنفسك!");
 
         joinRoomBtn.disabled = false;
 
         return;
 
       }
+
+      await update(roomRef, {
+        player2: {
+          uid: currentUser.uid,
+          choice: null,
+          ready: true
+        },
+        status: "playing"
+      });
 
       currentRoom = code;
 
@@ -716,9 +693,9 @@
         error.message
       );
 
-    }
+      joinRoomBtn.disabled = false;
 
-    joinRoomBtn.disabled = false;
+    }
 
   });
 
