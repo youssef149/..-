@@ -131,7 +131,7 @@
 <body>
 
     <div class="app-container">
-        <!-- القائمة الرئيسية للعبة -->
+        <!-- القائمة الرئيسية -->
         <section id="screen-rps-menu" class="game-screen active">
             <div class="hero-card">
                 <h1>واحد ضد واحد</h1>
@@ -139,7 +139,6 @@
                 <div class="menu-buttons">
                     <button class="primary-btn" onclick="showScreen('screen-rps-create')"><i class="fa-solid fa-user-plus"></i> إنشاء لعبة</button>
                     <button class="secondary-btn" onclick="showScreen('screen-rps-join')"><i class="fa-solid fa-door-open"></i> الانضمام إلى لعبة</button>
-                    <a href="index.html" class="text-btn" style="text-decoration: none;">🔙 العودة للرئيسية</a>
                 </div>
             </div>
         </section>
@@ -179,7 +178,7 @@
                 </div>
                 <div class="form-group">
                     <label>كود الغرفة:</label>
-                    <input type="text" id="rps-join-code" placeholder="أدخل الكود المكون من أرقام">
+                    <input type="text" id="rps-join-code" placeholder="أدخل الكود">
                 </div>
                 <button class="primary-btn w-100" onclick="joinRPSRoom()">دخول الغرفة</button>
                 <p id="rps-join-error" style="color:var(--danger); font-size:0.8rem; margin-top:8px;"></p>
@@ -189,7 +188,6 @@
 
         <!-- ساحة اللعب -->
         <section id="screen-rps-game" class="game-screen">
-            <!-- زرار فتح الخريطة يظهر فقط لصاحب الغرفة عند انضمام الطرف الآخر -->
             <div id="map-btn-container" class="hidden">
                 <button id="open-map-target-btn" class="map-btn w-100" onclick="openOpponentMap()">
                     <i class="fa-solid fa-map-location-dot"></i> فتح موقع الطرف الآخر على الخريطة 📍
@@ -282,7 +280,7 @@
         </section>
     </div>
 
-    <!-- سكربت جافاسكريبت لربط Firebase واللعبة -->
+    <!-- كود فايربيس (Firebase) المدمج بالطريقة الصحيحة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -297,12 +295,12 @@
             measurementId: "G-76XM3GND1Y"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        console.log("Firebase initialized successfully!");
+        console.log("Firebase Connected Successfully!");
     </script>
 
+    <!-- سكربت اللعبة وتشغيل الغرف -->
     <script>
         const peerIceConfig = {
             config: {
