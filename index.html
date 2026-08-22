@@ -273,10 +273,10 @@
         </section>
     </div>
 
-    <!-- سكربت اللعبة مع Firebase Realtime Database -->
+    <!-- سكربت اللعبة وربط Firebase وإتاحة الدوال للعامة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
@@ -292,13 +292,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.db = db;
-        window.dbRefs = { ref, set, get, update, onValue, remove };
-        console.log("Firebase Database Connected Successfully!");
-    </script>
-
-    <!-- منطق اللعبة بالكامل عبر السيرفر السحابي -->
-    <script>
         let currentRoomCode = "";
         let rpsRole = ""; // 'p1' or 'p2'
         let rpsMyName = "";
@@ -312,21 +305,21 @@
         let rpsResultShown = false;
         let rpsCurrentRoundWinner = "";
 
-        function showScreen(id) {
+        window.showScreen = function(id) {
             document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function toggleChatMenu() {
+        window.toggleChatMenu = function() {
             let menu = document.getElementById('chatMenu');
             menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
-        function sendQuickChat(text) {
+        window.sendQuickChat = function(text) {
             document.getElementById('chatMenu').style.display = 'none';
             if (!currentRoomCode) return;
-            const chatRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode + '/chat');
-            window.dbRefs.set(chatRef, { sender: rpsMyName, text: text, timestamp: Date.now() });
+            const chatRef = ref(db, 'rooms/' + currentRoomCode + '/chat');
+            set(chatRef, { sender: rpsMyName, text: text, timestamp: Date.now() });
             showFloatingChat(rpsMyName + ": " + text);
         }
 
@@ -355,8 +348,8 @@
             rpsRole = 'p1';
             currentRoomCode = generateAlphaNumericCode(5);
 
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-            await window.dbRefs.set(roomRef, {
+            const roomRef = ref(db, 'rooms/' + currentRoomCode);
+            await set(roomRef, {
                 p1Name: rpsMyName,
                 p2Name: "",
                 status: "waiting",
@@ -364,15 +357,14 @@
                 p1Choice: null,
                 p2Choice: null,
                 question: "",
-                answer: "",
-                turn: "playing"
+                answer: ""
             });
 
             document.getElementById('rps-code-display').innerText = currentRoomCode;
-            showScreen('screen-rps-waiting');
+            window.showScreen('screen-rps-waiting');
 
             // الاستماع لدخول الطرف التاني
-            window.dbRefs.onValue(roomRef, (snapshot) => {
+            onValue(roomRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.p2Name && data.status === "playing") {
                     rpsOpponentName = data.p2Name;
@@ -392,8 +384,8 @@
                 return;
             }
 
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + code);
-            const snapshot = await window.dbRefs.get(roomRef);
+            const roomRef = ref(db, 'rooms/' + code);
+            const snapshot = await get(roomRef);
 
             if(!snapshot.exists()) {
                 document.getElementById('rps-join-error').innerText = "❌ الغرفة غير موجودة أو انتهت!";
@@ -404,7 +396,7 @@
             currentRoomCode = code;
             rpsOpponentName = roomData.p1Name;
 
-            await window.dbRefs.update(roomRef, {
+            await update(roomRef, {
                 p2Name: rpsMyName,
                 status: "playing"
             });
@@ -413,32 +405,28 @@
         }
 
         function startZGamePlay() {
-            showScreen('screen-rps-game');
+            window.showScreen('screen-rps-game');
             updateRPSUI();
 
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-            window.dbRefs.onValue(roomRef, (snapshot) => {
+            const roomRef = ref(db, 'rooms/' + currentRoomCode);
+            onValue(roomRef, (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
 
-                // تحديث الأسماء
                 if(rpsRole === 'p1') rpsOpponentName = data.p2Name || "اللاعب 2";
                 else rpsOpponentName = data.p1Name || "اللاعب 1";
                 updateRPSUI();
 
-                // قراءة اختيارات الجولة
                 if(rpsRole === 'p1') rpsOpponentChoice = data.p2Choice;
                 else rpsOpponentChoice = data.p1Choice;
 
                 checkRPSRoundResult();
 
-                // تحديث الجولات
                 if(data.round !== rpsRoundNum && data.round > rpsRoundNum) {
                     rpsRoundNum = data.round;
                     resetRPSRoundUI();
                 }
 
-                // الأسئلة والأجوبة بعد الجولة
                 if(data.question && data.question !== window.lastProcessedQuestion) {
                     window.lastProcessedQuestion = data.question;
                     if(rpsRole === 'p2') showLoserQuestionPrompt(data.question);
@@ -450,9 +438,8 @@
                 }
             });
 
-            // الاستماع للشات السريع
-            const chatRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode + '/chat');
-            window.dbRefs.onValue(chatRef, (snapshot) => {
+            const chatRef = ref(db, 'rooms/' + currentRoomCode + '/chat');
+            onValue(chatRef, (snapshot) => {
                 const chat = snapshot.val();
                 if(chat && chat.sender !== rpsMyName && chat.timestamp > (window.lastChatTime || 0)) {
                     window.lastChatTime = chat.timestamp;
@@ -466,11 +453,11 @@
             rpsMyChoice = move;
             rpsRoundActive = false;
 
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
+            const roomRef = ref(db, 'rooms/' + currentRoomCode);
             if(rpsRole === 'p1') {
-                await window.dbRefs.update(roomRef, { p1Choice: move });
+                await update(roomRef, { p1Choice: move });
             } else {
-                await window.dbRefs.update(roomRef, { p2Choice: move });
+                await update(roomRef, { p2Choice: move });
             }
 
             document.getElementById('choice-area').classList.add('hidden');
@@ -522,8 +509,8 @@
                         setTimeout(() => {
                             rpsRoundNum++;
                             if(rpsRole === 'p1') {
-                                const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-                                window.dbRefs.update(roomRef, { round: rpsRoundNum, p1Choice: null, p2Choice: null });
+                                const roomRef = ref(db, 'rooms/' + currentRoomCode);
+                                update(roomRef, { round: rpsRoundNum, p1Choice: null, p2Choice: null });
                             }
                             resetRPSRoundUI();
                         }, 2000);
@@ -554,8 +541,8 @@
 
         window.sendRPSQuestion = async function() {
             let qToken = document.getElementById('winner-question-input').value.trim() || "قول بحبك قد ايه؟ 😂❤️";
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-            await window.dbRefs.update(roomRef, { question: qToken });
+            const roomRef = ref(db, 'rooms/' + currentRoomCode);
+            await update(roomRef, { question: qToken });
 
             document.getElementById('winner-question-box').classList.add('hidden');
             document.getElementById('winner-waiting-answer').classList.remove('hidden');
@@ -571,8 +558,8 @@
 
         window.sendRPSAnswer = async function() {
             let aText = document.getElementById('loser-answer-input').value.trim() || "ماشي خلاص 😂❤️";
-            const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-            await window.dbRefs.update(roomRef, { answer: aText });
+            const roomRef = ref(db, 'rooms/' + currentRoomCode);
+            await update(roomRef, { answer: aText });
             showQAResult(aText);
         }
 
@@ -587,8 +574,8 @@
         window.startNextRoundFromQA = async function() {
             rpsRoundNum++;
             if(rpsRole === 'p1') {
-                const roomRef = window.dbRefs.ref(window.db, 'rooms/' + currentRoomCode);
-                await window.dbRefs.update(roomRef, {
+                const roomRef = ref(db, 'rooms/' + currentRoomCode);
+                await update(roomRef, {
                     round: rpsRoundNum,
                     p1Choice: null,
                     p2Choice: null,
