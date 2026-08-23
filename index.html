@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>LoveDuel</title>
 
@@ -16,1115 +12,441 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-
         :root {
-
-            --bg-gradient:
-                linear-gradient(
-                    135deg,
-                    #fce7f3,
-                    #fae8ff,
-                    #f3e8ff
-                );
-
+            --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
             --card-bg: rgba(255,255,255,.95);
-
             --primary-pink: #db2777;
-
             --accent-purple: #9333ea;
-
             --text-main: #4a044e;
-
             --text-muted: #86198f;
-
             --border-color: #fbcfe8;
-
             --danger: #ef4444;
-
             --success: #16a34a;
-
-            --warning: #f59e0b;
-
             --radius: 20px;
-
-            --shadow:
-                0 10px 30px rgba(219,39,119,.15);
+            --shadow: 0 10px 30px rgba(219,39,119,.15);
         }
-
 
         * {
-
             box-sizing: border-box;
-
             margin: 0;
-
             padding: 0;
-
-            font-family:
-                'Segoe UI',
-                Tahoma,
-                sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
-
         body {
-
-            background:
-                var(--bg-gradient);
-
-            color:
-                var(--text-main);
-
+            background: var(--bg-gradient);
+            color: var(--text-main);
             min-height: 100vh;
-
             display: flex;
-
             justify-content: center;
-
             align-items: center;
-
             padding: 15px;
         }
 
-
         .app-container {
-
             width: 100%;
-
             max-width: 480px;
-
             position: relative;
         }
 
-
         .game-screen {
-
             display: none;
         }
 
-
         .game-screen.active {
-
             display: block;
-
-            animation:
-                fadeIn .2s ease;
+            animation: fadeIn .2s ease;
         }
 
-
         @keyframes fadeIn {
-
             from {
-
                 opacity: 0;
-
-                transform:
-                    translateY(4px);
+                transform: translateY(4px);
             }
 
             to {
-
                 opacity: 1;
-
-                transform:
-                    translateY(0);
+                transform: translateY(0);
             }
         }
 
-
         .hidden {
-
             display: none !important;
         }
 
-
         .w-100 {
-
             width: 100%;
         }
 
-
         .hero-card,
         .gameplay-card {
-
-            background:
-                var(--card-bg);
-
-            border:
-                2px solid var(--border-color);
-
-            border-radius:
-                var(--radius);
-
-            padding:
-                25px 20px;
-
-            text-align:
-                center;
-
-            box-shadow:
-                var(--shadow);
-
-            margin-bottom:
-                15px;
-
-            position:
-                relative;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            position: relative;
         }
-
 
         h1 {
-
-            color:
-                var(--primary-pink);
-
-            font-size:
-                1.8rem;
-
-            margin-bottom:
-                5px;
+            color: var(--primary-pink);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
-
 
         h2 {
-
-            color:
-                var(--primary-pink);
-
-            font-size:
-                1.3rem;
-
-            margin-bottom:
-                15px;
+            color: var(--primary-pink);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
         }
-
 
         .subtitle {
-
-            color:
-                var(--text-muted);
-
-            font-size:
-                .9rem;
-
-            margin-bottom:
-                20px;
-
-            font-weight:
-                600;
+            color: var(--text-muted);
+            font-size: .9rem;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
-
 
         .menu-buttons {
-
-            display:
-                flex;
-
-            flex-direction:
-                column;
-
-            gap:
-                12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-
 
         .primary-btn,
         .secondary-btn,
         .danger-btn {
-
-            padding:
-                12px 20px;
-
-            border-radius:
-                12px;
-
-            font-weight:
-                bold;
-
-            cursor:
-                pointer;
-
-            border:
-                none;
-
-            font-size:
-                1rem;
-
-            display:
-                inline-flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            gap:
-                8px;
-
-            transition:
-                .15s;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: .15s;
         }
-
 
         .primary-btn {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--primary-pink),
-                    var(--accent-purple)
-                );
-
-            color:
-                #fff;
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-purple));
+            color: #fff;
         }
-
 
         .secondary-btn {
-
-            background:
-                #fbcfe8;
-
-            color:
-                var(--text-main);
+            background: #fbcfe8;
+            color: var(--text-main);
         }
-
 
         .danger-btn {
-
-            background:
-                #fee2e2;
-
-            color:
-                var(--danger);
+            background: #fee2e2;
+            color: var(--danger);
         }
-
 
         .primary-btn:active,
         .secondary-btn:active,
         .danger-btn:active {
-
-            transform:
-                scale(.98);
+            transform: scale(.98);
         }
-
-
-        .primary-btn:disabled {
-
-            opacity:
-                .6;
-
-            cursor:
-                not-allowed;
-
-            transform:
-                none;
-        }
-
 
         .text-btn {
-
-            background:
-                none;
-
-            border:
-                none;
-
-            color:
-                var(--text-muted);
-
-            margin-top:
-                12px;
-
-            cursor:
-                pointer;
-
-            text-decoration:
-                underline;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            margin-top: 12px;
+            cursor: pointer;
+            text-decoration: underline;
         }
-
 
         .form-group {
-
-            margin-bottom:
-                15px;
-
-            text-align:
-                right;
+            margin-bottom: 15px;
+            text-align: right;
         }
-
 
         label {
-
-            display:
-                block;
-
-            margin-bottom:
-                5px;
-
-            font-size:
-                .85rem;
-
-            font-weight:
-                bold;
-
-            color:
-                var(--text-muted);
+            display: block;
+            margin-bottom: 5px;
+            font-size: .85rem;
+            font-weight: bold;
+            color: var(--text-muted);
         }
-
 
         input {
-
-            width:
-                100%;
-
-            padding:
-                12px;
-
-            border:
-                2px solid var(--border-color);
-
-            border-radius:
-                10px;
-
-            font-size:
-                1rem;
-
-            text-align:
-                center;
-
-            outline:
-                none;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
         }
-
 
         input:focus {
-
-            border-color:
-                var(--primary-pink);
+            border-color: var(--primary-pink);
         }
-
 
         .room-code-box {
-
-            font-size:
-                1.8rem;
-
-            letter-spacing:
-                4px;
-
-            font-weight:
-                bold;
-
-            color:
-                var(--accent-purple);
-
-            background:
-                #f3e8ff;
-
-            padding:
-                12px;
-
-            border-radius:
-                12px;
-
-            margin:
-                15px 0;
-
-            border:
-                2px dashed var(--accent-purple);
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            font-weight: bold;
+            color: var(--accent-purple);
+            background: #f3e8ff;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px dashed var(--accent-purple);
         }
-
 
         .scoreboard-bar {
-
-            display:
-                flex;
-
-            justify-content:
-                space-between;
-
-            align-items:
-                center;
-
-            background:
-                var(--card-bg);
-
-            padding:
-                10px 15px;
-
-            border-radius:
-                12px;
-
-            border:
-                2px solid var(--border-color);
-
-            margin-bottom:
-                12px;
-
-            font-weight:
-                bold;
-
-            font-size:
-                .9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            margin-bottom: 12px;
+            font-weight: bold;
+            font-size: .9rem;
         }
-
 
         .round-badge {
-
-            background:
-                var(--primary-pink);
-
-            color:
-                #fff;
-
-            padding:
-                4px 10px;
-
-            border-radius:
-                20px;
-
-            font-size:
-                .8rem;
+            background: var(--primary-pink);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: .8rem;
         }
-
 
         .versus-title {
-
-            font-size:
-                1.1rem;
-
-            color:
-                var(--primary-pink);
-
-            margin-bottom:
-                10px;
-
-            font-weight:
-                bold;
+            font-size: 1.1rem;
+            color: var(--primary-pink);
+            margin-bottom: 10px;
+            font-weight: bold;
         }
-
 
         .choices-grid {
-
-            display:
-                flex;
-
-            justify-content:
-                center;
-
-            gap:
-                12px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
         }
-
 
         .choice-btn {
-
-            background:
-                #fff;
-
-            border:
-                2px solid var(--border-color);
-
-            border-radius:
-                16px;
-
-            padding:
-                15px 20px;
-
-            cursor:
-                pointer;
-
-            display:
-                flex;
-
-            flex-direction:
-                column;
-
-            align-items:
-                center;
-
-            gap:
-                6px;
-
-            min-width:
-                90px;
-
-            transition:
-                .15s;
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 90px;
         }
-
 
         .choice-btn:hover {
-
-            border-color:
-                var(--primary-pink);
-
-            background:
-                #fdf2f8;
+            border-color: var(--primary-pink);
+            background: #fdf2f8;
         }
-
-
-        .choice-btn:active {
-
-            transform:
-                scale(.96);
-        }
-
 
         .choice-icon {
-
-            font-size:
-                2.2rem;
+            font-size: 2.2rem;
         }
-
 
         .reveal-grid {
-
-            display:
-                flex;
-
-            justify-content:
-                space-around;
-
-            align-items:
-                center;
-
-            margin:
-                15px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 15px 0;
         }
-
 
         .reveal-box {
-
-            background:
-                #fdf2f8;
-
-            border:
-                2px solid var(--border-color);
-
-            padding:
-                12px;
-
-            border-radius:
-                12px;
-
-            width:
-                45%;
+            background: #fdf2f8;
+            border: 2px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            width: 45%;
         }
-
 
         .big-emoji {
-
-            font-size:
-                2.5rem;
-
-            margin:
-                8px 0;
+            font-size: 2.5rem;
+            margin: 8px 0;
         }
-
 
         .winner-announcement {
-
-            font-size:
-                1.1rem;
-
-            color:
-                var(--primary-pink);
-
-            margin:
-                10px 0;
-
-            font-weight:
-                bold;
+            font-size: 1.1rem;
+            color: var(--primary-pink);
+            margin: 10px 0;
+            font-weight: bold;
         }
-
 
         .qa-container {
-
-            background:
-                #fdf2f8;
-
-            border:
-                2px solid var(--border-color);
-
-            padding:
-                15px;
-
-            border-radius:
-                16px;
-
-            margin-top:
-                15px;
-
-            text-align:
-                right;
+            background: #fdf2f8;
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            border-radius: 16px;
+            margin-top: 15px;
+            text-align: right;
         }
-
 
         .chat-float-btn {
-
-            position:
-                absolute;
-
-            top:
-                15px;
-
-            left:
-                15px;
-
-            background:
-                #f3e8ff;
-
-            border:
-                2px solid var(--accent-purple);
-
-            color:
-                var(--accent-purple);
-
-            width:
-                40px;
-
-            height:
-                40px;
-
-            border-radius:
-                50%;
-
-            font-size:
-                1.2rem;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            cursor:
-                pointer;
-
-            z-index:
-                10;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #f3e8ff;
+            border: 2px solid var(--accent-purple);
+            color: var(--accent-purple);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
         }
-
 
         .chat-menu {
-
-            display:
-                none;
-
-            position:
-                absolute;
-
-            top:
-                60px;
-
-            left:
-                15px;
-
-            background:
-                #fff;
-
-            border:
-                2px solid var(--border-color);
-
-            border-radius:
-                14px;
-
-            padding:
-                8px;
-
-            box-shadow:
-                var(--shadow);
-
-            z-index:
-                20;
-
-            text-align:
-                right;
-
-            width:
-                210px;
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 15px;
+            background: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: var(--shadow);
+            z-index: 20;
+            text-align: right;
+            width: 210px;
         }
-
 
         .chat-menu button {
-
-            background:
-                none;
-
-            border:
-                none;
-
-            width:
-                100%;
-
-            padding:
-                8px 10px;
-
-            text-align:
-                right;
-
-            font-size:
-                .9rem;
-
-            font-weight:
-                bold;
-
-            color:
-                var(--text-main);
-
-            border-radius:
-                8px;
-
-            cursor:
-                pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            padding: 8px 10px;
+            text-align: right;
+            font-size: .9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
         }
-
 
         .chat-menu button:hover {
-
-            background:
-                #fdf2f8;
-
-            color:
-                var(--primary-pink);
+            background: #fdf2f8;
+            color: var(--primary-pink);
         }
-
 
         .floating-chat-popup {
-
-            position:
-                fixed;
-
-            bottom:
-                30px;
-
-            left:
-                50%;
-
-            transform:
-                translateX(-50%);
-
-            background:
-                rgba(74,4,78,.95);
-
-            color:
-                #fff;
-
-            padding:
-                12px 22px;
-
-            border-radius:
-                30px;
-
-            font-weight:
-                bold;
-
-            font-size:
-                .95rem;
-
-            z-index:
-                1000;
-
-            box-shadow:
-                0 5px 15px rgba(0,0,0,.2);
-
-            animation:
-                fadeInOut 2.8s ease-in-out forwards;
-
-            max-width:
-                90%;
-
-            text-align:
-                center;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(74,4,78,.95);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: .95rem;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,.2);
+            animation: fadeInOut 2.8s ease-in-out forwards;
         }
 
-
         @keyframes fadeInOut {
-
             0% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,20px);
+                opacity: 0;
+                transform: translate(-50%,20px);
             }
 
             15% {
-
-                opacity:
-                    1;
-
-                transform:
-                    translate(-50%,0);
+                opacity: 1;
+                transform: translate(-50%,0);
             }
 
             85% {
-
-                opacity:
-                    1;
-
-                transform:
-                    translate(-50%,0);
+                opacity: 1;
+                transform: translate(-50%,0);
             }
 
             100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-20px);
+                opacity: 0;
+                transform: translate(-50%,-20px);
             }
         }
-
 
         .connection-status {
-
-            font-size:
-                .8rem;
-
-            color:
-                var(--success);
-
-            margin-top:
-                10px;
-
-            font-weight:
-                bold;
+            font-size: .8rem;
+            color: var(--success);
+            margin-top: 10px;
+            font-weight: bold;
         }
-
-
-        .next-round-box {
-
-            margin-top:
-                18px;
-
-            padding:
-                15px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #fdf2f8,
-                    #f3e8ff
-                );
-
-            border:
-                2px solid var(--border-color);
-
-            border-radius:
-                15px;
-
-            text-align:
-                center;
-        }
-
-
-        .next-round-title {
-
-            color:
-                var(--primary-pink);
-
-            font-weight:
-                bold;
-
-            margin-bottom:
-                8px;
-
-            font-size:
-                1rem;
-        }
-
-
-        .next-round-status {
-
-            font-size:
-                .85rem;
-
-            color:
-                var(--text-muted);
-
-            margin-bottom:
-                10px;
-        }
-
-
-        .ready-badge {
-
-            display:
-                inline-block;
-
-            padding:
-                5px 10px;
-
-            border-radius:
-                20px;
-
-            background:
-                #dcfce7;
-
-            color:
-                #15803d;
-
-            font-size:
-                .8rem;
-
-            font-weight:
-                bold;
-
-            margin-bottom:
-                10px;
-        }
-
-
-        .waiting-badge {
-
-            display:
-                inline-block;
-
-            padding:
-                5px 10px;
-
-            border-radius:
-                20px;
-
-            background:
-                #fef3c7;
-
-            color:
-                #b45309;
-
-            font-size:
-                .8rem;
-
-            font-weight:
-                bold;
-
-            margin-bottom:
-                10px;
-        }
-
-
-        .my-choice-message {
-
-            background:
-                #f3e8ff;
-
-            border:
-                2px solid #ddd6fe;
-
-            color:
-                var(--accent-purple);
-
-            border-radius:
-                12px;
-
-            padding:
-                12px;
-
-            margin-top:
-                15px;
-
-            font-weight:
-                bold;
-
-            text-align:
-                center;
-        }
-
 
         .loading {
-
-            text-align:
-                center;
-
-            padding:
-                15px;
-
-            color:
-                var(--text-muted);
+            text-align: center;
+            padding: 15px;
+            color: var(--text-muted);
         }
 
+        .next-round-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f3e8ff;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .next-round-status {
+            font-size: .85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
 
         @media(max-width:360px) {
-
             .choice-btn {
-
-                padding:
-                    12px 10px;
-
-                min-width:
-                    75px;
+                padding: 12px 10px;
+                min-width: 75px;
             }
-
 
             .choice-icon {
-
-                font-size:
-                    1.8rem;
+                font-size: 1.8rem;
             }
-
 
             .scoreboard-bar {
-
-                font-size:
-                    .75rem;
+                font-size: .75rem;
             }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
 <div class="app-container">
 
-
-    <!-- =====================================================
-         HOME
-    ====================================================== -->
-
-    <section
-        id="screen-home"
-        class="game-screen active">
+    <!-- HOME -->
+    <section id="screen-home" class="game-screen active">
 
         <div class="hero-card">
 
-            <div
-                style="font-size:2.5rem;margin-bottom:10px;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">❤️</div>
 
-                ❤️
-
-            </div>
-
-
-            <h1>
-                LoveDuel
-            </h1>
-
+            <h1>LoveDuel</h1>
 
             <p class="subtitle">
-
                 لعبة التحدي والأسئلة
-
             </p>
-
 
             <div class="menu-buttons">
 
-                <button
-                    class="primary-btn"
-                    onclick="showScreen('screen-create')">
+                <button class="primary-btn"
+                        onclick="showScreen('screen-create')">
 
                     <i class="fa-solid fa-user-plus"></i>
 
@@ -1132,10 +454,8 @@
 
                 </button>
 
-
-                <button
-                    class="secondary-btn"
-                    onclick="showScreen('screen-join')">
+                <button class="secondary-btn"
+                        onclick="showScreen('screen-join')">
 
                     <i class="fa-solid fa-door-open"></i>
 
@@ -1150,27 +470,16 @@
     </section>
 
 
-    <!-- =====================================================
-         CREATE
-    ====================================================== -->
-
-    <section
-        id="screen-create"
-        class="game-screen">
+    <!-- CREATE -->
+    <section id="screen-create" class="game-screen">
 
         <div class="hero-card">
 
-            <h2>
-                🎮 إنشاء لعبة جديدة
-            </h2>
-
+            <h2>🎮 إنشاء لعبة جديدة</h2>
 
             <div class="form-group">
 
-                <label>
-                    اسمك:
-                </label>
-
+                <label>اسمك:</label>
 
                 <input
                     type="text"
@@ -1179,7 +488,6 @@
 
             </div>
 
-
             <button
                 class="primary-btn w-100"
                 onclick="createRoom()">
@@ -1187,7 +495,6 @@
                 إنشاء الغرفة
 
             </button>
-
 
             <button
                 class="text-btn"
@@ -1202,25 +509,14 @@
     </section>
 
 
-    <!-- =====================================================
-         WAITING
-    ====================================================== -->
-
-    <section
-        id="screen-waiting"
-        class="game-screen">
+    <!-- WAITING -->
+    <section id="screen-waiting" class="game-screen">
 
         <div class="hero-card">
 
-            <h2>
-                🎮 الغرفة جاهزة
-            </h2>
+            <h2>🎮 الغرفة جاهزة</h2>
 
-
-            <p>
-                كود الغرفة:
-            </p>
-
+            <p>كود الغرفة:</p>
 
             <div
                 class="room-code-box"
@@ -1230,13 +526,11 @@
 
             </div>
 
-
             <p class="subtitle">
 
                 ابعت الكود للطرف التاني ❤️
 
             </p>
-
 
             <p id="waiting-text">
 
@@ -1244,13 +538,11 @@
 
             </p>
 
-
             <div class="connection-status">
 
                 🟢 متصل بقاعدة البيانات
 
             </div>
-
 
             <button
                 class="danger-btn w-100"
@@ -1266,27 +558,16 @@
     </section>
 
 
-    <!-- =====================================================
-         JOIN
-    ====================================================== -->
-
-    <section
-        id="screen-join"
-        class="game-screen">
+    <!-- JOIN -->
+    <section id="screen-join" class="game-screen">
 
         <div class="hero-card">
 
-            <h2>
-                👩 الانضمام إلى لعبة
-            </h2>
-
+            <h2>👩 الانضمام إلى لعبة</h2>
 
             <div class="form-group">
 
-                <label>
-                    اسمك:
-                </label>
-
+                <label>اسمك:</label>
 
                 <input
                     type="text"
@@ -1295,13 +576,9 @@
 
             </div>
 
-
             <div class="form-group">
 
-                <label>
-                    كود الغرفة:
-                </label>
-
+                <label>كود الغرفة:</label>
 
                 <input
                     type="text"
@@ -1312,7 +589,6 @@
 
             </div>
 
-
             <button
                 class="primary-btn w-100"
                 onclick="joinRoom()">
@@ -1321,12 +597,10 @@
 
             </button>
 
-
             <p
                 id="join-error"
                 style="color:red;font-size:.8rem;margin-top:8px;">
             </p>
-
 
             <button
                 class="text-btn"
@@ -1341,33 +615,18 @@
     </section>
 
 
-    <!-- =====================================================
-         GAME
-    ====================================================== -->
-
-    <section
-        id="screen-game"
-        class="game-screen">
-
-
-        <!-- SCORE -->
+    <!-- GAME -->
+    <section id="screen-game" class="game-screen">
 
         <div class="scoreboard-bar">
 
             <div>
 
-                <span id="lbl-p1">
-                    اللاعب 1
-                </span>
+                <span id="lbl-p1">اللاعب 1</span>:
 
-                :
-
-                <strong id="score-p1">
-                    0
-                </strong>
+                <strong id="score-p1">0</strong>
 
             </div>
-
 
             <div
                 class="round-badge"
@@ -1377,18 +636,11 @@
 
             </div>
 
-
             <div>
 
-                <span id="lbl-p2">
-                    اللاعب 2
-                </span>
+                <span id="lbl-p2">اللاعب 2</span>:
 
-                :
-
-                <strong id="score-p2">
-                    0
-                </strong>
+                <strong id="score-p2">0</strong>
 
             </div>
 
@@ -1397,9 +649,7 @@
 
         <div class="gameplay-card">
 
-
             <!-- CHAT -->
-
             <button
                 class="chat-float-btn"
                 onclick="toggleChatMenu()">
@@ -1408,63 +658,41 @@
 
             </button>
 
-
             <div
                 id="chatMenu"
                 class="chat-menu">
 
-                <button
-                    onclick="sendQuickChat('العب بسرعة!')">
-
+                <button onclick="sendQuickChat('العب بسرعة!')">
                     العب بسرعة! ⚡
-
                 </button>
 
-
-                <button
-                    onclick="sendQuickChat('دي آخر جولة!')">
-
+                <button onclick="sendQuickChat('دي آخر جولة!')">
                     دي آخر جولة! 🏁
-
                 </button>
 
-
-                <button
-                    onclick="sendQuickChat('اسأل أسئلة حلوة')">
-
+                <button onclick="sendQuickChat('اسأل أسئلة حلوة')">
                     اسأل أسئلة حلوة 😉
-
                 </button>
 
             </div>
 
 
             <p class="versus-title">
-
                 تحدي بين الأبطال ❤️
-
             </p>
 
 
-            <!-- =================================================
-                 CHOICE AREA
-            ================================================== -->
-
+            <!-- CHOICE -->
             <div id="choice-area">
 
                 <p
-                    style="
-                        margin-bottom:12px;
-                        font-weight:bold;
-                    ">
+                    style="margin-bottom:12px;font-weight:bold;">
 
                     اختار حركتك:
 
                 </p>
 
-
                 <div class="choices-grid">
-
 
                     <button
                         class="choice-btn"
@@ -1478,7 +706,6 @@
 
                     </button>
 
-
                     <button
                         class="choice-btn"
                         onclick="makeChoice('ورقة')">
@@ -1490,7 +717,6 @@
                         ورقة
 
                     </button>
-
 
                     <button
                         class="choice-btn"
@@ -1509,35 +735,17 @@
             </div>
 
 
-            <!-- =================================================
-                 WAITING FOR OPPONENT
-            ================================================== -->
-
+            <!-- WAIT -->
             <div
                 id="waiting-choice-area"
                 class="hidden">
 
                 <h3>
-
                     🔒 تم اختيارك بنجاح!
-
                 </h3>
 
-
-                <div
-                    id="my-choice-display"
-                    class="my-choice-message">
-
-                    اختيارك محفوظ ❤️
-
-                </div>
-
-
                 <p
-                    style="
-                        color:var(--text-muted);
-                        margin-top:8px;
-                    ">
+                    style="color:var(--text-muted);margin-top:8px;">
 
                     في انتظار اختيار الطرف الآخر...
 
@@ -1546,24 +754,18 @@
             </div>
 
 
-            <!-- =================================================
-                 RESULT
-            ================================================== -->
-
+            <!-- RESULT -->
             <div
                 id="result-area"
                 class="hidden">
 
-
                 <div class="reveal-grid">
-
 
                     <div class="reveal-box">
 
                         <h4 id="res-p1-name">
                             اللاعب 1
                         </h4>
-
 
                         <div
                             class="big-emoji"
@@ -1575,13 +777,11 @@
 
                     </div>
 
-
                     <div class="reveal-box">
 
                         <h4 id="res-p2-name">
                             اللاعب 2
                         </h4>
-
 
                         <div
                             class="big-emoji"
@@ -1595,7 +795,6 @@
 
                 </div>
 
-
                 <h3
                     id="round-winner-text"
                     class="winner-announcement">
@@ -1604,81 +803,26 @@
 
                 </h3>
 
-
-                <!-- NEXT ROUND FOR BOTH PLAYERS -->
-
-                <div
-                    id="tie-next-round-box"
-                    class="next-round-box hidden">
-
-                    <div class="next-round-title">
-
-                        🔄 الجولة التالية
-
-                    </div>
-
-
-                    <div
-                        id="tie-next-status"
-                        class="next-round-status">
-
-                        كل لاعب يضغط على الزر عنده.
-
-                    </div>
-
-
-                    <div
-                        id="tie-ready-badge"
-                        class="waiting-badge">
-
-                        ⏳ لم تضغط بعد
-
-                    </div>
-
-
-                    <button
-                        id="tie-next-btn"
-                        class="primary-btn w-100"
-                        onclick="readyForNextRound()">
-
-                        الجولة التالية 🚀
-
-                    </button>
-
-                </div>
-
-
             </div>
 
 
-            <!-- =================================================
-                 QA
-            ================================================== -->
-
+            <!-- QA -->
             <div
                 id="qa-section"
                 class="qa-container hidden">
 
-
                 <!-- WINNER -->
-
                 <div
                     id="winner-question-box"
                     class="hidden">
 
                     <p
-                        style="
-                            color:var(--primary-pink);
-                            font-weight:bold;
-                            margin-bottom:8px;
-                        ">
+                        style="color:var(--primary-pink);font-weight:bold;margin-bottom:8px;">
 
                         🎉 أنت الفائز!
-
                         اسأل الخاسر سؤال أو اطلب منه طلب:
 
                     </p>
-
 
                     <div
                         class="form-group"
@@ -1691,7 +835,6 @@
 
                     </div>
 
-
                     <button
                         class="primary-btn w-100"
                         onclick="sendQuestion()">
@@ -1703,17 +846,13 @@
                 </div>
 
 
-                <!-- LOSER WAITING -->
-
+                <!-- LOSER WAIT -->
                 <div
                     id="loser-waiting-box"
                     class="hidden">
 
                     <p
-                        style="
-                            color:var(--danger);
-                            font-weight:bold;
-                        ">
+                        style="color:var(--danger);font-weight:bold;">
 
                         ⏳ في انتظار الفائز عشان يكتب لك سؤال...
 
@@ -1723,34 +862,21 @@
 
 
                 <!-- LOSER ANSWER -->
-
                 <div
                     id="loser-answer-box"
                     class="hidden">
 
                     <p
-                        style="
-                            color:var(--danger);
-                            font-weight:bold;
-                            margin-bottom:5px;
-                        ">
+                        style="color:var(--danger);font-weight:bold;margin-bottom:5px;">
 
                         سؤال الفائز:
 
                     </p>
 
-
                     <p
                         id="displayed-question"
-                        style="
-                            background:#fff;
-                            padding:10px;
-                            border-radius:8px;
-                            margin-bottom:10px;
-                            font-weight:600;
-                        ">
+                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:600;">
                     </p>
-
 
                     <div
                         class="form-group"
@@ -1762,7 +888,6 @@
                             placeholder="اكتب إجابتك هنا...">
 
                     </div>
-
 
                     <button
                         class="primary-btn w-100"
@@ -1776,16 +901,12 @@
 
 
                 <!-- WINNER WAIT ANSWER -->
-
                 <div
                     id="winner-waiting-answer"
                     class="hidden">
 
                     <p
-                        style="
-                            color:var(--text-muted);
-                            font-weight:bold;
-                        ">
+                        style="color:var(--text-muted);font-weight:bold;">
 
                         ⏳ في انتظار رد الخاسر على سؤالك...
 
@@ -1795,72 +916,39 @@
 
 
                 <!-- QA RESULT -->
-
                 <div
                     id="qa-result-display"
                     class="hidden"
                     style="text-align:center;">
 
                     <p
-                        style="
-                            color:var(--accent-purple);
-                            font-weight:bold;
-                            margin-bottom:5px;
-                        ">
+                        style="color:var(--accent-purple);font-weight:bold;margin-bottom:5px;">
 
                         💬 الرد:
 
                     </p>
 
-
                     <p
                         id="final-qa-summary"
-                        style="
-                            background:#fff;
-                            padding:10px;
-                            border-radius:8px;
-                            margin-bottom:12px;
-                            font-weight:600;
-                        ">
+                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:600;">
                     </p>
 
+                    <div class="next-round-box">
 
-                    <!-- NEXT ROUND -->
-
-                    <div
-                        class="next-round-box">
-
-                        <div class="next-round-title">
-
-                            🔄 الجولة التالية
-
-                        </div>
-
-
-                        <div
-                            id="qa-next-status"
+                        <p
+                            id="next-round-status"
                             class="next-round-status">
 
-                            كل لاعب يضغط على الزر عنده.
+                            كل لاعب يضغط على زر الجولة التالية من عنده ❤️
 
-                        </div>
-
-
-                        <div
-                            id="qa-ready-badge"
-                            class="waiting-badge">
-
-                            ⏳ لم تضغط بعد
-
-                        </div>
-
+                        </p>
 
                         <button
-                            id="qa-next-btn"
+                            id="next-round-btn"
                             class="primary-btn w-100"
-                            onclick="readyForNextRound()">
+                            onclick="startNextRoundFromQA()">
 
-                            الجولة التالية 🚀
+                            الجولة اللي بعدها 🚀
 
                         </button>
 
@@ -1871,22 +959,11 @@
             </div>
 
 
-            <!-- =================================================
-                 DISCONNECT
-            ================================================== -->
-
+            <!-- DISCONNECT -->
             <div
                 id="disconnect-msg"
                 class="hidden"
-                style="
-                    margin-top:15px;
-                    color:var(--danger);
-                    font-weight:bold;
-                    font-size:1.1rem;
-                    background:#fee2e2;
-                    padding:12px;
-                    border-radius:10px;
-                ">
+                style="margin-top:15px;color:var(--danger);font-weight:bold;font-size:1.1rem;background:#fee2e2;padding:12px;border-radius:10px;">
 
                 ⚠️ الطرف الآخر قد خرج من اللعبة!
 
@@ -1909,19 +986,11 @@
 </div>
 
 
-<!-- =========================================================
-     FIREBASE
-========================================================= -->
-
 <script type="module">
-
 
 import {
     initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getDatabase,
@@ -1932,29 +1001,23 @@ import {
     onValue,
     onDisconnect,
     runTransaction
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
 /* =========================================================
-   FIREBASE CONFIG
+   FIREBASE
 ========================================================= */
 
 const firebaseConfig = {
 
-    apiKey:
-        "AIzaSyAUV_pAXMCjUVPNUGnAGkbu9De39nEEU",
+    apiKey: "AIzaSyAUV_pAXMCjUVNPVNUGnAGkbu9De39nEEU",
 
-    authDomain:
-        "rps-online-785fc.firebaseapp.com",
+    authDomain: "rps-online-785fc.firebaseapp.com",
 
     databaseURL:
         "https://rps-online-785fc-default-rtdb.firebaseio.com",
 
-    projectId:
-        "rps-online-785fc",
+    projectId: "rps-online-785fc",
 
     storageBucket:
         "rps-online-785fc.firebasestorage.app",
@@ -1970,18 +1033,11 @@ const firebaseConfig = {
 };
 
 
-
-/* =========================================================
-   FIREBASE START
-========================================================= */
-
 const app =
     initializeApp(firebaseConfig);
 
-
 const db =
     getDatabase(app);
-
 
 
 /* =========================================================
@@ -1989,69 +1045,47 @@ const db =
 ========================================================= */
 
 let myRole = "";
-
 let myName = "";
-
 let opponentName = "";
-
 let roomCode = "";
-
 let roomListener = null;
-
-let chatListener = null;
-
 let currentRoomData = null;
-
 let myChoice = null;
-
 let currentRound = 1;
+let chatStarted = false;
 
-let isLeaving = false;
 
-let lastDisplayedRound = null;
-
+/*
+ * هل ضغط اللاعب الحالي على
+ * زر الجولة التالية؟
+ */
+let nextRoundPressed = false;
 
 
 /* =========================================================
    DOM
 ========================================================= */
 
-const $ =
-    id => document.getElementById(id);
-
+const $ = id =>
+    document.getElementById(id);
 
 
 /* =========================================================
    SCREEN
 ========================================================= */
 
-window.showScreen =
-function(id) {
+window.showScreen = function(id) {
 
     document
         .querySelectorAll(".game-screen")
         .forEach(screen => {
 
-            screen.classList.remove(
-                "active"
-            );
+            screen.classList.remove("active");
 
         });
 
-
-    const screen =
-        $(id);
-
-    if(screen) {
-
-        screen.classList.add(
-            "active"
-        );
-
-    }
-
+    $(id).classList.add("active");
 };
-
 
 
 /* =========================================================
@@ -2068,133 +1102,93 @@ function generateRoomCode() {
 }
 
 
-
 /* =========================================================
    CREATE ROOM
 ========================================================= */
 
-window.createRoom =
-async function() {
+window.createRoom = async function() {
 
     myName =
-        $("create-name")
-        .value
-        .trim() ||
+        $("create-name").value.trim() ||
         "اللاعب 1";
 
-
-    myRole =
-        "p1";
-
+    myRole = "p1";
 
     $("code-display").innerText =
         "جاري الإنشاء...";
 
-
-    showScreen(
-        "screen-waiting"
-    );
-
+    showScreen("screen-waiting");
 
     let attempts = 0;
-
 
     while(attempts < 10) {
 
         attempts++;
 
-
         const code =
             generateRoomCode();
 
-
         const roomRef =
-            ref(
-                db,
-                "rooms/" + code
-            );
-
+            ref(db, "rooms/" + code);
 
         try {
 
             const snapshot =
                 await get(roomRef);
 
-
             if(snapshot.exists()) {
-
                 continue;
-
             }
 
+            roomCode = code;
 
-            roomCode =
-                code;
+            await set(roomRef, {
 
+                createdAt:
+                    Date.now(),
 
-            await set(
-                roomRef,
-                {
+                status:
+                    "waiting",
 
-                    createdAt:
-                        Date.now(),
+                round:
+                    1,
 
-                    status:
-                        "waiting",
+                phase:
+                    "choosing",
 
-                    round:
-                        1,
+                scores: {
+                    p1: 0,
+                    p2: 0
+                },
 
-                    phase:
-                        "choosing",
+                players: {
 
-                    winner:
-                        null,
+                    p1: {
+                        name: myName,
+                        online: true
+                    }
 
-                    resultReady:
-                        false,
+                },
 
-                    scores: {
+                choices: {},
 
-                        p1: 0,
+                rounds: {},
 
-                        p2: 0
+                qa: {},
 
-                    },
-
-                    players: {
-
-                        p1: {
-
-                            name:
-                                myName,
-
-                            online:
-                                true,
-
-                            nextReady:
-                                false
-
-                        }
-
-                    },
-
-                    choices: {},
-
-                    qa: {},
-
-                    chat: {}
-
+                nextRound: {
+                    p1: false,
+                    p2: false
                 }
-            );
+
+            });
 
 
-            $("code-display")
-                .innerText =
+            $("code-display").innerText =
                 roomCode;
 
 
-            const myConnectionRef =
+            const connectionRef =
                 ref(
                     db,
                     "rooms/" +
@@ -2204,39 +1198,27 @@ async function() {
 
 
             onDisconnect(
-                myConnectionRef
+                connectionRef
             ).set(false);
 
 
             listenToRoom();
 
-            listenToChat();
-
-
             return;
 
-        }
-        catch(error) {
+        } catch(error) {
 
             console.error(error);
-
 
             alert(
                 "حصل خطأ في إنشاء الغرفة."
             );
 
-
-            showScreen(
-                "screen-home"
-            );
-
+            showScreen("screen-home");
 
             return;
-
         }
-
     }
-
 
     alert(
         "لم نستطع إنشاء غرفة، حاول مرة أخرى."
@@ -2245,39 +1227,27 @@ async function() {
 };
 
 
-
 /* =========================================================
    JOIN ROOM
 ========================================================= */
 
-window.joinRoom =
-async function() {
+window.joinRoom = async function() {
 
     myName =
-        $("join-name")
-        .value
-        .trim() ||
+        $("join-name").value.trim() ||
         "اللاعب 2";
 
-
     roomCode =
-        $("join-code")
-        .value
-        .trim();
+        $("join-code").value.trim();
 
-
-    $("join-error")
-        .innerText = "";
-
+    $("join-error").innerText = "";
 
     if(!roomCode) {
 
-        $("join-error")
-            .innerText =
+        $("join-error").innerText =
             "❌ اكتب كود الغرفة الأول!";
 
         return;
-
     }
 
 
@@ -2290,36 +1260,16 @@ async function() {
                 roomCode
             );
 
-
         const snapshot =
             await get(roomRef);
 
 
         if(!snapshot.exists()) {
 
-            $("join-error")
-                .innerText =
+            $("join-error").innerText =
                 "❌ الغرفة غير موجودة.";
 
             return;
-
-        }
-
-
-        const room =
-            snapshot.val();
-
-
-        if(
-            room.players?.p2?.online
-        ) {
-
-            $("join-error")
-                .innerText =
-                "❌ الغرفة ممتلئة بالفعل.";
-
-            return;
-
         }
 
 
@@ -2340,24 +1290,13 @@ async function() {
                     if(players === null) {
 
                         return {
-
                             p2: {
-
-                                name:
-                                    myName,
-
-                                online:
-                                    true,
-
-                                nextReady:
-                                    false
-
+                                name: myName,
+                                online: true
                             }
-
                         };
 
                     }
-
 
                     if(
                         players.p2 &&
@@ -2368,20 +1307,13 @@ async function() {
 
                     }
 
-
                     players.p2 = {
 
-                        name:
-                            myName,
+                        name: myName,
 
-                        online:
-                            true,
-
-                        nextReady:
-                            false
+                        online: true
 
                     };
-
 
                     return players;
 
@@ -2389,38 +1321,27 @@ async function() {
             );
 
 
-        if(
-            !transactionResult.committed
-        ) {
+        if(!transactionResult.committed) {
 
-            $("join-error")
-                .innerText =
+            $("join-error").innerText =
                 "❌ الغرفة ممتلئة.";
 
             return;
-
         }
 
 
-        myRole =
-            "p2";
+        myRole = "p2";
 
 
         await update(
             roomRef,
             {
-
-                status:
-                    "playing",
-
-                phase:
-                    "choosing"
-
+                status: "playing"
             }
         );
 
 
-        const myConnectionRef =
+        const connectionRef =
             ref(
                 db,
                 "rooms/" +
@@ -2430,33 +1351,25 @@ async function() {
 
 
         onDisconnect(
-            myConnectionRef
+            connectionRef
         ).set(false);
 
 
         listenToRoom();
 
-        listenToChat();
+        showScreen("screen-game");
 
 
-        showScreen(
-            "screen-game"
-        );
-
-    }
-    catch(error) {
+    } catch(error) {
 
         console.error(error);
 
-
-        $("join-error")
-            .innerText =
+        $("join-error").innerText =
             "❌ حصل خطأ في الاتصال بقاعدة البيانات.";
 
     }
 
 };
-
 
 
 /* =========================================================
@@ -2468,9 +1381,6 @@ function listenToRoom() {
     if(roomListener) {
 
         roomListener();
-
-        roomListener =
-            null;
 
     }
 
@@ -2493,7 +1403,6 @@ function listenToRoom() {
                     handleDisconnect();
 
                     return;
-
                 }
 
 
@@ -2515,19 +1424,34 @@ function listenToRoom() {
 
                 handleGameState(data);
 
+
+                if(myRole === "p1") {
+
+                    processRoundAsHost(data);
+
+                }
+
+
+                checkNextRound(data);
+
             },
             error => {
 
-                console.error(
-                    "Room listener:",
-                    error
-                );
+                console.error(error);
 
             }
         );
 
-}
 
+    if(!chatStarted) {
+
+        chatStarted = true;
+
+        listenToChat();
+
+    }
+
+}
 
 
 /* =========================================================
@@ -2540,7 +1464,6 @@ function updateNames(data) {
         data.players?.p1?.name ||
         "اللاعب 1";
 
-
     const p2 =
         data.players?.p2?.name ||
         "في انتظار اللاعب";
@@ -2552,27 +1475,19 @@ function updateNames(data) {
             : p1;
 
 
-    $("lbl-p1")
-        .innerText =
+    $("lbl-p1").innerText =
         p1;
 
-
-    $("lbl-p2")
-        .innerText =
+    $("lbl-p2").innerText =
         p2;
 
-
-    $("res-p1-name")
-        .innerText =
+    $("res-p1-name").innerText =
         p1;
 
-
-    $("res-p2-name")
-        .innerText =
+    $("res-p2-name").innerText =
         p2;
 
 }
-
 
 
 /* =========================================================
@@ -2583,25 +1498,18 @@ function updateScore(data) {
 
     const scores =
         data.scores || {
-
             p1: 0,
-
             p2: 0
-
         };
 
 
-    $("score-p1")
-        .innerText =
+    $("score-p1").innerText =
         scores.p1 || 0;
 
-
-    $("score-p2")
-        .innerText =
+    $("score-p2").innerText =
         scores.p2 || 0;
 
 }
-
 
 
 /* =========================================================
@@ -2614,13 +1522,11 @@ function updateRound(data) {
         Number(data.round || 1);
 
 
-    $("lbl-round")
-        .innerText =
+    $("lbl-round").innerText =
         "الجولة " +
         currentRound;
 
 }
-
 
 
 /* =========================================================
@@ -2632,7 +1538,6 @@ function handlePlayers(data) {
     const p1Online =
         data.players?.p1?.online;
 
-
     const p2Online =
         data.players?.p2?.online;
 
@@ -2642,20 +1547,15 @@ function handlePlayers(data) {
         p2Online
     ) {
 
-        $("waiting-text")
-            .innerText =
-            "❤️ اللاعب الثاني دخل!";
+        $("waiting-text").innerText =
+            "❤️ اللاعب الثاني دخل! جاري بدء اللعبة...";
 
 
-        if(
-            data.phase === "choosing"
-        ) {
+        setTimeout(() => {
 
-            showScreen(
-                "screen-game"
-            );
+            showScreen("screen-game");
 
-        }
+        }, 200);
 
     }
 
@@ -2665,14 +1565,239 @@ function handlePlayers(data) {
         p1Online
     ) {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
     }
 
 }
 
+
+/* =========================================================
+   HOST PROCESS ROUND
+========================================================= */
+
+async function processRoundAsHost(data) {
+
+    if(data.phase !== "choosing") {
+        return;
+    }
+
+
+    const round =
+        Number(data.round || 1);
+
+
+    const choices =
+        data.choices?.[round];
+
+
+    if(!choices) {
+        return;
+    }
+
+
+    const p1Choice =
+        choices.p1;
+
+    const p2Choice =
+        choices.p2;
+
+
+    if(!p1Choice || !p2Choice) {
+        return;
+    }
+
+
+    const processingRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/rounds/" +
+            round +
+            "/processed"
+        );
+
+
+    const result =
+        await runTransaction(
+            processingRef,
+            value => {
+
+                if(value === true) {
+                    return;
+                }
+
+                return true;
+
+            }
+        );
+
+
+    if(!result.committed) {
+        return;
+    }
+
+
+    let winner = "tie";
+
+
+    if(p1Choice === p2Choice) {
+
+        winner = "tie";
+
+    }
+
+    else if(
+
+        (p1Choice === "حجر" &&
+         p2Choice === "مقص") ||
+
+        (p1Choice === "مقص" &&
+         p2Choice === "ورقة") ||
+
+        (p1Choice === "ورقة" &&
+         p2Choice === "حجر")
+
+    ) {
+
+        winner = "p1";
+
+    }
+
+    else {
+
+        winner = "p2";
+
+    }
+
+
+    const oldScores =
+        data.scores || {
+            p1: 0,
+            p2: 0
+        };
+
+
+    let newP1 =
+        Number(oldScores.p1 || 0);
+
+    let newP2 =
+        Number(oldScores.p2 || 0);
+
+
+    if(winner === "p1") {
+        newP1++;
+    }
+
+    if(winner === "p2") {
+        newP2++;
+    }
+
+
+    /*
+     * التعادل:
+     * لا يوجد سؤال.
+     * النتيجة تظهر ثم ننتظر
+     * ضغط كل لاعب على الجولة التالية.
+     */
+
+    if(winner === "tie") {
+
+        await update(
+
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+
+            {
+
+                phase: "result",
+
+                winner: "tie",
+
+                scores: {
+
+                    p1: newP1,
+
+                    p2: newP2
+
+                },
+
+                resultReady: true,
+
+                nextRound: {
+
+                    p1: false,
+
+                    p2: false
+
+                }
+
+            }
+
+        );
+
+        return;
+    }
+
+
+    /*
+     * لو فيه فائز:
+     * ننتقل للسؤال.
+     */
+
+    await update(
+
+        ref(
+            db,
+            "rooms/" +
+            roomCode
+        ),
+
+        {
+
+            phase: "qa",
+
+            winner: winner,
+
+            scores: {
+
+                p1: newP1,
+
+                p2: newP2
+
+            },
+
+            resultReady: true,
+
+            qa: {
+
+                [round]: {
+
+                    question: "",
+
+                    answer: ""
+
+                }
+
+            },
+
+            nextRound: {
+
+                p1: false,
+
+                p2: false
+
+            }
+
+        }
+
+    );
+
+}
 
 
 /* =========================================================
@@ -2683,284 +1808,104 @@ function handleGameState(data) {
 
     if(!data.players?.p2) {
 
-        showScreen(
-            "screen-waiting"
-        );
+        showScreen("screen-waiting");
 
         return;
 
     }
 
 
-    if(
-        data.phase === "choosing"
-    ) {
+    if(data.phase === "choosing") {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
-
-        renderChoosingState(
-            data
-        );
-
+        resetRoundUI(true);
 
         return;
 
     }
 
 
-    if(
-        data.phase === "result"
-    ) {
+    if(data.phase === "result") {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
+        displayRoundResult(data);
 
-        displayRoundResult(
-            data
-        );
-
+        showNextRoundArea(data);
 
         return;
 
     }
 
 
-    if(
-        data.phase === "qa"
-    ) {
+    if(data.phase === "qa") {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
+        displayRoundResult(data);
 
-        displayRoundResult(
-            data
-        );
-
-
-        setupQAStageFromFirebase(
-            data
-        );
-
+        setupQAStageFromFirebase(data);
 
         return;
 
     }
 
 
-    if(
-        data.phase === "question"
-    ) {
+    if(data.phase === "question") {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
+        displayRoundResult(data);
 
-        displayRoundResult(
-            data
-        );
-
-
-        showQuestionStage(
-            data
-        );
-
+        showQuestionStage(data);
 
         return;
 
     }
 
 
-    if(
-        data.phase === "answer"
-    ) {
+    if(data.phase === "qaDone") {
 
-        showScreen(
-            "screen-game"
-        );
+        showScreen("screen-game");
 
+        displayRoundResult(data);
 
-        displayRoundResult(
-            data
-        );
-
-
-        showAnswerStage(
-            data
-        );
-
-
-        return;
-
-    }
-
-
-    if(
-        data.phase === "qaDone"
-    ) {
-
-        showScreen(
-            "screen-game"
-        );
-
-
-        displayRoundResult(
-            data
-        );
-
-
-        showQAResultFromFirebase(
-            data
-        );
-
+        showQAResultFromFirebase(data);
 
         return;
 
     }
 
 }
-
-
-
-/* =========================================================
-   CHOOSING STATE
-========================================================= */
-
-function renderChoosingState(data) {
-
-    $("result-area")
-        .classList
-        .add("hidden");
-
-
-    $("qa-section")
-        .classList
-        .add("hidden");
-
-
-    $("waiting-choice-area")
-        .classList
-        .add("hidden");
-
-
-    $("disconnect-msg")
-        .classList
-        .add("hidden");
-
-
-    $("choice-area")
-        .classList
-        .remove("hidden");
-
-
-    const roundChoices =
-        data.choices?.[currentRound];
-
-
-    const myExistingChoice =
-        roundChoices?.[myRole];
-
-
-    if(myExistingChoice) {
-
-        myChoice =
-            myExistingChoice;
-
-
-        $("choice-area")
-            .classList
-            .add("hidden");
-
-
-        $("waiting-choice-area")
-            .classList
-            .remove("hidden");
-
-
-        const emojis = {
-
-            "حجر": "🪨",
-
-            "ورقة": "📄",
-
-            "مقص": "✂️"
-
-        };
-
-
-        $("my-choice-display")
-            .innerText =
-            "اختيارك: " +
-            emojis[myExistingChoice] +
-            " " +
-            myExistingChoice;
-
-    }
-    else {
-
-        myChoice =
-            null;
-
-    }
-
-}
-
 
 
 /* =========================================================
    MAKE CHOICE
 ========================================================= */
 
-window.makeChoice =
-async function(move) {
+window.makeChoice = async function(move) {
 
     if(!roomCode) {
-
         return;
-
     }
 
 
-    if(
-        currentRoomData?.phase !==
-        "choosing"
-    ) {
-
+    if(currentRoomData?.phase !== "choosing") {
         return;
-
     }
 
 
-    const round =
-        Number(
-            currentRoomData.round ||
-            1
-        );
+    /*
+     * منع تغيير الاختيار
+     */
 
-
-    const existing =
-        currentRoomData
-            ?.choices
-            ?.[round]
-            ?.[myRole];
-
-
-    if(existing) {
-
+    if(myChoice) {
         return;
-
     }
 
 
-    myChoice =
-        move;
+    myChoice = move;
 
 
     $("choice-area")
@@ -2971,6 +1916,71 @@ async function(move) {
     $("waiting-choice-area")
         .classList
         .remove("hidden");
+
+
+    const choiceRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/choices/" +
+            currentRound +
+            "/" +
+            myRole
+        );
+
+
+    try {
+
+        await set(
+            choiceRef,
+            move
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert(
+            "حصل خطأ أثناء تسجيل اختيارك."
+        );
+
+        myChoice = null;
+
+    }
+
+};
+
+
+/* =========================================================
+   DISPLAY RESULT
+========================================================= */
+
+function displayRoundResult(data) {
+
+    const round =
+        Number(data.round || 1);
+
+
+    const choices =
+        data.choices?.[round];
+
+
+    if(!choices) {
+        return;
+    }
+
+
+    const p1Move =
+        choices.p1;
+
+    const p2Move =
+        choices.p2;
+
+
+    if(!p1Move || !p2Move) {
+        return;
+    }
 
 
     const emojis = {
@@ -2984,406 +1994,23 @@ async function(move) {
     };
 
 
-    $("my-choice-display")
-        .innerText =
-        "اختيارك: " +
-        emojis[move] +
-        " " +
-        move;
-
-
-    const choiceRef =
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/choices/" +
-            round +
-            "/" +
-            myRole
-        );
-
-
-    try {
-
-        await set(
-            choiceRef,
-            move
-        );
-
-
-        /*
-         * اللاعب الأول أو الثاني
-         * مش محتاج يعمل أي حاجة.
-         *
-         * الـ Firebase listener هيلاحظ
-         * إن الاتنين اختاروا ويحسب النتيجة.
-         */
-
-        await tryResolveRound();
-
-    }
-    catch(error) {
-
-        console.error(error);
-
-
-        alert(
-            "حصل خطأ أثناء تسجيل اختيارك."
-        );
-
-
-        $("choice-area")
-            .classList
-            .remove("hidden");
-
-
-        $("waiting-choice-area")
-            .classList
-            .add("hidden");
-
-    }
-
-};
-
-
-
-/* =========================================================
-   RESOLVE ROUND
-   أي لاعب ممكن ينفذها.
-   Transaction تمنع الحساب مرتين.
-========================================================= */
-
-async function tryResolveRound() {
-
-    if(!roomCode) {
-
-        return;
-
-    }
-
-
-    const data =
-        currentRoomData;
-
-
-    if(!data) {
-
-        return;
-
-    }
-
-
-    if(
-        data.phase !==
-        "choosing"
-    ) {
-
-        return;
-
-    }
-
-
-    const round =
-        Number(
-            data.round || 1
-        );
-
-
-    const choices =
-        data.choices?.[round];
-
-
-    if(!choices) {
-
-        return;
-
-    }
-
-
-    const p1Choice =
-        choices.p1;
-
-
-    const p2Choice =
-        choices.p2;
-
-
-    if(
-        !p1Choice ||
-        !p2Choice
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-     * قفل المعالجة للجولة.
-     */
-
-    const processingRef =
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/rounds/" +
-            round +
-            "/processed"
-        );
-
-
-    const transactionResult =
-        await runTransaction(
-            processingRef,
-            value => {
-
-                if(value === true) {
-
-                    return;
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    if(
-        !transactionResult.committed
-    ) {
-
-        return;
-
-    }
-
-
-    let winner =
-        "tie";
-
-
-    if(
-        p1Choice === p2Choice
-    ) {
-
-        winner =
-            "tie";
-
-    }
-    else if(
-
-        (
-            p1Choice === "حجر" &&
-            p2Choice === "مقص"
-        )
-
-        ||
-
-        (
-            p1Choice === "مقص" &&
-            p2Choice === "ورقة"
-        )
-
-        ||
-
-        (
-            p1Choice === "ورقة" &&
-            p2Choice === "حجر"
-        )
-
-    ) {
-
-        winner =
-            "p1";
-
-    }
-    else {
-
-        winner =
-            "p2";
-
-    }
-
-
-    const oldScores =
-        data.scores || {
-
-            p1: 0,
-
-            p2: 0
-
-        };
-
-
-    let newP1 =
-        Number(
-            oldScores.p1 || 0
-        );
-
-
-    let newP2 =
-        Number(
-            oldScores.p2 || 0
-        );
-
-
-    if(
-        winner === "p1"
-    ) {
-
-        newP1++;
-
-    }
-
-
-    if(
-        winner === "p2"
-    ) {
-
-        newP2++;
-
-    }
-
-
-    /*
-     * التعادل:
-     *
-     * phase = result
-     *
-     * وبعدها كل لاعب عنده زر الجولة التالية.
-     *
-     * الفوز:
-     *
-     * phase = qa
-     */
-
-    await update(
-
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
-
-        {
-
-            phase:
-                winner === "tie"
-                    ? "result"
-                    : "qa",
-
-            winner:
-                winner,
-
-            scores: {
-
-                p1:
-                    newP1,
-
-                p2:
-                    newP2
-
-            },
-
-            resultReady:
-                true,
-
-            qa:
-                {},
-
-            "players/p1/nextReady":
-                false,
-
-            "players/p2/nextReady":
-                false
-
-        }
-
-    );
-
-}
-
-
-
-/* =========================================================
-   DISPLAY RESULT
-========================================================= */
-
-function displayRoundResult(data) {
-
-    const round =
-        Number(
-            data.round || 1
-        );
-
-
-    const choices =
-        data.choices?.[round];
-
-
-    if(!choices) {
-
-        return;
-
-    }
-
-
-    const p1Move =
-        choices.p1;
-
-
-    const p2Move =
-        choices.p2;
-
-
-    if(
-        !p1Move ||
-        !p2Move
-    ) {
-
-        return;
-
-    }
-
-
-    const emojis = {
-
-        "حجر":
-            "🪨",
-
-        "ورقة":
-            "📄",
-
-        "مقص":
-            "✂️"
-
-    };
-
-
-    $("res-p1-emoji")
-        .innerText =
+    $("res-p1-emoji").innerText =
         emojis[p1Move];
 
-
-    $("res-p2-emoji")
-        .innerText =
+    $("res-p2-emoji").innerText =
         emojis[p2Move];
 
 
     let text = "";
 
 
-    if(
-        data.winner === "tie"
-    ) {
+    if(data.winner === "tie") {
 
         text =
-            "تعادل! نفس الحركة 😂❤️";
+            "تعادل... نفس الاختيار 😂❤️";
 
     }
+
     else {
 
         const winnerName =
@@ -3399,8 +2026,7 @@ function displayRoundResult(data) {
     }
 
 
-    $("round-winner-text")
-        .innerText =
+    $("round-winner-text").innerText =
         text;
 
 
@@ -3419,74 +2045,27 @@ function displayRoundResult(data) {
         .remove("hidden");
 
 
-    /*
-     * إظهار زر الجولة التالية
-     * فقط في حالة التعادل.
-     */
-
-    if(
-        data.winner === "tie"
-    ) {
-
-        $("tie-next-round-box")
-            .classList
-            .remove("hidden");
-
-
-        updateNextRoundUI(
-            data
-        );
-
-    }
-    else {
-
-        $("tie-next-round-box")
-            .classList
-            .add("hidden");
-
-    }
-
-
-    /*
-     * الكونفيتي يظهر مرة واحدة تقريبًا
-     * لكل جولة على الجهاز.
-     */
-
-    if(
-        lastDisplayedRound !==
-        round
-    ) {
-
-        lastDisplayedRound =
-            round;
-
+    if(data.winner !== "tie") {
 
         try {
 
             confetti({
 
-                particleCount:
-                    80,
+                particleCount: 80,
 
-                spread:
-                    70,
+                spread: 70,
 
                 origin: {
-
-                    y:
-                        .6
-
+                    y: .6
                 }
 
             });
 
-        }
-        catch(e) {}
+        } catch(e) {}
 
     }
 
 }
-
 
 
 /* =========================================================
@@ -3494,6 +2073,10 @@ function displayRoundResult(data) {
 ========================================================= */
 
 function setupQAStageFromFirebase(data) {
+
+    const round =
+        Number(data.round || 1);
+
 
     $("qa-section")
         .classList
@@ -3525,24 +2108,29 @@ function setupQAStageFromFirebase(data) {
         .add("hidden");
 
 
-    if(
-        data.winner === myRole
-    ) {
+    /*
+     * تنظيف الخانات قبل عرض
+     * الجولة الحالية
+     */
 
-        /*
-         * الفائز هو اللي يسأل.
-         */
+    $("winner-question-input").value = "";
+
+    $("loser-answer-input").value = "";
+
+    $("displayed-question").innerText = "";
+
+    $("final-qa-summary").innerText = "";
+
+
+    if(data.winner === myRole) {
 
         $("winner-question-box")
             .classList
             .remove("hidden");
 
     }
-    else {
 
-        /*
-         * الخاسر يستنى السؤال.
-         */
+    else {
 
         $("loser-waiting-box")
             .classList
@@ -3553,23 +2141,14 @@ function setupQAStageFromFirebase(data) {
 }
 
 
-
 /* =========================================================
    SEND QUESTION
 ========================================================= */
 
-window.sendQuestion =
-async function() {
+window.sendQuestion = async function() {
 
-    if(
-        !currentRoomData ||
-        currentRoomData.winner !==
-        myRole
-    ) {
-
-        return;
-
-    }
+    const round =
+        Number(currentRound);
 
 
     let question =
@@ -3581,7 +2160,7 @@ async function() {
     if(!question) {
 
         question =
-            "قول بحبك قد إيه؟ 😂❤️";
+            "قول بحبك قد ايه؟ 😂❤️";
 
     }
 
@@ -3601,22 +2180,41 @@ async function() {
                 phase:
                     "question",
 
-                "qa/question":
-                    question
+                [`qa/${round}`]: {
+
+                    question:
+                        question,
+
+                    answer:
+                        ""
+
+                }
 
             }
 
         );
 
-    }
-    catch(error) {
+
+        /*
+         * مسح خانة السؤال
+         * بعد الإرسال
+         */
+
+        $("winner-question-input")
+            .value = "";
+
+
+    } catch(error) {
 
         console.error(error);
+
+        alert(
+            "حصل خطأ أثناء إرسال السؤال."
+        );
 
     }
 
 };
-
 
 
 /* =========================================================
@@ -3625,25 +2223,40 @@ async function() {
 
 function showQuestionStage(data) {
 
+    const round =
+        Number(data.round || 1);
+
+
+    const qaData =
+        data.qa?.[round] || {};
+
+
+    const question =
+        qaData.question || "";
+
+
     $("qa-section")
         .classList
         .remove("hidden");
 
 
-    const question =
-        data.qa?.question ||
-        "";
-
-
     /*
-     * الفائز ينتظر الإجابة.
+     * الفائز
      */
 
-    if(
-        data.winner === myRole
-    ) {
+    if(data.winner === myRole) {
 
         $("winner-question-box")
+            .classList
+            .add("hidden");
+
+
+        $("loser-waiting-box")
+            .classList
+            .add("hidden");
+
+
+        $("loser-answer-box")
             .classList
             .add("hidden");
 
@@ -3653,19 +2266,18 @@ function showQuestionStage(data) {
             .remove("hidden");
 
 
-        $("loser-answer-box")
-            .classList
-            .add("hidden");
-
-
         return;
-
     }
 
 
     /*
-     * الخاسر يجاوب.
+     * الخاسر
      */
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
 
     $("loser-waiting-box")
         .classList
@@ -3681,26 +2293,27 @@ function showQuestionStage(data) {
         .innerText =
         question;
 
-}
 
+    /*
+     * مهم جدًا:
+     * لا نمسح خانة الإجابة إذا
+     * كان اللاعب كتب فيها بالفعل.
+     *
+     * لكن عند دخول مرحلة جديدة
+     * تكون قد تصفرت.
+     */
+
+}
 
 
 /* =========================================================
    SEND ANSWER
 ========================================================= */
 
-window.sendAnswer =
-async function() {
+window.sendAnswer = async function() {
 
-    if(
-        !currentRoomData ||
-        currentRoomData.winner ===
-        myRole
-    ) {
-
-        return;
-
-    }
+    const round =
+        Number(currentRound);
 
 
     let answer =
@@ -3732,36 +2345,29 @@ async function() {
                 phase:
                     "qaDone",
 
-                "qa/answer":
+                [`qa/${round}/answer`]:
                     answer
 
             }
 
         );
 
-    }
-    catch(error) {
+
+        $("loser-answer-input")
+            .value = "";
+
+
+    } catch(error) {
 
         console.error(error);
+
+        alert(
+            "حصل خطأ أثناء إرسال الإجابة."
+        );
 
     }
 
 };
-
-
-
-/* =========================================================
-   ANSWER STAGE
-========================================================= */
-
-function showAnswerStage(data) {
-
-    showQuestionStage(
-        data
-    );
-
-}
-
 
 
 /* =========================================================
@@ -3769,6 +2375,14 @@ function showAnswerStage(data) {
 ========================================================= */
 
 function showQAResultFromFirebase(data) {
+
+    const round =
+        Number(data.round || 1);
+
+
+    const qaData =
+        data.qa?.[round] || {};
+
 
     $("qa-section")
         .classList
@@ -3802,52 +2416,169 @@ function showQAResultFromFirebase(data) {
 
     $("final-qa-summary")
         .innerText =
-        data.qa?.answer ||
+        qaData.answer ||
         "تم إرسال الإجابة ❤️";
 
 
     /*
-     * تحديث حالة الزرين
+     * إظهار زر الجولة التالية
+     * لكل لاعب بشكل مستقل.
      */
 
-    updateNextRoundUI(
-        data
-    );
+    showNextRoundArea(data);
 
 }
 
 
-
 /* =========================================================
-   NEXT ROUND SYSTEM
+   NEXT ROUND UI
 ========================================================= */
 
-/*
- * دي أهم دالة في النظام الجديد.
- *
- * كل لاعب عنده:
- *
- * players/p1/nextReady
- * players/p2/nextReady
- *
- * وكل واحد يضغط الزر عنده.
- *
- * لما الاثنين يبقوا true:
- * الجولة الجديدة تبدأ.
- */
+function showNextRoundArea(data) {
 
-window.readyForNextRound =
-async function() {
+    /*
+     * في حالة التعادل لا يوجد QA
+     * لذلك نظهر زر الجولة التالية
+     * تحت النتيجة.
+     */
 
-    if(!roomCode) {
+    if(data.winner === "tie") {
 
-        return;
+        $("qa-section")
+            .classList
+            .remove("hidden");
+
+        $("winner-question-box")
+            .classList
+            .add("hidden");
+
+        $("loser-waiting-box")
+            .classList
+            .add("hidden");
+
+        $("loser-answer-box")
+            .classList
+            .add("hidden");
+
+        $("winner-waiting-answer")
+            .classList
+            .add("hidden");
+
+        $("qa-result-display")
+            .classList
+            .remove("hidden");
+
+        $("final-qa-summary")
+            .innerText =
+            "تعادل! اضغط الجولة التالية للعب من جديد ❤️";
+
+    }
+
+
+    const next =
+        data.nextRound || {
+            p1: false,
+            p2: false
+        };
+
+
+    const alreadyPressed =
+        next[myRole] === true;
+
+
+    const button =
+        $("next-round-btn");
+
+
+    if(alreadyPressed) {
+
+        button.disabled = true;
+
+        button.innerText =
+            "✅ تم اختيار الجولة التالية";
+
+        button.style.opacity =
+            ".6";
+
+    }
+
+    else {
+
+        button.disabled = false;
+
+        button.innerText =
+            "الجولة اللي بعدها 🚀";
+
+        button.style.opacity =
+            "1";
 
     }
 
 
     if(
-        !currentRoomData
+        next.p1 &&
+        next.p2
+    ) {
+
+        $("next-round-status")
+            .innerText =
+            "❤️ الاثنين جاهزين! جاري بدء الجولة الجديدة...";
+
+    }
+
+    else if(alreadyPressed) {
+
+        $("next-round-status")
+            .innerText =
+            "⏳ مستني الطرف التاني يضغط الجولة التالية...";
+
+    }
+
+    else {
+
+        $("next-round-status")
+            .innerText =
+            "كل لاعب يضغط على زر الجولة التالية من عنده ❤️";
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAYER PRESSES NEXT ROUND
+========================================================= */
+
+window.startNextRoundFromQA =
+async function() {
+
+    if(!roomCode || !myRole) {
+        return;
+    }
+
+
+    if(nextRoundPressed) {
+        return;
+    }
+
+
+    const current =
+        currentRoomData;
+
+
+    if(!current) {
+        return;
+    }
+
+
+    /*
+     * لازم نكون في result
+     * أو qaDone.
+     */
+
+    if(
+        current.phase !== "result" &&
+        current.phase !== "qaDone"
     ) {
 
         return;
@@ -3855,430 +2586,153 @@ async function() {
     }
 
 
-    /*
-     * مسموح بالانتقال فقط
-     * بعد التعادل أو بعد السؤال.
-     */
-
-    const allowed =
-        currentRoomData.phase ===
-            "result"
-
-        ||
-
-        currentRoomData.phase ===
-            "qaDone";
+    nextRoundPressed = true;
 
 
-    if(!allowed) {
+    try {
 
-        return;
+        /*
+         * كل لاعب يكتب جاهزيته
+         * في مكان مستقل.
+         */
 
-    }
+        await update(
+
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/nextRound"
+            ),
+
+            {
+
+                [myRole]: true
+
+            }
+
+        );
 
 
-    /*
-     * لو ضغط بالفعل
-     * ممنوع يضغط مرة ثانية.
-     */
+    } catch(error) {
 
-    const alreadyReady =
-        currentRoomData
-            .players
-            ?.[myRole]
-            ?.nextReady === true;
+        console.error(error);
 
-
-    if(alreadyReady) {
+        nextRoundPressed = false;
 
         return;
 
     }
-
-
-    /*
-     * سجل إن اللاعب الحالي
-     * جاهز للجولة الجديدة.
-     */
-
-    await update(
-
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/players/" +
-            myRole
-        ),
-
-        {
-
-            nextReady:
-                true
-
-        }
-
-    );
-
-
-    /*
-     * بعد التسجيل نحاول
-     * تشغيل الجولة.
-     */
-
-    setTimeout(
-        tryStartNextRound,
-        100
-    );
 
 };
 
 
-
 /* =========================================================
-   UPDATE NEXT ROUND UI
+   CHECK BOTH PLAYERS READY
 ========================================================= */
 
-function updateNextRoundUI(data) {
-
-    const p1Ready =
-        data.players
-            ?.p1
-            ?.nextReady === true;
+let startingNextRound = false;
 
 
-    const p2Ready =
-        data.players
-            ?.p2
-            ?.nextReady === true;
+async function checkNextRound(data) {
 
+    if(data.phase !== "result" &&
+       data.phase !== "qaDone") {
 
-    const meReady =
-        data.players
-            ?.[myRole]
-            ?.nextReady === true;
-
-
-    /*
-     * تعادل
-     */
-
-    const tieBadge =
-        $("tie-ready-badge");
-
-
-    const tieButton =
-        $("tie-next-btn");
-
-
-    const tieStatus =
-        $("tie-next-status");
-
-
-    if(tieBadge) {
-
-        if(meReady) {
-
-            tieBadge
-                .className =
-                "ready-badge";
-
-            tieBadge
-                .innerText =
-                "✅ أنت جاهز";
-
-        }
-        else {
-
-            tieBadge
-                .className =
-                "waiting-badge";
-
-            tieBadge
-                .innerText =
-                "⏳ لم تضغط بعد";
-
-        }
-
+        return;
     }
 
 
-    if(tieButton) {
-
-        tieButton.disabled =
-            meReady;
-
-        tieButton.innerText =
-            meReady
-                ? "✅ تم الاستعداد"
-                : "الجولة التالية 🚀";
-
-    }
+    const next =
+        data.nextRound || {};
 
 
-    if(tieStatus) {
+    if(
+        next.p1 === true &&
+        next.p2 === true
+    ) {
+
+        /*
+         * اللاعب الأول فقط
+         * ينفذ الانتقال فعليًا.
+         */
 
         if(
-            p1Ready &&
-            p2Ready
+            myRole === "p1" &&
+            !startingNextRound
         ) {
 
-            tieStatus.innerText =
-                "🚀 الاثنين جاهزين... جاري بدء الجولة!";
+            startingNextRound = true;
 
-        }
-        else if(
-            p1Ready &&
-            !p2Ready
-        ) {
+            await startNextRoundHost();
 
-            tieStatus.innerText =
-                "اللاعب الأول جاهز ⏳ في انتظار اللاعب الثاني";
-
-        }
-        else if(
-            !p1Ready &&
-            p2Ready
-        ) {
-
-            tieStatus.innerText =
-                "اللاعب الثاني جاهز ⏳ في انتظار اللاعب الأول";
-
-        }
-        else {
-
-            tieStatus.innerText =
-                "كل لاعب يضغط على الزر عنده.";
-
-        }
-
-    }
-
-
-    /*
-     * سؤال وإجابة
-     */
-
-    const qaBadge =
-        $("qa-ready-badge");
-
-
-    const qaButton =
-        $("qa-next-btn");
-
-
-    const qaStatus =
-        $("qa-next-status");
-
-
-    if(qaBadge) {
-
-        if(meReady) {
-
-            qaBadge
-                .className =
-                "ready-badge";
-
-            qaBadge
-                .innerText =
-                "✅ أنت جاهز";
-
-        }
-        else {
-
-            qaBadge
-                .className =
-                "waiting-badge";
-
-            qaBadge
-                .innerText =
-                "⏳ لم تضغط بعد";
-
-        }
-
-    }
-
-
-    if(qaButton) {
-
-        qaButton.disabled =
-            meReady;
-
-        qaButton.innerText =
-            meReady
-                ? "✅ تم الاستعداد"
-                : "الجولة التالية 🚀";
-
-    }
-
-
-    if(qaStatus) {
-
-        if(
-            p1Ready &&
-            p2Ready
-        ) {
-
-            qaStatus.innerText =
-                "🚀 الاثنين جاهزين... جاري بدء الجولة!";
-
-        }
-        else if(
-            p1Ready &&
-            !p2Ready
-        ) {
-
-            qaStatus.innerText =
-                "اللاعب الأول جاهز ⏳ في انتظار اللاعب الثاني";
-
-        }
-        else if(
-            !p1Ready &&
-            p2Ready
-        ) {
-
-            qaStatus.innerText =
-                "اللاعب الثاني جاهز ⏳ في انتظار اللاعب الأول";
-
-        }
-        else {
-
-            qaStatus.innerText =
-                "كل لاعب يضغط على الزر عنده.";
+            startingNextRound = false;
 
         }
 
     }
 
 }
-
 
 
 /* =========================================================
    START NEXT ROUND
 ========================================================= */
 
-async function tryStartNextRound() {
+async function startNextRoundHost() {
 
-    if(!roomCode) {
-
+    if(myRole !== "p1") {
         return;
-
-    }
-
-
-    const data =
-        currentRoomData;
-
-
-    if(!data) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        data.phase ===
-            "result"
-
-        ||
-
-        data.phase ===
-            "qaDone";
-
-
-    if(!allowed) {
-
-        return;
-
-    }
-
-
-    const p1Ready =
-        data.players
-            ?.p1
-            ?.nextReady === true;
-
-
-    const p2Ready =
-        data.players
-            ?.p2
-            ?.nextReady === true;
-
-
-    /*
-     * لازم الاثنين يضغطوا.
-     */
-
-    if(
-        !p1Ready ||
-        !p2Ready
-    ) {
-
-        return;
-
-    }
-
-
-    const oldRound =
-        Number(
-            data.round || 1
-        );
-
-
-    /*
-     * Transaction لقفل بداية الجولة.
-     *
-     * لو جهازين حاولوا يبدأوا في نفس
-     * الوقت، واحد فقط يأخذ القفل.
-     */
-
-    const startLockRef =
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/rounds/" +
-            oldRound +
-            "/nextRoundStarted"
-        );
-
-
-    const lockResult =
-        await runTransaction(
-            startLockRef,
-            value => {
-
-                if(value === true) {
-
-                    return;
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    if(
-        !lockResult.committed
-    ) {
-
-        return;
-
     }
 
 
     const nextRound =
-        oldRound + 1;
+        Number(currentRound) + 1;
 
 
     /*
-     * بدء الجولة الجديدة.
+     * إنشاء QA جديد للجولة الجديدة
+     * بدون أي سؤال أو إجابة قديمة.
      */
+
+    const updates = {
+
+        round:
+            nextRound,
+
+        phase:
+            "choosing",
+
+        winner:
+            null,
+
+        resultReady:
+            false,
+
+        nextRound: {
+
+            p1: false,
+
+            p2: false
+
+        },
+
+        [`rounds/${nextRound}`]: {
+
+            processed: false
+
+        },
+
+        [`qa/${nextRound}`]: {
+
+            question: "",
+
+            answer: ""
+
+        }
+
+    };
+
 
     await update(
 
@@ -4288,87 +2742,156 @@ async function tryStartNextRound() {
             roomCode
         ),
 
-        {
-
-            round:
-                nextRound,
-
-            phase:
-                "choosing",
-
-            winner:
-                null,
-
-            resultReady:
-                false,
-
-            qa:
-                {},
-
-            "players/p1/nextReady":
-                false,
-
-            "players/p2/nextReady":
-                false
-
-        }
+        updates
 
     );
 
 
     /*
-     * واجهة كل لاعب
-     * ستتحدث تلقائيًا من Firebase.
+     * مهم:
+     * كل لاعب عنده متغير محلي مستقل.
      */
+
+    nextRoundPressed = false;
+
+    myChoice = null;
+
+
+    /*
+     * تنظيف الواجهة فورًا.
+     */
+
+    resetRoundUI(true);
 
 }
 
 
-
 /* =========================================================
-   OPTIONAL SAFETY:
-   محاولة حساب الجولة عند وصول
-   تحديث جديد من Firebase.
+   RESET ROUND UI
 ========================================================= */
 
-setInterval(
-    () => {
+function resetRoundUI(showChoice = true) {
 
-        if(
-            roomCode &&
-            currentRoomData
-        ) {
+    myChoice = null;
 
-            if(
-                currentRoomData.phase ===
-                "choosing"
-            ) {
-
-                tryResolveRound();
-
-            }
+    nextRoundPressed = false;
 
 
-            if(
-                currentRoomData.phase ===
-                    "result"
+    /*
+     * إخفاء النتيجة
+     */
 
-                ||
+    $("result-area")
+        .classList
+        .add("hidden");
 
-                currentRoomData.phase ===
-                    "qaDone"
-            ) {
 
-                tryStartNextRound();
+    $("qa-section")
+        .classList
+        .add("hidden");
 
-            }
 
-        }
+    $("waiting-choice-area")
+        .classList
+        .add("hidden");
 
-    },
-    700
-);
 
+    $("disconnect-msg")
+        .classList
+        .add("hidden");
+
+
+    /*
+     * الاختيارات
+     */
+
+    if(showChoice) {
+
+        $("choice-area")
+            .classList
+            .remove("hidden");
+
+    }
+
+    else {
+
+        $("choice-area")
+            .classList
+            .add("hidden");
+
+    }
+
+
+    /*
+     * تنظيف السؤال والإجابة
+     */
+
+    $("winner-question-input")
+        .value = "";
+
+
+    $("loser-answer-input")
+        .value = "";
+
+
+    $("displayed-question")
+        .innerText = "";
+
+
+    $("final-qa-summary")
+        .innerText = "";
+
+
+    /*
+     * إخفاء مراحل السؤال
+     */
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
+
+
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+
+    $("qa-result-display")
+        .classList
+        .add("hidden");
+
+
+    /*
+     * إعادة زر الجولة التالية
+     */
+
+    const button =
+        $("next-round-btn");
+
+
+    if(button) {
+
+        button.disabled = false;
+
+        button.innerText =
+            "الجولة اللي بعدها 🚀";
+
+        button.style.opacity =
+            "1";
+
+    }
+
+}
 
 
 /* =========================================================
@@ -4383,23 +2906,17 @@ function() {
 
 
     menu.style.display =
-        menu.style.display ===
-        "block"
-
+        menu.style.display === "block"
             ? "none"
-
             : "block";
 
 };
 
 
-
 window.sendQuickChat =
 async function(text) {
 
-    $("chatMenu")
-        .style
-        .display =
+    $("chatMenu").style.display =
         "none";
 
 
@@ -4411,9 +2928,7 @@ async function(text) {
 
 
     if(!roomCode) {
-
         return;
-
     }
 
 
@@ -4423,11 +2938,7 @@ async function(text) {
             "rooms/" +
             roomCode +
             "/chat/" +
-            Date.now() +
-            "_" +
-            Math.random()
-                .toString(36)
-                .slice(2)
+            Date.now()
         );
 
 
@@ -4452,18 +2963,13 @@ async function(text) {
             }
         );
 
-    }
-    catch(error) {
+    } catch(error) {
 
-        console.error(
-            "Chat:",
-            error
-        );
+        console.error(error);
 
     }
 
 };
-
 
 
 /* =========================================================
@@ -4473,19 +2979,7 @@ async function(text) {
 function listenToChat() {
 
     if(!roomCode) {
-
         return;
-
-    }
-
-
-    if(chatListener) {
-
-        chatListener();
-
-        chatListener =
-            null;
-
     }
 
 
@@ -4498,84 +2992,65 @@ function listenToChat() {
         );
 
 
-    chatListener =
-        onValue(
-            chatRef,
-            snapshot => {
+    onValue(
+        chatRef,
+        snapshot => {
 
-                const data =
-                    snapshot.val();
-
-
-                if(!data) {
-
-                    return;
-
-                }
+            const data =
+                snapshot.val();
 
 
-                const messages =
-                    Object
-                        .values(data)
-                        .sort(
-                            (a,b) =>
-                                Number(
-                                    a.time || 0
-                                )
-                                -
-                                Number(
-                                    b.time || 0
-                                )
-                        );
+            if(!data) {
+                return;
+            }
 
 
-                if(
-                    messages.length === 0
-                ) {
-
-                    return;
-
-                }
+            const messages =
+                Object.values(data);
 
 
-                const last =
-                    messages[
-                        messages.length - 1
-                    ];
+            if(messages.length === 0) {
+                return;
+            }
 
 
-                if(
-                    last.sender !==
-                    myRole
-                ) {
+            messages.sort(
+                (a,b) =>
+                    (a.time || 0) -
+                    (b.time || 0)
+            );
 
-                    showFloatingChat(
 
-                        (
-                            last.name ||
-                            opponentName ||
-                            "الطرف الآخر"
-                        )
+            const last =
+                messages[messages.length - 1];
 
-                        +
 
-                        ": " +
+            if(
+                last.sender !== myRole
+            ) {
 
-                        last.text
+                showFloatingChat(
 
-                    );
+                    (last.name ||
+                     opponentName ||
+                     "الطرف الآخر") +
 
-                }
+                    ": " +
+
+                    last.text
+
+                );
 
             }
-        );
+
+        }
+    );
 
 }
 
 
-
 /* =========================================================
-   FLOATING CHAT
+   FLOAT CHAT
 ========================================================= */
 
 function showFloatingChat(msg) {
@@ -4587,16 +3062,12 @@ function showFloatingChat(msg) {
 
 
     if(existing) {
-
         existing.remove();
-
     }
 
 
     const pop =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     pop.className =
@@ -4607,8 +3078,7 @@ function showFloatingChat(msg) {
         msg;
 
 
-    document.body
-        .appendChild(pop);
+    document.body.appendChild(pop);
 
 
     setTimeout(
@@ -4625,7 +3095,6 @@ function showFloatingChat(msg) {
     );
 
 }
-
 
 
 /* =========================================================
@@ -4658,13 +3127,7 @@ function handleDisconnect() {
         .classList
         .remove("hidden");
 
-
-    showScreen(
-        "screen-game"
-    );
-
 }
-
 
 
 /* =========================================================
@@ -4674,23 +3137,9 @@ function handleDisconnect() {
 window.leaveGame =
 async function() {
 
-    if(isLeaving) {
-
-        return;
-
-    }
-
-
-    isLeaving =
-        true;
-
-
     try {
 
-        if(
-            roomCode &&
-            myRole
-        ) {
+        if(roomCode && myRole) {
 
             await update(
 
@@ -4704,11 +3153,7 @@ async function() {
 
                 {
 
-                    online:
-                        false,
-
-                    nextReady:
-                        false
+                    online: false
 
                 }
 
@@ -4716,12 +3161,9 @@ async function() {
 
         }
 
-    }
-    catch(error) {
+    } catch(error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
     }
 
@@ -4729,7 +3171,6 @@ async function() {
     location.reload();
 
 };
-
 
 
 /* =========================================================
@@ -4747,15 +3188,14 @@ onValue(
     connectedRef,
     snapshot => {
 
-        if(
-            snapshot.val() === true
-        ) {
+        if(snapshot.val() === true) {
 
             console.log(
                 "Firebase Connected"
             );
 
         }
+
         else {
 
             console.log(
@@ -4767,10 +3207,7 @@ onValue(
     }
 );
 
-
 </script>
 
-
 </body>
-
 </html>
