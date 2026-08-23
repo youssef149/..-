@@ -584,13 +584,11 @@
 </div>
 
 <!-- ========================================================= -->
-<!-- FIREBASE -->
+<!-- FIREBASE SCRIPT FIXED & COMPLETED -->
 <!-- ========================================================= -->
-
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, get, update, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
@@ -606,15 +604,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let myRole = "";
+let myRole = ""; // "p1" or "p2"
 let myName = "";
-let opponentName = "";
 let roomCode = "";
-let roomListener = null;
-let currentRoomData = null;
+let roomRef = null;
 let myChoice = null;
-let currentRound = 1;
-let roundAlreadyDisplayed = false;
 
 const $ = id => document.getElementById(id);
 
@@ -623,520 +617,272 @@ window.showScreen = function(id) {
     $(id).classList.add("active");
 };
 
-function generateRoomCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-window.createRoom = async function() {
-    myName = $("create-name").value.trim() || "اللاعب 1";
-    myRole = "p1";
-    $("code-display").innerText = "جاري الإنشاء...";
-    showScreen("screen-waiting");
-
-    let attempts = 0;
-    while(attempts < 10) {
-        attempts++;
-        const code = generateRoomCode();
-        const roomRef = ref(db, "rooms/" + code);
-        try {
-            const snapshot = await get(roomRef);
-            if(snapshot.exists()) continue;
-            roomCode = code;
-            await set(roomRef, {
-                createdAt: Date.now(),
-                status: "waiting",
-                round: 1,
-                phase: "choosing",
-                scores: { p1: 0, p2: 0 },
-                players: { p1: { name: myName, online: true } },
-                choices: {},
-                qa: {}
-            });
-
-            $("code-display").innerText = roomCode;
-            const myConnectionRef = ref(db, "rooms/" + roomCode + "/players/p1/online");
-            onDisconnect(myConnectionRef).set(false);
-            listenToRoom();
-            return;
-        } catch(error) {
-            console.error(error);
-            alert("حصل خطأ في إنشاء الغرفة.");
-            showScreen("screen-home");
-            return;
-        }
-    }
-    alert("لم نستطع إنشاء غرفة، حاول مرة أخرى.");
-};
-
-window.joinRoom = async function() {
-    myName = $("join-name").value.trim() || "اللاعب 2";
-    roomCode = $("join-code").value.trim();
-    $("join-error").innerText = "";
-
-    if(!roomCode) {
-        $("join-error").innerText = "❌ اكتب كود الغرفة الأول!";
-        return;
-    }
-
-    try {
-        const roomRef = ref(db, "rooms/" + roomCode);
-        const snapshot = await get(roomRef);
-
-        if(!snapshot.exists()) {
-            $("join-error").innerText = "❌ الغرفة غير موجودة.";
-            return;
-        }
-
-        const room = snapshot.val();
-        if(room.players && room.players.p2 && room.players.p2.online) {
-            $("join-error").innerText = "❌ الغرفة ممتلئة بالفعل.";
-            return;
-        }
-
-        const playersRef = ref(db, "rooms/" + roomCode + "/players");
-        const transactionResult = await runTransaction(playersRef, players => {
-            if(players === null) {
-                return { p2: { name: myName, online: true } };
-            }
-            if(players.p2 && players.p2.online) return;
-            players.p2 = { name: myName, online: true };
-            return players;
-        });
-
-        if(!transactionResult.committed) {
-            $("join-error").innerText = "❌ الغرفة ممتلئة.";
-            return;
-        }
-
-        myRole = "p2";
-        await update(roomRef, { status: "playing" });
-
-        const myConnectionRef = ref(db, "rooms/" + roomCode + "/players/p2/online");
-        onDisconnect(myConnectionRef).set(false);
-
-        listenToRoom();
-        showScreen("screen-game");
-    } catch(error) {
-        console.error(error);
-        $("join-error").innerText = "❌ حصل خطأ في الاتصال بقاعدة البيانات.";
-    }
-};
-
-function listenToRoom() {
-    if(roomListener) roomListener();
-
-    const roomRef = ref(db, "rooms/" + roomCode);
-    roomListener = onValue(roomRef, snapshot => {
-        if(!snapshot.exists()) {
-            handleDisconnect();
-            return;
-        }
-
-        const data = snapshot.val();
-        currentRoomData = data;
-
-        updateNames(data);
-        updateScore(data);
-        updateRound(data);
-        handlePlayers(data);
-        handleGameState(data);
-
-        if(myRole === "p1") {
-            processRoundAsHost(data);
-        }
-    }, error => {
-        console.error(error);
-    });
-}
-
-function updateNames(data) {
-    const p1 = data.players?.p1?.name || "اللاعب 1";
-    const p2 = data.players?.p2?.name || "في انتظار اللاعب";
-
-    opponentName = myRole === "p1" ? p2 : p1;
-
-    $("lbl-p1").innerText = p1;
-    $("lbl-p2").innerText = p2;
-    $("res-p1-name").innerText = p1;
-    $("res-p2-name").innerText = p2;
-}
-
-function updateScore(data) {
-    const scores = data.scores || { p1: 0, p2: 0 };
-    $("score-p1").innerText = scores.p1 || 0;
-    $("score-p2").innerText = scores.p2 || 0;
-}
-
-function updateRound(data) {
-    currentRound = data.round || 1;
-    $("lbl-round").innerText = "الجولة " + currentRound;
-}
-
-function handlePlayers(data) {
-    const p1Online = data.players?.p1?.online;
-    const p2Online = data.players?.p2?.online;
-
-    if(myRole === "p1" && p2Online) {
-        $("waiting-text").innerText = "❤️ اللاعب الثاني دخل! جاري بدء اللعبة...";
-        setTimeout(() => { showScreen("screen-game"); }, 300);
-    }
-    if(myRole === "p2" && p1Online) {
-        showScreen("screen-game");
-    }
-}
-
-async function processRoundAsHost(data) {
-    if(data.phase !== "choosing") return;
-
-    const choices = data.choices?.[currentRound];
-    if(!choices) return;
-
-    const p1Choice = choices.p1;
-    const p2Choice = choices.p2;
-    if(!p1Choice || !p2Choice) return;
-
-    const processingRef = ref(db, "rooms/" + roomCode + "/rounds/" + currentRound + "/processed");
-    const result = await runTransaction(processingRef, value => {
-        if(value === true) return;
-        return true;
-    });
-
-    if(!result.committed) return;
-
-    let winner = "tie";
-    if(p1Choice === p2Choice) {
-        winner = "tie";
-    } else if(
-        (p1Choice === "حجر" && p2Choice === "مقص") ||
-        (p1Choice === "مقص" && p2Choice === "ورقة") ||
-        (p1Choice === "ورقة" && p2Choice === "حجر")
-    ) {
-        winner = "p1";
-    } else {
-        winner = "p2";
-    }
-
-    const oldScores = data.scores || { p1: 0, p2: 0 };
-    let newP1 = Number(oldScores.p1 || 0);
-    let newP2 = Number(oldScores.p2 || 0);
-
-    if(winner === "p1") newP1++;
-    if(winner === "p2") newP2++;
-
-    await update(ref(db, "rooms/" + roomCode), {
-        phase: winner === "tie" ? "result" : "qa",
-        winner: winner,
-        scores: { p1: newP1, p2: newP2 },
-        resultReady: true
-    });
-
-    if(winner === "tie") {
-        setTimeout(() => { startNextRoundHost(); }, 2200);
-    }
-}
-
-async function startNextRoundHost() {
-    const nextRound = currentRound + 1;
-    try {
-        await update(ref(db, "rooms/" + roomCode), {
-            round: nextRound,
-            phase: "choosing",
-            winner: null,
-            resultReady: false,
-            qa: {},
-            [`rounds/${nextRound}`]: { processed: false }
-        });
-        resetRoundUI(true);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function handleGameState(data) {
-    if(!data.players?.p2) {
-        showScreen("screen-waiting");
-        return;
-    }
-    if(data.phase === "choosing") {
-        showScreen("screen-game");
-        resetRoundUI(false);
-        return;
-    }
-    if(data.phase === "result") {
-        showScreen("screen-game");
-        displayRoundResult(data);
-        return;
-    }
-    if(data.phase === "qa") {
-        showScreen("screen-game");
-        displayRoundResult(data);
-        setupQAStageFromFirebase(data);
-        return;
-    }
-    if(data.phase === "question") {
-        showScreen("screen-game");
-        displayRoundResult(data);
-        showQuestionStage(data);
-        return;
-    }
-    if(data.phase === "answer") {
-        showScreen("screen-game");
-        displayRoundResult(data);
-        showAnswerStage(data);
-        return;
-    }
-    if(data.phase === "qaDone") {
-        showScreen("screen-game");
-        displayRoundResult(data);
-        showQAResultFromFirebase(data);
-    }
-}
-
-window.makeChoice = async function(move) {
-    if(!roomCode) return;
-    if(currentRoomData?.phase !== "choosing") return;
-
-    myChoice = move;
-    $("choice-area").classList.add("hidden");
-    $("waiting-choice-area").classList.remove("hidden");
-
-    const choiceRef = ref(db, "rooms/" + roomCode + "/choices/" + currentRound + "/" + myRole);
-    try {
-        await set(choiceRef, move);
-    } catch(error) {
-        console.error(error);
-        alert("حصل خطأ أثناء تسجيل اختيارك.");
-    }
-};
-
-function displayRoundResult(data) {
-    const choices = data.choices?.[data.round];
-    if(!choices) return;
-
-    const p1Move = choices.p1;
-    const p2Move = choices.p2;
-    if(!p1Move || !p2Move) return;
-
-    const emojis = { "حجر": "🪨", "ورقة": "📄", "مقص": "✂️" };
-
-    $("res-p1-emoji").innerText = emojis[p1Move];
-    $("res-p2-emoji").innerText = emojis[p2Move];
-
-    let text = "";
-    if(data.winner === "tie") {
-        text = "تعادل... محدش عايز يزعل التاني 😂❤️";
-    } else {
-        const winnerName = data.winner === "p1" ? data.players.p1.name : data.players.p2.name;
-        text = winnerName + " كسب الجولة! 🎉";
-    }
-
-    $("round-winner-text").innerText = text;
-    $("choice-area").classList.add("hidden");
-    $("waiting-choice-area").classList.add("hidden");
-    $("result-area").classList.remove("hidden");
-
-    if(data.winner !== "tie") {
-        try {
-            confetti({ particleCount: 80, spread: 70, origin: { y: .6 } });
-        } catch(e) {}
-    }
-}
-
-function setupQAStageFromFirebase(data) {
-    $("qa-section").classList.remove("hidden");
-    $("winner-question-box").classList.add("hidden");
-    $("loser-waiting-box").classList.add("hidden");
-    $("loser-answer-box").classList.add("hidden");
-    $("winner-waiting-answer").classList.add("hidden");
-    $("qa-result-display").classList.add("hidden");
-
-    if(data.winner === myRole) {
-        $("winner-question-box").classList.remove("hidden");
-    } else {
-        $("loser-waiting-box").classList.remove("hidden");
-    }
-}
-
-window.sendQuestion = async function() {
-    let question = $("winner-question-input").value.trim();
-    if(!question) {
-        question = "قول بحبك قد ايه؟ 😂❤️";
-    }
-    await update(ref(db, "rooms/" + roomCode), {
-        phase: "question",
-        "qa/question": question
-    });
-};
-
-function showQuestionStage(data) {
-    $("qa-section").classList.remove("hidden");
-    const question = data.qa?.question || "";
-
-    if(data.winner === myRole) {
-        $("winner-question-box").classList.add("hidden");
-        $("winner-waiting-answer").classList.remove("hidden");
-        return;
-    }
-
-    $("loser-waiting-box").classList.add("hidden");
-    $("loser-answer-box").classList.remove("hidden");
-    $("displayed-question").innerText = question;
-    $("loser-answer-input").value = "";
-}
-
-window.sendAnswer = async function() {
-    let answer = $("loser-answer-input").value.trim();
-    if(!answer) {
-        answer = "ماشي خلاص 😂❤️";
-    }
-    await update(ref(db, "rooms/" + roomCode), {
-        phase: "qaDone",
-        "qa/answer": answer
-    });
-};
-
-function showAnswerStage(data) {
-    showQuestionStage(data);
-}
-
-function showQAResultFromFirebase(data) {
-    $("qa-section").classList.remove("hidden");
-    $("winner-question-box").classList.add("hidden");
-    $("loser-waiting-box").classList.add("hidden");
-    $("loser-answer-box").classList.add("hidden");
-    $("winner-waiting-answer").classList.add("hidden");
-    $("qa-result-display").classList.remove("hidden");
-
-    $("final-qa-summary").innerText = data.qa?.answer || "تم إرسال الإجابة ❤️";
-}
-
-// التعديل الرئيسي هنا: السماح بانتقال الجولة لكل من اللاعب الأول أو الثاني
-window.startNextRoundFromQA = async function() {
-    if (myRole === "p1") {
-        await startNextRoundHost();
-    } else {
-        try {
-            const nextRound = currentRound + 1;
-            await update(ref(db, "rooms/" + roomCode), {
-                round: nextRound,
-                phase: "choosing",
-                winner: null,
-                resultReady: false,
-                qa: {},
-                [`rounds/${nextRound}`]: { processed: false }
-            });
-            resetRoundUI(true);
-        } catch (error) {
-            console.error(error);
-            showFloatingChat("حدث خطأ، حاول مرة أخرى ❤️");
-        }
-    }
-};
-
-function resetRoundUI(showChoice = true) {
-    myChoice = null;
-    roundAlreadyDisplayed = false;
-    $("result-area").classList.add("hidden");
-    $("qa-section").classList.add("hidden");
-    $("waiting-choice-area").classList.add("hidden");
-
-    if(showChoice) {
-        $("choice-area").classList.remove("hidden");
-    }
-
-    $("winner-question-box").classList.add("hidden");
-    $("loser-waiting-box").classList.add("hidden");
-    $("loser-answer-box").classList.add("hidden");
-    $("winner-waiting-answer").classList.add("hidden");
-    $("qa-result-display").classList.add("hidden");
-}
-
 window.toggleChatMenu = function() {
     const menu = $("chatMenu");
     menu.style.display = menu.style.display === "block" ? "none" : "block";
 };
 
-window.sendQuickChat = async function(text) {
+window.sendQuickChat = function(msg) {
+    if (!roomRef) return;
+    update(roomRef, { lastChat: `${myName}: ${msg}`, chatTime: Date.now() });
     $("chatMenu").style.display = "none";
-    showFloatingChat(myName + ": " + text);
-
-    const chatRef = ref(db, "rooms/" + roomCode + "/chat/" + Date.now());
-    try {
-        await set(chatRef, {
-            sender: myRole,
-            name: myName,
-            text: text,
-            time: Date.now()
-        });
-    } catch(error) {
-        console.error(error);
-    }
 };
 
-function listenToChat() {
-    const chatRef = ref(db, "rooms/" + roomCode + "/chat");
-    onValue(chatRef, snapshot => {
+function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.className = "floating-chat-popup";
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2800);
+}
+
+function resetGameUI() {
+    $("choice-area").classList.remove("hidden");
+    $("waiting-choice-area").classList.add("hidden");
+    $("result-area").classList.add("hidden");
+    $("qa-section").classList.add("hidden");
+    
+    $("winner-question-box").classList.add("hidden");
+    $("loser-waiting-box").classList.add("hidden");
+    $("loser-answer-box").classList.add("hidden");
+    $("winner-waiting-answer").classList.add("hidden");
+    $("qa-result-display").classList.add("hidden");
+
+    $("winner-question-input").value = "";
+    $("loser-answer-input").value = "";
+    
+    myChoice = null;
+}
+
+window.createRoom = async function() {
+    myName = $("create-name").value.trim() || "اللاعب 1";
+    myRole = "p1";
+    roomCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    $("code-display").innerText = roomCode;
+    showScreen("screen-waiting");
+
+    roomRef = ref(db, "rooms/" + roomCode);
+    
+    await set(roomRef, {
+        p1Name: myName,
+        p2Name: "في الانتظار...",
+        p1Score: 0,
+        p2Score: 0,
+        round: 1,
+        status: "waiting",
+        p1Choice: null,
+        p2Choice: null,
+        question: null,
+        answer: null,
+        lastChat: null
+    });
+
+    onDisconnect(roomRef).remove();
+    listenToRoom();
+};
+
+window.joinRoom = async function() {
+    const code = $("join-code").value.trim().toUpperCase();
+    myName = $("join-name").value.trim() || "اللاعب 2";
+    $("join-error").innerText = "";
+
+    if (!code) {
+        $("join-error").innerText = "برجاء أدخل كود الغرفة";
+        return;
+    }
+
+    roomRef = ref(db, "rooms/" + code);
+    const snapshot = await get(roomRef);
+
+    if (!snapshot.exists()) {
+        $("join-error").innerText = "الكود غير صحيح!";
+        return;
+    }
+
+    const data = snapshot.val();
+    if (data.status !== "waiting") {
+        $("join-error").innerText = "الغرفة ممتلئة أو بدأت بالفعل!";
+        return;
+    }
+
+    myRole = "p2";
+    roomCode = code;
+
+    await update(roomRef, {
+        p2Name: myName,
+        status: "playing"
+    });
+
+    onDisconnect(roomRef).update({ status: "disconnected" });
+    listenToRoom();
+};
+
+function listenToRoom() {
+    onValue(roomRef, (snapshot) => {
         const data = snapshot.val();
-        if(!data) return;
-        const messages = Object.values(data);
-        if(messages.length === 0) return;
-        const last = messages[messages.length - 1];
-        if(last.sender !== myRole) {
-            showFloatingChat((last.name || opponentName || "الطرف الآخر") + ": " + last.text);
+        if (!data) return;
+
+        if (data.status === "disconnected") {
+            $("disconnect-msg").classList.remove("hidden");
+            return;
+        }
+
+        if (data.status === "playing") {
+            showScreen("screen-game");
+            $("lbl-p1").innerText = data.p1Name;
+            $("lbl-p2").innerText = data.p2Name;
+            $("score-p1").innerText = data.p1Score;
+            $("score-p2").innerText = data.p2Score;
+            $("lbl-round").innerText = "الجولة " + data.round;
+
+            if (data.lastChat && data.chatTime !== window.lastChatTime) {
+                window.lastChatTime = data.chatTime;
+                showToast(data.lastChat);
+            }
+
+            if (!data.p1Choice && !data.p2Choice && !data.question) {
+                resetGameUI();
+            }
+
+            if (data.p1Choice && data.p2Choice) {
+                handleRoundResult(data);
+            }
+
+            handleQASystem(data);
         }
     });
 }
 
-function showFloatingChat(msg) {
-    const existing = document.querySelector(".floating-chat-popup");
-    if(existing) existing.remove();
-
-    const pop = document.createElement("div");
-    pop.className = "floating-chat-popup";
-    pop.innerText = msg;
-    document.body.appendChild(pop);
-
-    setTimeout(() => pop.remove(), 2800);
-}
-
-function handleDisconnect() {
+window.makeChoice = async function(choice) {
+    myChoice = choice;
     $("choice-area").classList.add("hidden");
-    $("waiting-choice-area").classList.add("hidden");
-    $("result-area").classList.add("hidden");
-    $("qa-section").classList.add("hidden");
-    $("disconnect-msg").classList.remove("hidden");
+    $("waiting-choice-area").classList.remove("hidden");
+
+    let updateData = {};
+    updateData[myRole + "Choice"] = choice;
+    await update(roomRef, updateData);
+};
+
+function getWinnerRole(data) {
+    if (data.p1Choice === data.p2Choice) return null;
+    if (
+        (data.p1Choice === "حجر" && data.p2Choice === "مقص") ||
+        (data.p1Choice === "ورقة" && data.p2Choice === "حجر") ||
+        (data.p1Choice === "مقص" && data.p2Choice === "ورقة")
+    ) {
+        return "p1";
+    }
+    return "p2";
 }
 
-window.leaveGame = async function() {
-    try {
-        if(roomCode && myRole) {
-            await update(ref(db, "rooms/" + roomCode + "/players/" + myRole), { online: false });
+function handleRoundResult(data) {
+    $("waiting-choice-area").classList.add("hidden");
+    $("result-area").classList.remove("hidden");
+
+    const emojiMap = { "حجر": "🪨", "ورقة": "📄", "مقص": "✂️" };
+    $("res-p1-name").innerText = data.p1Name;
+    $("res-p1-emoji").innerText = emojiMap[data.p1Choice] || "❓";
+    $("res-p2-name").innerText = data.p2Name;
+    $("res-p2-emoji").innerText = emojiMap[data.p2Choice] || "❓";
+
+    const winner = getWinnerRole(data);
+
+    if (!winner) {
+        $("round-winner-text").innerText = "🤝 تعادل في هذه الجولة!";
+        setTimeout(() => startNextRound(), 3000);
+    } else {
+        const winnerName = winner === "p1" ? data.p1Name : data.p2Name;
+        $("round-winner-text").innerText = "🎉 الفائز: " + winnerName;
+        
+        $("qa-section").classList.remove("hidden");
+        
+        if (myRole === winner) {
+            $("winner-question-box").classList.remove("hidden");
+            if (typeof confetti === "function") confetti();
+        } else {
+            $("loser-waiting-box").classList.remove("hidden");
         }
-    } catch(error) {
-        console.error(error);
+    }
+}
+
+window.sendQuestion = async function() {
+    const q = $("winner-question-input").value.trim();
+    if (!q) return;
+
+    await update(roomRef, { question: q });
+    $("winner-question-box").classList.add("hidden");
+    $("winner-waiting-answer").classList.remove("hidden");
+};
+
+function handleQASystem(data) {
+    if (data.question && !data.answer) {
+        if ($("winner-question-box")) $("winner-question-box").classList.add("hidden");
+        if ($("loser-waiting-box")) $("loser-waiting-box").classList.add("hidden");
+
+        if ((data.p1Choice && data.p2Choice) && myRole !== getWinnerRole(data)) {
+            $("loser-answer-box").classList.remove("hidden");
+            $("displayed-question").innerText = data.question;
+        }
+    }
+
+    if (data.answer) {
+        $("loser-answer-box").classList.add("hidden");
+        $("winner-waiting-answer").classList.add("hidden");
+        $("qa-result-display").classList.remove("hidden");
+        $("final-qa-summary").innerText = `السؤال: ${data.question}\n الرد: ${data.answer}`;
+    }
+}
+
+window.sendAnswer = async function() {
+    const ans = $("loser-answer-input").value.trim();
+    if (!ans) return;
+
+    await update(roomRef, { answer: ans });
+};
+
+window.startNextRoundFromQA = async function() {
+    const snapshot = await get(roomRef);
+    const data = snapshot.val();
+    const winner = getWinnerRole(data);
+    
+    let p1Score = data.p1Score || 0;
+    let p2Score = data.p2Score || 0;
+    
+    if (winner === "p1") p1Score++;
+    if (winner === "p2") p2Score++;
+
+    await update(roomRef, {
+        round: data.round + 1,
+        p1Score: p1Score,
+        p2Score: p2Score,
+        p1Choice: null,
+        p2Choice: null,
+        question: null,
+        answer: null
+    });
+};
+
+async function startNextRound() {
+    if (myRole !== "p1") return;
+    const snapshot = await get(roomRef);
+    const data = snapshot.val();
+    await update(roomRef, {
+        round: data.round + 1,
+        p1Choice: null,
+        p2Choice: null,
+        question: null,
+        answer: null
+    });
+}
+
+window.leaveGame = function() {
+    if (roomRef) {
+        onDisconnect(roomRef).cancel();
+        roomRef.remove();
     }
     location.reload();
 };
-
-const connectedRef = ref(db, ".info/connected");
-onValue(connectedRef, snapshot => {
-    if(snapshot.val() === true) {
-        console.log("Firebase Connected");
-    } else {
-        console.log("Firebase Disconnected");
-    }
-});
-
-setInterval(() => {
-    if(roomCode) {
-        if(!window.__chatStarted) {
-            window.__chatStarted = true;
-            listenToChat();
-        }
-    }
-}, 1000);
-
 </script>
-
 </body>
 </html>
