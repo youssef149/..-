@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>LoveDuel</title>
 
@@ -11,427 +15,1051 @@
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+
     <style>
+
         :root {
-            --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
-            --card-bg: rgba(255,255,255,.95);
-            --primary-pink: #db2777;
-            --accent-purple: #9333ea;
-            --text-main: #4a044e;
-            --text-muted: #86198f;
-            --border-color: #fbcfe8;
-            --danger: #ef4444;
-            --success: #16a34a;
-            --radius: 20px;
-            --shadow: 0 10px 30px rgba(219,39,119,.15);
+
+            --bg-gradient:
+                linear-gradient(
+                    135deg,
+                    #fce7f3,
+                    #fae8ff,
+                    #f3e8ff
+                );
+
+            --card-bg:
+                rgba(255,255,255,.95);
+
+            --primary-pink:
+                #db2777;
+
+            --accent-purple:
+                #9333ea;
+
+            --text-main:
+                #4a044e;
+
+            --text-muted:
+                #86198f;
+
+            --border-color:
+                #fbcfe8;
+
+            --danger:
+                #ef4444;
+
+            --success:
+                #16a34a;
+
+            --radius:
+                20px;
+
+            --shadow:
+                0 10px 30px
+                rgba(219,39,119,.15);
         }
+
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+
+            box-sizing:
+                border-box;
+
+            margin:
+                0;
+
+            padding:
+                0;
+
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                sans-serif;
         }
+
 
         body {
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
+
+            background:
+                var(--bg-gradient);
+
+            color:
+                var(--text-main);
+
+            min-height:
+                100vh;
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            padding:
+                15px;
         }
+
 
         .app-container {
-            width: 100%;
-            max-width: 480px;
-            position: relative;
+
+            width:
+                100%;
+
+            max-width:
+                480px;
+
+            position:
+                relative;
         }
+
 
         .game-screen {
-            display: none;
+
+            display:
+                none;
         }
+
 
         .game-screen.active {
-            display: block;
-            animation: fadeIn .2s ease;
+
+            display:
+                block;
+
+            animation:
+                fadeIn .2s ease;
         }
 
+
         @keyframes fadeIn {
+
             from {
-                opacity: 0;
-                transform: translateY(4px);
+
+                opacity:
+                    0;
+
+                transform:
+                    translateY(4px);
             }
 
             to {
-                opacity: 1;
-                transform: translateY(0);
+
+                opacity:
+                    1;
+
+                transform:
+                    translateY(0);
             }
         }
 
+
         .hidden {
-            display: none !important;
+
+            display:
+                none !important;
         }
 
+
         .w-100 {
-            width: 100%;
+
+            width:
+                100%;
         }
+
 
         .hero-card,
         .gameplay-card {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            margin-bottom: 15px;
-            position: relative;
+
+            background:
+                var(--card-bg);
+
+            border:
+                2px solid var(--border-color);
+
+            border-radius:
+                var(--radius);
+
+            padding:
+                25px 20px;
+
+            text-align:
+                center;
+
+            box-shadow:
+                var(--shadow);
+
+            margin-bottom:
+                15px;
+
+            position:
+                relative;
         }
+
 
         h1 {
-            color: var(--primary-pink);
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+
+            color:
+                var(--primary-pink);
+
+            font-size:
+                1.8rem;
+
+            margin-bottom:
+                5px;
         }
+
 
         h2 {
-            color: var(--primary-pink);
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+
+            color:
+                var(--primary-pink);
+
+            font-size:
+                1.3rem;
+
+            margin-bottom:
+                15px;
         }
+
 
         .subtitle {
-            color: var(--text-muted);
-            font-size: .9rem;
-            margin-bottom: 20px;
-            font-weight: 600;
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                .9rem;
+
+            margin-bottom:
+                20px;
+
+            font-weight:
+                600;
         }
 
+
         .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                12px;
         }
+
 
         .primary-btn,
         .secondary-btn,
         .danger-btn {
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: .15s;
+
+            padding:
+                12px 20px;
+
+            border-radius:
+                12px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            border:
+                none;
+
+            font-size:
+                1rem;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                8px;
+
+            transition:
+                .15s;
         }
+
 
         .primary-btn {
-            background: linear-gradient(135deg, var(--primary-pink), var(--accent-purple));
-            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-pink),
+                    var(--accent-purple)
+                );
+
+            color:
+                #fff;
         }
+
 
         .secondary-btn {
-            background: #fbcfe8;
-            color: var(--text-main);
+
+            background:
+                #fbcfe8;
+
+            color:
+                var(--text-main);
         }
 
+
         .danger-btn {
-            background: #fee2e2;
-            color: var(--danger);
+
+            background:
+                #fee2e2;
+
+            color:
+                var(--danger);
         }
+
 
         .primary-btn:active,
         .secondary-btn:active,
         .danger-btn:active {
-            transform: scale(.98);
+
+            transform:
+                scale(.98);
         }
+
+
+        .primary-btn:disabled {
+
+            opacity:
+                .65;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+        }
+
 
         .text-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            margin-top: 12px;
-            cursor: pointer;
-            text-decoration: underline;
+
+            background:
+                none;
+
+            border:
+                none;
+
+            color:
+                var(--text-muted);
+
+            margin-top:
+                12px;
+
+            cursor:
+                pointer;
+
+            text-decoration:
+                underline;
         }
+
 
         .form-group {
-            margin-bottom: 15px;
-            text-align: right;
+
+            margin-bottom:
+                15px;
+
+            text-align:
+                right;
         }
+
 
         label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: .85rem;
-            font-weight: bold;
-            color: var(--text-muted);
+
+            display:
+                block;
+
+            margin-bottom:
+                5px;
+
+            font-size:
+                .85rem;
+
+            font-weight:
+                bold;
+
+            color:
+                var(--text-muted);
         }
+
 
         input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            text-align: center;
-            outline: none;
+
+            width:
+                100%;
+
+            padding:
+                12px;
+
+            border:
+                2px solid var(--border-color);
+
+            border-radius:
+                10px;
+
+            font-size:
+                1rem;
+
+            text-align:
+                center;
+
+            outline:
+                none;
         }
+
 
         input:focus {
-            border-color: var(--primary-pink);
+
+            border-color:
+                var(--primary-pink);
         }
+
 
         .room-code-box {
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            font-weight: bold;
-            color: var(--accent-purple);
-            background: #f3e8ff;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border: 2px dashed var(--accent-purple);
+
+            font-size:
+                1.8rem;
+
+            letter-spacing:
+                4px;
+
+            font-weight:
+                bold;
+
+            color:
+                var(--accent-purple);
+
+            background:
+                #f3e8ff;
+
+            padding:
+                12px;
+
+            border-radius:
+                12px;
+
+            margin:
+                15px 0;
+
+            border:
+                2px dashed
+                var(--accent-purple);
         }
+
 
         .scoreboard-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            margin-bottom: 12px;
-            font-weight: bold;
-            font-size: .9rem;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            background:
+                var(--card-bg);
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                12px;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            margin-bottom:
+                12px;
+
+            font-weight:
+                bold;
+
+            font-size:
+                .9rem;
         }
+
 
         .round-badge {
-            background: var(--primary-pink);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: .8rem;
+
+            background:
+                var(--primary-pink);
+
+            color:
+                #fff;
+
+            padding:
+                4px 10px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                .8rem;
         }
+
 
         .versus-title {
-            font-size: 1.1rem;
-            color: var(--primary-pink);
-            margin-bottom: 10px;
-            font-weight: bold;
+
+            font-size:
+                1.1rem;
+
+            color:
+                var(--primary-pink);
+
+            margin-bottom:
+                10px;
+
+            font-weight:
+                bold;
         }
+
 
         .choices-grid {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            gap:
+                12px;
         }
+
 
         .choice-btn {
-            background: #fff;
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 15px 20px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            min-width: 90px;
+
+            background:
+                #fff;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            border-radius:
+                16px;
+
+            padding:
+                15px 20px;
+
+            cursor:
+                pointer;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            gap:
+                6px;
+
+            min-width:
+                90px;
         }
+
 
         .choice-btn:hover {
-            border-color: var(--primary-pink);
-            background: #fdf2f8;
+
+            border-color:
+                var(--primary-pink);
+
+            background:
+                #fdf2f8;
         }
+
 
         .choice-icon {
-            font-size: 2.2rem;
+
+            font-size:
+                2.2rem;
         }
+
 
         .reveal-grid {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin: 15px 0;
+
+            display:
+                flex;
+
+            justify-content:
+                space-around;
+
+            align-items:
+                center;
+
+            margin:
+                15px 0;
         }
+
 
         .reveal-box {
-            background: #fdf2f8;
-            border: 2px solid var(--border-color);
-            padding: 12px;
-            border-radius: 12px;
-            width: 45%;
+
+            background:
+                #fdf2f8;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            padding:
+                12px;
+
+            border-radius:
+                12px;
+
+            width:
+                45%;
         }
+
 
         .big-emoji {
-            font-size: 2.5rem;
-            margin: 8px 0;
+
+            font-size:
+                2.5rem;
+
+            margin:
+                8px 0;
         }
+
 
         .winner-announcement {
-            font-size: 1.1rem;
-            color: var(--primary-pink);
-            margin: 10px 0;
-            font-weight: bold;
+
+            font-size:
+                1.1rem;
+
+            color:
+                var(--primary-pink);
+
+            margin:
+                10px 0;
+
+            font-weight:
+                bold;
         }
+
 
         .qa-container {
-            background: #fdf2f8;
-            border: 2px solid var(--border-color);
-            padding: 15px;
-            border-radius: 16px;
-            margin-top: 15px;
-            text-align: right;
+
+            background:
+                #fdf2f8;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            padding:
+                15px;
+
+            border-radius:
+                16px;
+
+            margin-top:
+                15px;
+
+            text-align:
+                right;
         }
+
 
         .chat-float-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #f3e8ff;
-            border: 2px solid var(--accent-purple);
-            color: var(--accent-purple);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
+
+            position:
+                absolute;
+
+            top:
+                15px;
+
+            left:
+                15px;
+
+            background:
+                #f3e8ff;
+
+            border:
+                2px solid
+                var(--accent-purple);
+
+            color:
+                var(--accent-purple);
+
+            width:
+                40px;
+
+            height:
+                40px;
+
+            border-radius:
+                50%;
+
+            font-size:
+                1.2rem;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            cursor:
+                pointer;
+
+            z-index:
+                10;
         }
+
 
         .chat-menu {
-            display: none;
-            position: absolute;
-            top: 60px;
-            left: 15px;
-            background: #fff;
-            border: 2px solid var(--border-color);
-            border-radius: 14px;
-            padding: 8px;
-            box-shadow: var(--shadow);
-            z-index: 20;
-            text-align: right;
-            width: 210px;
+
+            display:
+                none;
+
+            position:
+                absolute;
+
+            top:
+                60px;
+
+            left:
+                15px;
+
+            background:
+                #fff;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            border-radius:
+                14px;
+
+            padding:
+                8px;
+
+            box-shadow:
+                var(--shadow);
+
+            z-index:
+                20;
+
+            text-align:
+                right;
+
+            width:
+                210px;
         }
+
 
         .chat-menu button {
-            background: none;
-            border: none;
-            width: 100%;
-            padding: 8px 10px;
-            text-align: right;
-            font-size: .9rem;
-            font-weight: bold;
-            color: var(--text-main);
-            border-radius: 8px;
-            cursor: pointer;
+
+            background:
+                none;
+
+            border:
+                none;
+
+            width:
+                100%;
+
+            padding:
+                8px 10px;
+
+            text-align:
+                right;
+
+            font-size:
+                .9rem;
+
+            font-weight:
+                bold;
+
+            color:
+                var(--text-main);
+
+            border-radius:
+                8px;
+
+            cursor:
+                pointer;
         }
+
 
         .chat-menu button:hover {
-            background: #fdf2f8;
-            color: var(--primary-pink);
+
+            background:
+                #fdf2f8;
+
+            color:
+                var(--primary-pink);
         }
+
 
         .floating-chat-popup {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(74,4,78,.95);
-            color: #fff;
-            padding: 12px 22px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: .95rem;
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,.2);
-            animation: fadeInOut 2.8s ease-in-out forwards;
+
+            position:
+                fixed;
+
+            bottom:
+                30px;
+
+            left:
+                50%;
+
+            transform:
+                translateX(-50%);
+
+            background:
+                rgba(74,4,78,.95);
+
+            color:
+                #fff;
+
+            padding:
+                12px 22px;
+
+            border-radius:
+                30px;
+
+            font-weight:
+                bold;
+
+            font-size:
+                .95rem;
+
+            z-index:
+                1000;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0,0,0,.2);
+
+            animation:
+                fadeInOut 2.8s
+                ease-in-out
+                forwards;
         }
 
+
         @keyframes fadeInOut {
+
             0% {
-                opacity: 0;
-                transform: translate(-50%,20px);
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,20px);
             }
 
             15% {
-                opacity: 1;
-                transform: translate(-50%,0);
+
+                opacity:
+                    1;
+
+                transform:
+                    translate(-50%,0);
             }
 
             85% {
-                opacity: 1;
-                transform: translate(-50%,0);
+
+                opacity:
+                    1;
+
+                transform:
+                    translate(-50%,0);
             }
 
             100% {
-                opacity: 0;
-                transform: translate(-50%,-20px);
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-20px);
             }
         }
+
 
         .connection-status {
-            font-size: .8rem;
-            color: var(--success);
-            margin-top: 10px;
-            font-weight: bold;
+
+            font-size:
+                .8rem;
+
+            color:
+                var(--success);
+
+            margin-top:
+                10px;
+
+            font-weight:
+                bold;
         }
+
 
         .loading {
-            text-align: center;
-            padding: 15px;
-            color: var(--text-muted);
+
+            text-align:
+                center;
+
+            padding:
+                15px;
+
+            color:
+                var(--text-muted);
         }
+
+
+        /*
+         * حالة الاستعداد للجولة الجديدة
+         */
+
+        .ready-status {
+
+            background:
+                #f3e8ff;
+
+            border:
+                2px solid
+                var(--border-color);
+
+            border-radius:
+                12px;
+
+            padding:
+                12px;
+
+            margin-top:
+                10px;
+
+            text-align:
+                center;
+
+            font-size:
+                .9rem;
+
+            font-weight:
+                bold;
+
+            color:
+                var(--text-muted);
+        }
+
+
+        .ready-me {
+
+            color:
+                var(--success);
+        }
+
+
+        .ready-opponent {
+
+            color:
+                var(--primary-pink);
+        }
+
 
         @media(max-width:360px) {
+
             .choice-btn {
-                padding: 12px 10px;
-                min-width: 75px;
+
+                padding:
+                    12px 10px;
+
+                min-width:
+                    75px;
             }
+
 
             .choice-icon {
-                font-size: 1.8rem;
+
+                font-size:
+                    1.8rem;
             }
 
+
             .scoreboard-bar {
-                font-size: .75rem;
+
+                font-size:
+                    .75rem;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app-container">
 
-    <!-- HOME -->
-    <section id="screen-home" class="game-screen active">
+
+    <!-- =====================================================
+         HOME
+    ====================================================== -->
+
+    <section
+        id="screen-home"
+        class="game-screen active">
 
         <div class="hero-card">
 
-            <div style="font-size:2.5rem;margin-bottom:10px;">❤️</div>
+            <div
+                style="font-size:2.5rem;margin-bottom:10px;">
 
-            <h1>LoveDuel</h1>
+                ❤️
+
+            </div>
+
+
+            <h1>
+
+                LoveDuel
+
+            </h1>
+
 
             <p class="subtitle">
+
                 لعبة التحدي والأسئلة
+
             </p>
+
 
             <div class="menu-buttons">
 
-                <button class="primary-btn"
-                        onclick="showScreen('screen-create')">
+
+                <button
+                    class="primary-btn"
+                    onclick="showScreen('screen-create')">
 
                     <i class="fa-solid fa-user-plus"></i>
 
@@ -439,14 +1067,17 @@
 
                 </button>
 
-                <button class="secondary-btn"
-                        onclick="showScreen('screen-join')">
+
+                <button
+                    class="secondary-btn"
+                    onclick="showScreen('screen-join')">
 
                     <i class="fa-solid fa-door-open"></i>
 
                     الانضمام إلى لعبة
 
                 </button>
+
 
             </div>
 
@@ -455,16 +1086,31 @@
     </section>
 
 
-    <!-- CREATE -->
-    <section id="screen-create" class="game-screen">
+    <!-- =====================================================
+         CREATE
+    ====================================================== -->
+
+    <section
+        id="screen-create"
+        class="game-screen">
 
         <div class="hero-card">
 
-            <h2>🎮 إنشاء لعبة جديدة</h2>
+            <h2>
+
+                🎮 إنشاء لعبة جديدة
+
+            </h2>
+
 
             <div class="form-group">
 
-                <label>اسمك:</label>
+                <label>
+
+                    اسمك:
+
+                </label>
+
 
                 <input
                     type="text"
@@ -473,6 +1119,7 @@
 
             </div>
 
+
             <button
                 class="primary-btn w-100"
                 onclick="createRoom()">
@@ -480,6 +1127,7 @@
                 إنشاء الغرفة
 
             </button>
+
 
             <button
                 class="text-btn"
@@ -494,14 +1142,29 @@
     </section>
 
 
-    <!-- WAITING -->
-    <section id="screen-waiting" class="game-screen">
+    <!-- =====================================================
+         WAITING
+    ====================================================== -->
+
+    <section
+        id="screen-waiting"
+        class="game-screen">
 
         <div class="hero-card">
 
-            <h2>🎮 الغرفة جاهزة</h2>
+            <h2>
 
-            <p>كود الغرفة:</p>
+                🎮 الغرفة جاهزة
+
+            </h2>
+
+
+            <p>
+
+                كود الغرفة:
+
+            </p>
+
 
             <div
                 class="room-code-box"
@@ -511,11 +1174,13 @@
 
             </div>
 
+
             <p class="subtitle">
 
                 ابعت الكود للطرف التاني ❤️
 
             </p>
+
 
             <p id="waiting-text">
 
@@ -523,11 +1188,13 @@
 
             </p>
 
+
             <div class="connection-status">
 
                 🟢 متصل بقاعدة البيانات
 
             </div>
+
 
             <button
                 class="danger-btn w-100"
@@ -543,16 +1210,31 @@
     </section>
 
 
-    <!-- JOIN -->
-    <section id="screen-join" class="game-screen">
+    <!-- =====================================================
+         JOIN
+    ====================================================== -->
+
+    <section
+        id="screen-join"
+        class="game-screen">
 
         <div class="hero-card">
 
-            <h2>👩 الانضمام إلى لعبة</h2>
+            <h2>
+
+                👩 الانضمام إلى لعبة
+
+            </h2>
+
 
             <div class="form-group">
 
-                <label>اسمك:</label>
+                <label>
+
+                    اسمك:
+
+                </label>
+
 
                 <input
                     type="text"
@@ -561,9 +1243,15 @@
 
             </div>
 
+
             <div class="form-group">
 
-                <label>كود الغرفة:</label>
+                <label>
+
+                    كود الغرفة:
+
+                </label>
+
 
                 <input
                     type="text"
@@ -574,6 +1262,7 @@
 
             </div>
 
+
             <button
                 class="primary-btn w-100"
                 onclick="joinRoom()">
@@ -582,10 +1271,12 @@
 
             </button>
 
+
             <p
                 id="join-error"
                 style="color:red;font-size:.8rem;margin-top:8px;">
             </p>
+
 
             <button
                 class="text-btn"
@@ -600,18 +1291,35 @@
     </section>
 
 
-    <!-- GAME -->
-    <section id="screen-game" class="game-screen">
+    <!-- =====================================================
+         GAME
+    ====================================================== -->
+
+    <section
+        id="screen-game"
+        class="game-screen">
+
+
+        <!-- SCORE -->
 
         <div class="scoreboard-bar">
 
             <div>
 
-                <span id="lbl-p1">اللاعب 1</span>:
+                <span id="lbl-p1">
 
-                <strong id="score-p1">0</strong>
+                    اللاعب 1
+
+                </span>:
+
+                <strong id="score-p1">
+
+                    0
+
+                </strong>
 
             </div>
+
 
             <div
                 class="round-badge"
@@ -621,11 +1329,20 @@
 
             </div>
 
+
             <div>
 
-                <span id="lbl-p2">اللاعب 2</span>:
+                <span id="lbl-p2">
 
-                <strong id="score-p2">0</strong>
+                    اللاعب 2
+
+                </span>:
+
+                <strong id="score-p2">
+
+                    0
+
+                </strong>
 
             </div>
 
@@ -634,7 +1351,9 @@
 
         <div class="gameplay-card">
 
+
             <!-- CHAT -->
+
             <button
                 class="chat-float-btn"
                 onclick="toggleChatMenu()">
@@ -643,32 +1362,52 @@
 
             </button>
 
+
             <div
                 id="chatMenu"
                 class="chat-menu">
 
-                <button onclick="sendQuickChat('العب بسرعة!')">
+
+                <button
+                    onclick="sendQuickChat('العب بسرعة!')">
+
                     العب بسرعة! ⚡
+
                 </button>
 
-                <button onclick="sendQuickChat('دي آخر جولة!')">
+
+                <button
+                    onclick="sendQuickChat('دي آخر جولة!')">
+
                     دي آخر جولة! 🏁
+
                 </button>
 
-                <button onclick="sendQuickChat('اسأل أسئلة حلوة')">
+
+                <button
+                    onclick="sendQuickChat('اسأل أسئلة حلوة')">
+
                     اسأل أسئلة حلوة 😉
+
                 </button>
+
 
             </div>
 
 
             <p class="versus-title">
+
                 تحدي بين الأبطال ❤️
+
             </p>
 
 
-            <!-- CHOICE -->
+            <!-- =================================================
+                 CHOICE
+            ================================================== -->
+
             <div id="choice-area">
+
 
                 <p
                     style="margin-bottom:12px;font-weight:bold;">
@@ -677,57 +1416,74 @@
 
                 </p>
 
+
                 <div class="choices-grid">
+
 
                     <button
                         class="choice-btn"
                         onclick="makeChoice('حجر')">
 
                         <span class="choice-icon">
+
                             🪨
+
                         </span>
 
                         حجر
 
                     </button>
 
+
                     <button
                         class="choice-btn"
                         onclick="makeChoice('ورقة')">
 
                         <span class="choice-icon">
+
                             📄
+
                         </span>
 
                         ورقة
 
                     </button>
 
+
                     <button
                         class="choice-btn"
                         onclick="makeChoice('مقص')">
 
                         <span class="choice-icon">
+
                             ✂️
+
                         </span>
 
                         مقص
 
                     </button>
 
+
                 </div>
 
             </div>
 
 
-            <!-- WAIT -->
+            <!-- =================================================
+                 WAITING FOR CHOICE
+            ================================================== -->
+
             <div
                 id="waiting-choice-area"
                 class="hidden">
 
                 <h3>
+
                     🔒 تم اختيارك بنجاح!
+
                 </h3>
+
 
                 <p
                     style="color:var(--text-muted);margin-top:8px;">
@@ -739,18 +1495,26 @@
             </div>
 
 
-            <!-- RESULT -->
+            <!-- =================================================
+                 RESULT
+            ================================================== -->
+
             <div
                 id="result-area"
                 class="hidden">
 
+
                 <div class="reveal-grid">
+
 
                     <div class="reveal-box">
 
                         <h4 id="res-p1-name">
+
                             اللاعب 1
+
                         </h4>
+
 
                         <div
                             class="big-emoji"
@@ -762,11 +1526,15 @@
 
                     </div>
 
+
                     <div class="reveal-box">
 
                         <h4 id="res-p2-name">
+
                             اللاعب 2
+
                         </h4>
+
 
                         <div
                             class="big-emoji"
@@ -778,7 +1546,9 @@
 
                     </div>
 
+
                 </div>
+
 
                 <h3
                     id="round-winner-text"
@@ -788,38 +1558,49 @@
 
                 </h3>
 
+
             </div>
 
 
-            <!-- QA -->
+            <!-- =================================================
+                 QA
+            ================================================== -->
+
             <div
                 id="qa-section"
                 class="qa-container hidden">
 
 
                 <!-- WINNER -->
+
                 <div
                     id="winner-question-box"
                     class="hidden">
+
 
                     <p
                         style="color:var(--primary-pink);font-weight:bold;margin-bottom:8px;">
 
                         🎉 أنت الفائز!
+
                         اسأل الخاسر سؤال أو اطلب منه طلب:
 
                     </p>
 
+
                     <div
                         class="form-group"
                         style="margin-bottom:10px;">
+
 
                         <input
                             type="text"
                             id="winner-question-input"
                             placeholder="اكتب السؤال أو الطلب هنا...">
 
+
                     </div>
+
 
                     <button
                         class="primary-btn w-100"
@@ -832,10 +1613,12 @@
                 </div>
 
 
-                <!-- LOSER WAIT -->
+                <!-- LOSER WAITING -->
+
                 <div
                     id="loser-waiting-box"
                     class="hidden">
+
 
                     <p
                         style="color:var(--danger);font-weight:bold;">
@@ -848,9 +1631,11 @@
 
 
                 <!-- LOSER ANSWER -->
+
                 <div
                     id="loser-answer-box"
                     class="hidden">
+
 
                     <p
                         style="color:var(--danger);font-weight:bold;margin-bottom:5px;">
@@ -859,14 +1644,17 @@
 
                     </p>
 
+
                     <p
                         id="displayed-question"
                         style="background:#fff;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:600;">
                     </p>
 
+
                     <div
                         class="form-group"
                         style="margin-bottom:10px;">
+
 
                         <input
                             type="text"
@@ -874,6 +1662,7 @@
                             placeholder="اكتب إجابتك هنا...">
 
                     </div>
+
 
                     <button
                         class="primary-btn w-100"
@@ -886,10 +1675,12 @@
                 </div>
 
 
-                <!-- WINNER WAIT ANSWER -->
+                <!-- WINNER WAITING ANSWER -->
+
                 <div
                     id="winner-waiting-answer"
                     class="hidden">
+
 
                     <p
                         style="color:var(--text-muted);font-weight:bold;">
@@ -901,11 +1692,15 @@
                 </div>
 
 
-                <!-- QA RESULT -->
+                <!-- =================================================
+                     QA RESULT
+                ================================================== -->
+
                 <div
                     id="qa-result-display"
                     class="hidden"
                     style="text-align:center;">
+
 
                     <p
                         style="color:var(--accent-purple);font-weight:bold;margin-bottom:5px;">
@@ -914,25 +1709,45 @@
 
                     </p>
 
+
                     <p
                         id="final-qa-summary"
                         style="background:#fff;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:600;">
                     </p>
 
+
+                    <!-- زر كل لاعب مستقل -->
+
                     <button
+                        id="next-round-btn"
                         class="primary-btn w-100"
-                        onclick="startNextRoundFromQA()">
+                        onclick="readyForNextRound()">
 
                         الجولة اللي بعدها 🚀
 
                     </button>
 
+
+                    <!-- حالة الاستعداد -->
+
+                    <div
+                        id="next-round-status"
+                        class="ready-status hidden">
+
+                        ⏳ جاري معرفة استعداد اللاعبين...
+
+                    </div>
+
                 </div>
+
 
             </div>
 
 
-            <!-- DISCONNECT -->
+            <!-- =================================================
+                 DISCONNECT
+            ================================================== -->
+
             <div
                 id="disconnect-msg"
                 class="hidden"
@@ -943,6 +1758,8 @@
             </div>
 
 
+            <!-- LEAVE -->
+
             <button
                 class="danger-btn w-100"
                 style="margin-top:20px;"
@@ -952,49 +1769,71 @@
 
             </button>
 
+
         </div>
 
     </section>
 
+
 </div>
 
 
-<!-- ========================================================= -->
-<!-- FIREBASE -->
-<!-- ========================================================= -->
+<!-- =========================================================
+     FIREBASE + GAME LOGIC
+========================================================= -->
 
 <script type="module">
 
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+
+    initializeApp
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
     getDatabase,
+
     ref,
+
     set,
+
     get,
+
     update,
+
     onValue,
+
     onDisconnect,
+
     runTransaction
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
 /* =========================================================
-   إعداد Firebase بتاعك
-   ========================================================= */
+   FIREBASE CONFIG
+========================================================= */
 
 const firebaseConfig = {
 
-    apiKey: "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
+    apiKey:
+        "AIzaSyAUV_pAXMCjUVLNUGnAGkbu9De39nEEU",
 
-    authDomain: "rps-online-785fc.firebaseapp.com",
+    authDomain:
+        "rps-online-785fc.firebaseapp.com",
 
     databaseURL:
         "https://rps-online-785fc-default-rtdb.firebaseio.com",
 
-    projectId: "rps-online-785fc",
+    projectId:
+        "rps-online-785fc",
 
     storageBucket:
         "rps-online-785fc.firebasestorage.app",
@@ -1007,21 +1846,21 @@ const firebaseConfig = {
 
     measurementId:
         "G-76XM3GND1Y"
+
 };
 
 
+const app =
+    initializeApp(firebaseConfig);
+
+
+const db =
+    getDatabase(app);
+
+
 /* =========================================================
-   تشغيل Firebase
-   ========================================================= */
-
-const app = initializeApp(firebaseConfig);
-
-const db = getDatabase(app);
-
-
-/* =========================================================
-   متغيرات اللعبة
-   ========================================================= */
+   VARIABLES
+========================================================= */
 
 let myRole = "";
 
@@ -1033,133 +1872,209 @@ let roomCode = "";
 
 let roomListener = null;
 
+let chatListener = null;
+
 let currentRoomData = null;
 
 let myChoice = null;
 
 let currentRound = 1;
 
-let roundAlreadyDisplayed = false;
+let processingRound = false;
 
-let currentWinner = "";
+let movingToNextRound = false;
 
-
-/* =========================================================
-   الوصول للـ DOM
-   ========================================================= */
-
-const $ = id => document.getElementById(id);
+let lastDisplayedResultRound = null;
 
 
 /* =========================================================
-   تغيير الشاشة
-   ========================================================= */
+   DOM
+========================================================= */
 
-window.showScreen = function(id) {
+const $ =
+    id => document.getElementById(id);
+
+
+/* =========================================================
+   SCREEN
+========================================================= */
+
+window.showScreen =
+function(id) {
 
     document
         .querySelectorAll(".game-screen")
-        .forEach(screen =>
-            screen.classList.remove("active")
+        .forEach(screen => {
+
+            screen.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    const screen =
+        $(id);
+
+
+    if(screen) {
+
+        screen.classList.add(
+            "active"
         );
 
-    $(id).classList.add("active");
+    }
+
 };
 
 
 /* =========================================================
-   توليد كود غرفة
-   ========================================================= */
+   ROOM CODE
+========================================================= */
 
 function generateRoomCode() {
 
     return Math.floor(
-        100000 + Math.random() * 900000
+        100000 +
+        Math.random() *
+        900000
     ).toString();
 
 }
 
 
 /* =========================================================
-   إنشاء غرفة
-   ========================================================= */
+   CREATE ROOM
+========================================================= */
 
-window.createRoom = async function() {
+window.createRoom =
+async function() {
 
     myName =
-        $("create-name").value.trim() ||
+        $("create-name")
+        .value
+        .trim() ||
         "اللاعب 1";
 
-    myRole = "p1";
 
-    $("code-display").innerText =
+    myRole =
+        "p1";
+
+
+    $("code-display")
+        .innerText =
         "جاري الإنشاء...";
 
-    showScreen("screen-waiting");
+
+    showScreen(
+        "screen-waiting"
+    );
+
 
     let attempts = 0;
+
 
     while(attempts < 10) {
 
         attempts++;
 
+
         const code =
             generateRoomCode();
 
+
         const roomRef =
-            ref(db, "rooms/" + code);
+            ref(
+                db,
+                "rooms/" + code
+            );
+
 
         try {
 
             const snapshot =
                 await get(roomRef);
 
+
             if(snapshot.exists()) {
+
                 continue;
+
             }
 
-            roomCode = code;
 
-            await set(roomRef, {
-
-                createdAt:
-                    Date.now(),
-
-                status:
-                    "waiting",
-
-                round:
-                    1,
-
-                phase:
-                    "choosing",
-
-                scores: {
-                    p1: 0,
-                    p2: 0
-                },
-
-                players: {
-
-                    p1: {
-                        name: myName,
-                        online: true
-                    }
-
-                },
-
-                choices: {},
-
-                qa: {}
-
-            });
+            roomCode =
+                code;
 
 
-            $("code-display").innerText =
+            await set(
+                roomRef,
+                {
+
+                    createdAt:
+                        Date.now(),
+
+                    status:
+                        "waiting",
+
+                    round:
+                        1,
+
+                    phase:
+                        "choosing",
+
+                    winner:
+                        null,
+
+                    resultReady:
+                        false,
+
+                    scores: {
+
+                        p1:
+                            0,
+
+                        p2:
+                            0
+
+                    },
+
+                    players: {
+
+                        p1: {
+
+                            name:
+                                myName,
+
+                            online:
+                                true
+
+                        }
+
+                    },
+
+                    choices:
+                        {},
+
+                    rounds:
+                        {},
+
+                    qa:
+                        {},
+
+                    chat:
+                        {}
+
+                }
+            );
+
+
+            $("code-display")
+                .innerText =
                 roomCode;
 
 
-            const myConnectionRef =
+            const connectionRef =
                 ref(
                     db,
                     "rooms/" +
@@ -1167,28 +2082,44 @@ window.createRoom = async function() {
                     "/players/p1/online"
                 );
 
+
             onDisconnect(
-                myConnectionRef
-            ).set(false);
+                connectionRef
+            )
+            .set(false);
 
 
             listenToRoom();
 
+            listenToChat();
+
+
             return;
+
 
         } catch(error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "حصل خطأ في إنشاء الغرفة."
             );
 
-            showScreen("screen-home");
+
+            showScreen(
+                "screen-home"
+            );
+
 
             return;
+
         }
+
     }
+
 
     alert(
         "لم نستطع إنشاء غرفة، حاول مرة أخرى."
@@ -1198,26 +2129,39 @@ window.createRoom = async function() {
 
 
 /* =========================================================
-   الانضمام لغرفة
-   ========================================================= */
+   JOIN ROOM
+========================================================= */
 
-window.joinRoom = async function() {
+window.joinRoom =
+async function() {
 
     myName =
-        $("join-name").value.trim() ||
+        $("join-name")
+        .value
+        .trim() ||
         "اللاعب 2";
 
-    roomCode =
-        $("join-code").value.trim();
 
-    $("join-error").innerText = "";
+    roomCode =
+        $("join-code")
+        .value
+        .trim();
+
+
+    $("join-error")
+        .innerText =
+        "";
+
 
     if(!roomCode) {
 
-        $("join-error").innerText =
+        $("join-error")
+            .innerText =
             "❌ اكتب كود الغرفة الأول!";
 
+
         return;
+
     }
 
 
@@ -1230,40 +2174,22 @@ window.joinRoom = async function() {
                 roomCode
             );
 
+
         const snapshot =
             await get(roomRef);
 
 
         if(!snapshot.exists()) {
 
-            $("join-error").innerText =
+            $("join-error")
+                .innerText =
                 "❌ الغرفة غير موجودة.";
 
-            return;
-        }
-
-
-        const room =
-            snapshot.val();
-
-
-        if(
-            room.players &&
-            room.players.p2 &&
-            room.players.p2.online
-        ) {
-
-            $("join-error").innerText =
-                "❌ الغرفة ممتلئة بالفعل.";
 
             return;
+
         }
 
-
-        /*
-         * Transaction لمنع دخول شخصين
-         * في نفس اللحظة.
-         */
 
         const playersRef =
             ref(
@@ -1279,16 +2205,25 @@ window.joinRoom = async function() {
                 playersRef,
                 players => {
 
+
                     if(players === null) {
 
                         return {
+
                             p2: {
-                                name: myName,
-                                online: true
+
+                                name:
+                                    myName,
+
+                                online:
+                                    true
+
                             }
+
                         };
 
                     }
+
 
                     if(
                         players.p2 &&
@@ -1299,13 +2234,17 @@ window.joinRoom = async function() {
 
                     }
 
+
                     players.p2 = {
 
-                        name: myName,
+                        name:
+                            myName,
 
-                        online: true
+                        online:
+                            true
 
                     };
+
 
                     return players;
 
@@ -1313,27 +2252,36 @@ window.joinRoom = async function() {
             );
 
 
-        if(!transactionResult.committed) {
+        if(
+            !transactionResult.committed
+        ) {
 
-            $("join-error").innerText =
+            $("join-error")
+                .innerText =
                 "❌ الغرفة ممتلئة.";
 
+
             return;
+
         }
 
 
-        myRole = "p2";
+        myRole =
+            "p2";
 
 
         await update(
             roomRef,
             {
-                status: "playing"
+
+                status:
+                    "playing"
+
             }
         );
 
 
-        const myConnectionRef =
+        const connectionRef =
             ref(
                 db,
                 "rooms/" +
@@ -1343,20 +2291,30 @@ window.joinRoom = async function() {
 
 
         onDisconnect(
-            myConnectionRef
-        ).set(false);
+            connectionRef
+        )
+        .set(false);
 
 
         listenToRoom();
 
-        showScreen("screen-game");
+        listenToChat();
+
+
+        showScreen(
+            "screen-game"
+        );
 
 
     } catch(error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
-        $("join-error").innerText =
+
+        $("join-error")
+            .innerText =
             "❌ حصل خطأ في الاتصال بقاعدة البيانات.";
 
     }
@@ -1365,13 +2323,18 @@ window.joinRoom = async function() {
 
 
 /* =========================================================
-   الاستماع للغرفة
-   ========================================================= */
+   LISTEN TO ROOM
+========================================================= */
 
 function listenToRoom() {
 
     if(roomListener) {
+
         roomListener();
+
+        roomListener =
+            null;
+
     }
 
 
@@ -1388,47 +2351,98 @@ function listenToRoom() {
             roomRef,
             snapshot => {
 
-                if(!snapshot.exists()) {
+
+                if(
+                    !snapshot.exists()
+                ) {
 
                     handleDisconnect();
 
                     return;
+
                 }
 
 
                 const data =
                     snapshot.val();
 
+
                 currentRoomData =
                     data;
 
 
-                updateNames(data);
+                currentRound =
+                    Number(
+                        data.round ||
+                        1
+                    );
 
-                updateScore(data);
 
-                updateRound(data);
+                updateNames(
+                    data
+                );
 
-                handlePlayers(data);
 
-                handleGameState(data);
+                updateScore(
+                    data
+                );
+
+
+                updateRound(
+                    data
+                );
+
+
+                handlePlayers(
+                    data
+                );
+
+
+                handleGameState(
+                    data
+                );
 
 
                 /*
-                 * اللاعب الأول هو المسؤول
-                 * عن إنهاء الجولة.
+                 * أي لاعب ممكن يعالج الجولة.
                  */
+                if(
+                    data.phase ===
+                    "choosing"
+                ) {
 
-                if(myRole === "p1") {
+                    processRound(
+                        data
+                    );
 
-                    processRoundAsHost(data);
+                }
+
+
+                /*
+                 * فحص هل الطرفين
+                 * استعدوا للجولة التالية.
+                 */
+                if(
+                    data.phase ===
+                    "qaDone" ||
+                    data.phase ===
+                    "result"
+                ) {
+
+                    checkNextRoundReady(
+                        data
+                    );
 
                 }
 
             },
+
             error => {
 
-                console.error(error);
+                console.error(
+                    "Room listener:",
+                    error
+                );
 
             }
         );
@@ -1437,14 +2451,17 @@ function listenToRoom() {
 
 
 /* =========================================================
-   أسماء اللاعبين
-   ========================================================= */
+   NAMES
+========================================================= */
 
-function updateNames(data) {
+function updateNames(
+    data
+) {
 
     const p1 =
         data.players?.p1?.name ||
         "اللاعب 1";
+
 
     const p2 =
         data.players?.p2?.name ||
@@ -1457,53 +2474,74 @@ function updateNames(data) {
             : p1;
 
 
-    $("lbl-p1").innerText =
+    $("lbl-p1")
+        .innerText =
         p1;
 
-    $("lbl-p2").innerText =
+
+    $("lbl-p2")
+        .innerText =
         p2;
 
-    $("res-p1-name").innerText =
+
+    $("res-p1-name")
+        .innerText =
         p1;
 
-    $("res-p2-name").innerText =
+
+    $("res-p2-name")
+        .innerText =
         p2;
 
 }
 
 
 /* =========================================================
-   النقاط
-   ========================================================= */
+   SCORE
+========================================================= */
 
-function updateScore(data) {
+function updateScore(
+    data
+) {
 
     const scores =
-        data.scores || {
-            p1: 0,
-            p2: 0
-        };
+        data.scores ||
+        {};
 
 
-    $("score-p1").innerText =
-        scores.p1 || 0;
+    $("score-p1")
+        .innerText =
+        Number(
+            scores.p1 || 0
+        );
 
-    $("score-p2").innerText =
-        scores.p2 || 0;
+
+    $("score-p2")
+        .innerText =
+        Number(
+            scores.p2 || 0
+        );
 
 }
 
 
 /* =========================================================
-   الجولة
-   ========================================================= */
+   ROUND
+========================================================= */
 
-function updateRound(data) {
+function updateRound(
+    data
+) {
 
     currentRound =
-        data.round || 1;
+        Number(
+            data.round ||
+            1
+        );
 
-    $("lbl-round").innerText =
+
+    $("lbl-round")
+        .innerText =
         "الجولة " +
         currentRound;
 
@@ -1511,391 +2549,322 @@ function updateRound(data) {
 
 
 /* =========================================================
-   متابعة اللاعبين
-   ========================================================= */
+   PLAYERS
+========================================================= */
 
-function handlePlayers(data) {
+function handlePlayers(
+    data
+) {
 
     const p1Online =
         data.players?.p1?.online;
+
 
     const p2Online =
         data.players?.p2?.online;
 
 
-    if(
-        myRole === "p1" &&
-        p2Online
-    ) {
+    if(!p2Online) {
 
-        $("waiting-text").innerText =
-            "❤️ اللاعب الثاني دخل! جاري بدء اللعبة...";
+        if(
+            myRole ===
+            "p1"
+        ) {
 
-        setTimeout(() => {
+            showScreen(
+                "screen-waiting"
+            );
 
-            showScreen("screen-game");
 
-        }, 300);
+            $("waiting-text")
+                .innerText =
+                "⏳ في انتظار اللاعب الثاني...";
+
+        }
+
+
+        return;
 
     }
 
 
     if(
         myRole === "p2" &&
-        p1Online
+        !p1Online
     ) {
 
-        showScreen("screen-game");
+        $("disconnect-msg")
+            .classList
+            .remove("hidden");
+
+    }
+
+}
+
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+function handleGameState(
+    data
+) {
+
+    if(
+        !data.players?.p2
+    ) {
+
+        showScreen(
+            "screen-waiting"
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * اختيار
+     */
+    if(
+        data.phase ===
+        "choosing"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        resetRoundUI(
+            true
+        );
+
+
+        const choice =
+            data.choices?.[
+                currentRound
+            ]?.[
+                myRole
+            ];
+
+
+        if(choice) {
+
+            $("choice-area")
+                .classList
+                .add("hidden");
+
+
+            $("waiting-choice-area")
+                .classList
+                .remove("hidden");
+
+        }
+
+
+        return;
+
+    }
+
+
+    /*
+     * النتيجة
+     */
+    if(
+        data.phase ===
+        "result"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        displayRoundResult(
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * سؤال
+     */
+    if(
+        data.phase ===
+        "qa"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        displayRoundResult(
+            data
+        );
+
+
+        setupQAStage(
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * السؤال اتبعت
+     */
+    if(
+        data.phase ===
+        "question"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        displayRoundResult(
+            data
+        );
+
+
+        showQuestionStage(
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * الإجابة
+     */
+    if(
+        data.phase ===
+        "answer"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        displayRoundResult(
+            data
+        );
+
+
+        showAnswerStage(
+            data
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * السؤال والإجابة انتهوا
+     */
+    if(
+        data.phase ===
+        "qaDone"
+    ) {
+
+        showScreen(
+            "screen-game"
+        );
+
+
+        displayRoundResult(
+            data
+        );
+
+
+        showQAResultFromFirebase(
+            data
+        );
+
+
+        return;
+
+    }
+
+}
+
+
+/* =========================================================
+   MAKE CHOICE
+========================================================= */
+
+window.makeChoice =
+async function(move) {
+
+    if(!roomCode) {
+
+        return;
 
     }
 
 
     if(
-        myRole === "p1" &&
-        !p2Online &&
-        data.status === "playing"
+        !currentRoomData
     ) {
 
-        /*
-         * لا نعتبر الغرفة منتهية مباشرة
-         * عند تحديث بسيط.
-         */
-
-    }
-
-}
-
-
-/* =========================================================
-   معالجة الجولة من اللاعب الأول
-   ========================================================= */
-
-async function processRoundAsHost(data) {
-
-    if(data.phase !== "choosing") {
         return;
+
     }
 
 
-    const choices =
-        data.choices?.[currentRound];
+    if(
+        currentRoomData.phase !==
+        "choosing"
+    ) {
 
-
-    if(!choices) {
         return;
+
     }
 
 
-    const p1Choice =
-        choices.p1;
-
-    const p2Choice =
-        choices.p2;
-
-
-    if(!p1Choice || !p2Choice) {
-        return;
-    }
+    const round =
+        Number(
+            currentRoomData.round ||
+            1
+        );
 
 
     /*
-     * منع المعالجة أكثر من مرة.
+     * منع تغيير الاختيار
      */
-
-    const processingRef =
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/rounds/" +
-            currentRound +
-            "/processed"
-        );
-
-
-    const result =
-        await runTransaction(
-            processingRef,
-            value => {
-
-                if(value === true) {
-                    return;
-                }
-
-                return true;
-
-            }
-        );
-
-
-    if(!result.committed) {
-        return;
-    }
-
-
-    let winner = "tie";
-
-
-    if(p1Choice === p2Choice) {
-
-        winner = "tie";
-
-    } else if(
-
-        (p1Choice === "حجر" &&
-         p2Choice === "مقص") ||
-
-        (p1Choice === "مقص" &&
-         p2Choice === "ورقة") ||
-
-        (p1Choice === "ورقة" &&
-         p2Choice === "حجر")
-
+    if(
+        currentRoomData
+            .choices?.[
+                round
+            ]?.[
+                myRole
+            ]
     ) {
 
-        winner = "p1";
-
-    } else {
-
-        winner = "p2";
-
-    }
-
-
-    const oldScores =
-        data.scores || {
-            p1: 0,
-            p2: 0
-        };
-
-
-    let newP1 =
-        Number(oldScores.p1 || 0);
-
-    let newP2 =
-        Number(oldScores.p2 || 0);
-
-
-    if(winner === "p1") {
-        newP1++;
-    }
-
-    if(winner === "p2") {
-        newP2++;
-    }
-
-
-    await update(
-
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
-
-        {
-
-            phase:
-                winner === "tie"
-                    ? "result"
-                    : "qa",
-
-            winner:
-                winner,
-
-            scores: {
-
-                p1: newP1,
-
-                p2: newP2
-
-            },
-
-            resultReady:
-                true
-
-        }
-
-    );
-
-
-    if(winner === "tie") {
-
-        setTimeout(
-            () => {
-
-                startNextRoundHost();
-
-            },
-            2200
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   بداية الجولة التالية من اللاعب الأول
-   ========================================================= */
-
-async function startNextRoundHost() {
-
-    if(myRole !== "p1") {
-        return;
-    }
-
-
-    const nextRound =
-        currentRound + 1;
-
-
-    await update(
-
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
-
-        {
-
-            round:
-                nextRound,
-
-            phase:
-                "choosing",
-
-            winner:
-                null,
-
-            resultReady:
-                false,
-
-            qa:
-                {},
-
-            [`rounds/${nextRound}`]:
-                {
-                    processed: false
-                }
-
-        }
-
-    );
-
-
-    resetRoundUI();
-
-}
-
-
-/* =========================================================
-   عرض حالة اللعبة
-   ========================================================= */
-
-function handleGameState(data) {
-
-    if(!data.players?.p2) {
-
-        showScreen("screen-waiting");
-
         return;
 
     }
 
 
-    if(data.phase === "choosing") {
-
-        showScreen("screen-game");
-
-        resetRoundUI(false);
-
-        return;
-
-    }
-
-
-    if(data.phase === "result") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "qa") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        setupQAStageFromFirebase(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "question") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showQuestionStage(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "answer") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showAnswerStage(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "qaDone") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showQAResultFromFirebase(data);
-
-    }
-
-}
-
-
-/* =========================================================
-   اختيار الحركة
-   ========================================================= */
-
-window.makeChoice = async function(move) {
-
-    if(!roomCode) {
-        return;
-    }
-
-
-    if(currentRoomData?.phase !== "choosing") {
-        return;
-    }
-
-
-    myChoice = move;
+    myChoice =
+        move;
 
 
     $("choice-area")
@@ -1914,7 +2883,7 @@ window.makeChoice = async function(move) {
             "rooms/" +
             roomCode +
             "/choices/" +
-            currentRound +
+            round +
             "/" +
             myRole
         );
@@ -1927,9 +2896,23 @@ window.makeChoice = async function(move) {
             move
         );
 
+
     } catch(error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
+
+        $("choice-area")
+            .classList
+            .remove("hidden");
+
+
+        $("waiting-choice-area")
+            .classList
+            .add("hidden");
+
 
         alert(
             "حصل خطأ أثناء تسجيل اختيارك."
@@ -1941,73 +2924,430 @@ window.makeChoice = async function(move) {
 
 
 /* =========================================================
-   عرض النتيجة
-   ========================================================= */
+   PROCESS ROUND
+========================================================= */
 
-function displayRoundResult(data) {
+async function processRound(
+    data
+) {
+
+    if(
+        processingRound
+    ) {
+
+        return;
+
+    }
+
+
+    const round =
+        Number(
+            data.round ||
+            1
+        );
+
 
     const choices =
-        data.choices?.[data.round];
+        data.choices?.[
+            round
+        ];
 
 
     if(!choices) {
+
         return;
+
+    }
+
+
+    const p1Choice =
+        choices.p1;
+
+
+    const p2Choice =
+        choices.p2;
+
+
+    /*
+     * لازم الاثنين يختاروا
+     */
+    if(
+        !p1Choice ||
+        !p2Choice
+    ) {
+
+        return;
+
+    }
+
+
+    processingRound =
+        true;
+
+
+    try {
+
+        /*
+         * قفل معالجة الجولة.
+         * أول لاعب ينفذ المعاملة
+         * يعالج الجولة فقط.
+         */
+        const processedRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/rounds/" +
+                round +
+                "/processed"
+            );
+
+
+        const result =
+            await runTransaction(
+                processedRef,
+                value => {
+
+                    if(
+                        value === true
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    return true;
+
+                }
+            );
+
+
+        if(
+            !result.committed
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * تحديد الفائز
+         */
+
+        let winner =
+            "tie";
+
+
+        if(
+            p1Choice ===
+            p2Choice
+        ) {
+
+            winner =
+                "tie";
+
+        }
+
+        else if(
+
+            (
+                p1Choice ===
+                "حجر" &&
+                p2Choice ===
+                "مقص"
+            )
+
+            ||
+
+            (
+                p1Choice ===
+                "مقص" &&
+                p2Choice ===
+                "ورقة"
+            )
+
+            ||
+
+            (
+                p1Choice ===
+                "ورقة" &&
+                p2Choice ===
+                "حجر"
+            )
+
+        ) {
+
+            winner =
+                "p1";
+
+        }
+
+        else {
+
+            winner =
+                "p2";
+
+        }
+
+
+        /*
+         * تحديث النتيجة
+         */
+
+        if(
+            winner ===
+            "tie"
+        ) {
+
+            await update(
+                ref(
+                    db,
+                    "rooms/" +
+                    roomCode
+                ),
+                {
+
+                    phase:
+                        "result",
+
+                    winner:
+                        "tie",
+
+                    resultReady:
+                        true,
+
+                    [
+                        `rounds/${round}/winner`
+                    ]:
+                        "tie"
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * تحديث النقاط باستخدام Transaction
+         */
+
+        const scoresRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/scores"
+            );
+
+
+        await runTransaction(
+            scoresRef,
+            scores => {
+
+                scores =
+                    scores ||
+                    {
+                        p1: 0,
+                        p2: 0
+                    };
+
+
+                if(
+                    winner ===
+                    "p1"
+                ) {
+
+                    scores.p1 =
+                        Number(
+                            scores.p1 ||
+                            0
+                        ) + 1;
+
+                }
+
+
+                if(
+                    winner ===
+                    "p2"
+                ) {
+
+                    scores.p2 =
+                        Number(
+                            scores.p2 ||
+                            0
+                        ) + 1;
+
+                }
+
+
+                return scores;
+
+            }
+        );
+
+
+        /*
+         * الانتقال للسؤال
+         */
+
+        await update(
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+            {
+
+                phase:
+                    "qa",
+
+                winner:
+                    winner,
+
+                resultReady:
+                    true,
+
+                [
+                    `rounds/${round}/winner`
+                ]:
+                    winner
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "processRound:",
+            error
+        );
+
+
+    } finally {
+
+        processingRound =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY RESULT
+========================================================= */
+
+function displayRoundResult(
+    data
+) {
+
+    const round =
+        Number(
+            data.round ||
+            1
+        );
+
+
+    const choices =
+        data.choices?.[
+            round
+        ];
+
+
+    if(!choices) {
+
+        return;
+
     }
 
 
     const p1Move =
         choices.p1;
 
+
     const p2Move =
         choices.p2;
 
 
-    if(!p1Move || !p2Move) {
+    if(
+        !p1Move ||
+        !p2Move
+    ) {
+
         return;
+
     }
 
 
     const emojis = {
 
-        "حجر": "🪨",
+        "حجر":
+            "🪨",
 
-        "ورقة": "📄",
+        "ورقة":
+            "📄",
 
-        "مقص": "✂️"
+        "مقص":
+            "✂️"
 
     };
 
 
-    $("res-p1-emoji").innerText =
-        emojis[p1Move];
-
-    $("res-p2-emoji").innerText =
-        emojis[p2Move];
-
-
-    let text = "";
+    $("res-p1-emoji")
+        .innerText =
+        emojis[p1Move] ||
+        "❓";
 
 
-    if(data.winner === "tie") {
+    $("res-p2-emoji")
+        .innerText =
+        emojis[p2Move] ||
+        "❓";
+
+
+    let text =
+        "";
+
+
+    if(
+        data.winner ===
+        "tie"
+    ) {
 
         text =
             "تعادل... محدش عايز يزعل التاني 😂❤️";
 
-    } else {
+    }
+
+    else {
 
         const winnerName =
-            data.winner === "p1"
-                ? data.players.p1.name
-                : data.players.p2.name;
+            data.winner ===
+            "p1"
+
+                ? data.players?.p1?.name
+
+                : data.players?.p2?.name;
+
 
         text =
-            winnerName +
+            (
+                winnerName ||
+                "اللاعب"
+            ) +
             " كسب الجولة! 🎉";
 
     }
 
 
-    $("round-winner-text").innerText =
+    $("round-winner-text")
+        .innerText =
         text;
 
 
@@ -2026,21 +3366,41 @@ function displayRoundResult(data) {
         .remove("hidden");
 
 
+    /*
+     * Confetti مرة واحدة
+     */
+
     if(
-        data.winner !== "tie"
+        data.winner !==
+        "tie" &&
+        lastDisplayedResultRound !==
+        round
     ) {
+
+        lastDisplayedResultRound =
+            round;
+
 
         try {
 
             confetti({
-                particleCount: 80,
-                spread: 70,
+
+                particleCount:
+                    80,
+
+                spread:
+                    70,
+
                 origin: {
-                    y: .6
+
+                    y:
+                        .6
+
                 }
+
             });
 
-        } catch(e) {}
+        } catch(error) {}
 
     }
 
@@ -2048,10 +3408,12 @@ function displayRoundResult(data) {
 
 
 /* =========================================================
-   مرحلة السؤال
-   ========================================================= */
+   QA STAGE
+========================================================= */
 
-function setupQAStageFromFirebase(data) {
+function setupQAStage(
+    data
+) {
 
     $("qa-section")
         .classList
@@ -2062,17 +3424,21 @@ function setupQAStageFromFirebase(data) {
         .classList
         .add("hidden");
 
+
     $("loser-waiting-box")
         .classList
         .add("hidden");
+
 
     $("loser-answer-box")
         .classList
         .add("hidden");
 
+
     $("winner-waiting-answer")
         .classList
         .add("hidden");
+
 
     $("qa-result-display")
         .classList
@@ -2080,14 +3446,17 @@ function setupQAStageFromFirebase(data) {
 
 
     if(
-        data.winner === myRole
+        data.winner ===
+        myRole
     ) {
 
         $("winner-question-box")
             .classList
             .remove("hidden");
 
-    } else {
+    }
+
+    else {
 
         $("loser-waiting-box")
             .classList
@@ -2099,10 +3468,30 @@ function setupQAStageFromFirebase(data) {
 
 
 /* =========================================================
-   إرسال السؤال
-   ========================================================= */
+   SEND QUESTION
+========================================================= */
 
-window.sendQuestion = async function() {
+window.sendQuestion =
+async function() {
+
+    if(
+        !currentRoomData
+    ) {
+
+        return;
+
+    }
+
+
+    if(
+        currentRoomData.winner !==
+        myRole
+    ) {
+
+        return;
+
+    }
+
 
     let question =
         $("winner-question-input")
@@ -2113,89 +3502,151 @@ window.sendQuestion = async function() {
     if(!question) {
 
         question =
-            "قول بحبك قد ايه؟ 😂❤️";
+            "قول بحبك قد إيه؟ 😂❤️";
 
     }
 
 
-    await update(
+    try {
 
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
+        await update(
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+            {
 
-        {
+                phase:
+                    "question",
 
-            phase:
-                "question",
+                "qa/question":
+                    question,
 
-            "qa/question":
-                question
+                "qa/answer":
+                    null
 
-        }
+            }
+        );
 
-    );
+
+        $("winner-question-input")
+            .value =
+            "";
+
+
+    } catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        showFloatingChat(
+            "حصل خطأ في إرسال السؤال."
+        );
+
+    }
 
 };
 
 
 /* =========================================================
-   عرض السؤال للخاسر
-   ========================================================= */
+   QUESTION STAGE
+========================================================= */
 
-function showQuestionStage(data) {
+function showQuestionStage(
+    data
+) {
 
     $("qa-section")
         .classList
         .remove("hidden");
 
 
-    const question =
-        data.qa?.question || "";
-
-
-    if(data.winner === myRole) {
+    if(
+        data.winner ===
+        myRole
+    ) {
 
         $("winner-question-box")
             .classList
             .add("hidden");
 
+
+        $("loser-waiting-box")
+            .classList
+            .add("hidden");
+
+
+        $("loser-answer-box")
+            .classList
+            .add("hidden");
+
+
         $("winner-waiting-answer")
             .classList
             .remove("hidden");
+
 
         return;
 
     }
 
 
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+
     $("loser-waiting-box")
         .classList
         .add("hidden");
+
 
     $("loser-answer-box")
         .classList
         .remove("hidden");
 
 
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+
     $("displayed-question")
         .innerText =
-        question;
-
-
-    $("loser-answer-input")
-        .value = "";
+        data.qa?.question ||
+        "السؤال غير موجود";
 
 }
 
 
 /* =========================================================
-   إرسال الإجابة
-   ========================================================= */
+   SEND ANSWER
+========================================================= */
 
-window.sendAnswer = async function() {
+window.sendAnswer =
+async function() {
+
+    if(
+        !currentRoomData
+    ) {
+
+        return;
+
+    }
+
+
+    if(
+        currentRoomData.winner ===
+        myRole
+    ) {
+
+        return;
+
+    }
+
 
     let answer =
         $("loser-answer-input")
@@ -2211,45 +3662,101 @@ window.sendAnswer = async function() {
     }
 
 
-    await update(
+    try {
 
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
+        const answerRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/qa/answer"
+            );
 
-        {
 
-            phase:
-                "qaDone",
+        /*
+         * أول إجابة فقط
+         */
 
-            "qa/answer":
-                answer
+        const result =
+            await runTransaction(
+                answerRef,
+                oldAnswer => {
+
+                    if(oldAnswer) {
+
+                        return;
+
+                    }
+
+
+                    return answer;
+
+                }
+            );
+
+
+        if(
+            !result.committed
+        ) {
+
+            return;
 
         }
 
-    );
+
+        await update(
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+            {
+
+                phase:
+                    "qaDone"
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        showFloatingChat(
+            "حصل خطأ في إرسال الإجابة."
+        );
+
+    }
 
 };
 
 
 /* =========================================================
-   عرض الإجابة
-   ========================================================= */
+   ANSWER STAGE
+========================================================= */
 
-function showAnswerStage(data) {
+function showAnswerStage(
+    data
+) {
 
-    showQuestionStage(data);
+    showQuestionStage(
+        data
+    );
 
 }
 
 
 /* =========================================================
-   عرض نتيجة السؤال
-   ========================================================= */
+   QA DONE
+========================================================= */
 
-function showQAResultFromFirebase(data) {
+function showQAResultFromFirebase(
+    data
+) {
 
     $("qa-section")
         .classList
@@ -2260,13 +3767,16 @@ function showQAResultFromFirebase(data) {
         .classList
         .add("hidden");
 
+
     $("loser-waiting-box")
         .classList
         .add("hidden");
 
+
     $("loser-answer-box")
         .classList
         .add("hidden");
+
 
     $("winner-waiting-answer")
         .classList
@@ -2283,59 +3793,572 @@ function showQAResultFromFirebase(data) {
         data.qa?.answer ||
         "تم إرسال الإجابة ❤️";
 
+
+    /*
+     * حالة استعداد اللاعب الحالي
+     */
+
+    const ready =
+        data.nextReady?.[
+            myRole
+        ] === true;
+
+
+    const button =
+        $("next-round-btn");
+
+
+    const status =
+        $("next-round-status");
+
+
+    if(ready) {
+
+        button.disabled =
+            true;
+
+
+        button.innerText =
+            "✅ تم الاستعداد";
+
+
+        status
+            .classList
+            .remove("hidden");
+
+
+        updateReadyStatus(
+            data
+        );
+
+    }
+
+    else {
+
+        button.disabled =
+            false;
+
+
+        button.innerText =
+            "الجولة اللي بعدها 🚀";
+
+
+        status
+            .classList
+            .add("hidden");
+
+    }
+
 }
 
 
 /* =========================================================
-   الجولة التالية
-   ========================================================= */
+   PLAYER READY FOR NEXT ROUND
+========================================================= */
 
-window.startNextRoundFromQA =
+window.readyForNextRound =
 async function() {
 
-    /*
-     * نخلي اللاعب الأول فقط
-     * يبدأ الجولة الجديدة.
-     */
-
-    if(myRole !== "p1") {
-
-        showFloatingChat(
-            "استنى اللاعب الأول يبدأ الجولة ❤️"
-        );
+    if(
+        !roomCode ||
+        !myRole ||
+        !currentRoomData
+    ) {
 
         return;
 
     }
 
 
-    await startNextRoundHost();
+    const phase =
+        currentRoomData.phase;
+
+
+    /*
+     * يسمح بالاستعداد بعد
+     * انتهاء النتيجة أو السؤال.
+     */
+
+    if(
+        phase !==
+        "qaDone" &&
+        phase !==
+        "result"
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * لو أنا ضغطت بالفعل
+     */
+    if(
+        currentRoomData
+            .nextReady?.[
+                myRole
+            ] === true
+    ) {
+
+        return;
+
+    }
+
+
+    const readyRef =
+        ref(
+            db,
+            "rooms/" +
+            roomCode +
+            "/nextReady/" +
+            myRole
+        );
+
+
+    try {
+
+        await set(
+            readyRef,
+            true
+        );
+
+
+        /*
+         * UI مباشر عند اللاعب نفسه
+         */
+
+        $("next-round-btn")
+            .disabled =
+            true;
+
+
+        $("next-round-btn")
+            .innerText =
+            "✅ تم الاستعداد";
+
+
+        $("next-round-status")
+            .classList
+            .remove("hidden");
+
+
+        if(
+            currentRoomData
+        ) {
+
+            const copy =
+                {
+                    ...currentRoomData,
+
+                    nextReady:
+                        {
+                            ...(
+                                currentRoomData
+                                    .nextReady ||
+                                {}
+                            ),
+
+                            [myRole]:
+                                true
+                        }
+                };
+
+
+            updateReadyStatus(
+                copy
+            );
+
+        }
+
+
+        /*
+         * الفحص الحقيقي سيحدث
+         * تلقائيًا من Listener.
+         */
+
+    } catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        $("next-round-btn")
+            .disabled =
+            false;
+
+
+        $("next-round-btn")
+            .innerText =
+            "الجولة اللي بعدها 🚀";
+
+
+        showFloatingChat(
+            "حصل خطأ، حاول تاني ❤️"
+        );
+
+    }
 
 };
 
 
 /* =========================================================
-   إعادة الجولة
-   ========================================================= */
+   READY STATUS
+========================================================= */
 
-function resetRoundUI(showChoice = true) {
+function updateReadyStatus(
+    data
+) {
 
-    myChoice = null;
+    const p1Ready =
+        data.nextReady?.p1 === true;
 
-    roundAlreadyDisplayed =
-        false;
+
+    const p2Ready =
+        data.nextReady?.p2 === true;
+
+
+    const status =
+        $("next-round-status");
+
+
+    if(
+        p1Ready &&
+        p2Ready
+    ) {
+
+        status.innerHTML =
+            "🚀 اللاعبان مستعدان... جاري بدء الجولة الجديدة!";
+
+
+        return;
+
+    }
+
+
+    if(
+        myRole === "p1"
+    ) {
+
+        if(p1Ready) {
+
+            status.innerHTML =
+                "✅ أنت مستعد — ⏳ في انتظار اللاعب الثاني...";
+
+        }
+
+        else if(p2Ready) {
+
+            status.innerHTML =
+                "⏳ اللاعب الثاني مستعد — اضغط الزر للبدء!";
+
+        }
+
+        else {
+
+            status.innerHTML =
+                "⏳ في انتظار استعداد اللاعبين...";
+
+        }
+
+    }
+
+
+    if(
+        myRole === "p2"
+    ) {
+
+        if(p2Ready) {
+
+            status.innerHTML =
+                "✅ أنت مستعد — ⏳ في انتظار اللاعب الأول...";
+
+        }
+
+        else if(p1Ready) {
+
+            status.innerHTML =
+                "⏳ اللاعب الأول مستعد — اضغط الزر للبدء!";
+
+        }
+
+        else {
+
+            status.innerHTML =
+                "⏳ في انتظار استعداد اللاعبين...";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CHECK BOTH PLAYERS READY
+========================================================= */
+
+async function checkNextRoundReady(
+    data
+) {
+
+    if(
+        movingToNextRound
+    ) {
+
+        return;
+
+    }
+
+
+    const p1Ready =
+        data.nextReady?.p1 === true;
+
+
+    const p2Ready =
+        data.nextReady?.p2 === true;
+
+
+    /*
+     * مش جاهزين الاتنين
+     */
+    if(
+        !p1Ready ||
+        !p2Ready
+    ) {
+
+        if(
+            data.phase ===
+            "qaDone" ||
+            data.phase ===
+            "result"
+        ) {
+
+            updateReadyStatus(
+                data
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    /*
+     * الاتنين جاهزين
+     */
+
+    movingToNextRound =
+        true;
+
+
+    try {
+
+        const round =
+            Number(
+                data.round ||
+                1
+            );
+
+
+        /*
+         * قفل بدء الجولة.
+         *
+         * يمنع الطرفين من إنشاء
+         * أكثر من جولة.
+         */
+
+        const startRef =
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/rounds/" +
+                round +
+                "/nextStarted"
+            );
+
+
+        const transactionResult =
+            await runTransaction(
+                startRef,
+                value => {
+
+                    if(
+                        value === true
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    return true;
+
+                }
+            );
+
+
+        /*
+         * الجولة بدأت بالفعل
+         */
+        if(
+            !transactionResult.committed
+        ) {
+
+            return;
+
+        }
+
+
+        const nextRound =
+            round + 1;
+
+
+        /*
+         * إنشاء الجولة الجديدة
+         */
+
+        await update(
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+            {
+
+                round:
+                    nextRound,
+
+                phase:
+                    "choosing",
+
+                winner:
+                    null,
+
+                resultReady:
+                    false,
+
+                qa:
+                    {},
+
+                nextReady:
+                    {
+                        p1:
+                            false,
+
+                        p2:
+                            false
+                    },
+
+                [
+                    `choices/${nextRound}`
+                ]:
+                    {},
+
+                [
+                    `rounds/${nextRound}`
+                ]:
+                    {
+
+                        processed:
+                            false,
+
+                        nextStarted:
+                            false
+
+                    }
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "checkNextRoundReady:",
+            error
+        );
+
+
+    } finally {
+
+        movingToNextRound =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET ROUND UI
+========================================================= */
+
+function resetRoundUI(
+    showChoice = true
+) {
+
+    myChoice =
+        null;
+
 
     $("result-area")
         .classList
         .add("hidden");
 
+
     $("qa-section")
         .classList
         .add("hidden");
 
+
     $("waiting-choice-area")
         .classList
         .add("hidden");
+
+
+    $("winner-question-box")
+        .classList
+        .add("hidden");
+
+
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
+
+
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
+
+
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
+
+
+    $("qa-result-display")
+        .classList
+        .add("hidden");
+
+
+    $("next-round-status")
+        .classList
+        .add("hidden");
+
+
+    $("next-round-btn")
+        .disabled =
+        false;
+
+
+    $("next-round-btn")
+        .innerText =
+        "الجولة اللي بعدها 🚀";
 
 
     if(showChoice) {
@@ -2346,33 +4369,12 @@ function resetRoundUI(showChoice = true) {
 
     }
 
-
-    $("winner-question-box")
-        .classList
-        .add("hidden");
-
-    $("loser-waiting-box")
-        .classList
-        .add("hidden");
-
-    $("loser-answer-box")
-        .classList
-        .add("hidden");
-
-    $("winner-waiting-answer")
-        .classList
-        .add("hidden");
-
-    $("qa-result-display")
-        .classList
-        .add("hidden");
-
 }
 
 
 /* =========================================================
-   الشات السريع
-   ========================================================= */
+   QUICK CHAT
+========================================================= */
 
 window.toggleChatMenu =
 function() {
@@ -2380,9 +4382,13 @@ function() {
     const menu =
         $("chatMenu");
 
+
     menu.style.display =
-        menu.style.display === "block"
+        menu.style.display ===
+        "block"
+
             ? "none"
+
             : "block";
 
 };
@@ -2391,7 +4397,9 @@ function() {
 window.sendQuickChat =
 async function(text) {
 
-    $("chatMenu").style.display =
+    $("chatMenu")
+        .style
+        .display =
         "none";
 
 
@@ -2402,13 +4410,28 @@ async function(text) {
     );
 
 
+    if(!roomCode) {
+
+        return;
+
+    }
+
+
+    const messageId =
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .slice(2);
+
+
     const chatRef =
         ref(
             db,
             "rooms/" +
             roomCode +
             "/chat/" +
-            Date.now()
+            messageId
         );
 
 
@@ -2433,9 +4456,12 @@ async function(text) {
             }
         );
 
+
     } catch(error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
     }
 
@@ -2443,10 +4469,27 @@ async function(text) {
 
 
 /* =========================================================
-   متابعة الشات
-   ========================================================= */
+   CHAT LISTENER
+========================================================= */
 
 function listenToChat() {
+
+    if(chatListener) {
+
+        chatListener();
+
+        chatListener =
+            null;
+
+    }
+
+
+    if(!roomCode) {
+
+        return;
+
+    }
+
 
     const chatRef =
         ref(
@@ -2457,89 +4500,135 @@ function listenToChat() {
         );
 
 
-    onValue(
-        chatRef,
-        snapshot => {
+    chatListener =
+        onValue(
+            chatRef,
+            snapshot => {
 
-            const data =
-                snapshot.val();
-
-            if(!data) {
-                return;
-            }
+                const data =
+                    snapshot.val();
 
 
-            const messages =
-                Object.values(data);
+                if(!data) {
+
+                    return;
+
+                }
 
 
-            if(messages.length === 0) {
-                return;
-            }
+                const messages =
+                    Object.values(
+                        data
+                    );
 
 
-            const last =
-                messages[messages.length - 1];
+                if(
+                    messages.length ===
+                    0
+                ) {
+
+                    return;
+
+                }
 
 
-            if(
-                last.sender !== myRole
-            ) {
-
-                showFloatingChat(
-
-                    (last.name ||
-                     opponentName ||
-                     "الطرف الآخر") +
-
-                    ": " +
-
-                    last.text
-
+                messages.sort(
+                    (a,b) =>
+                        Number(
+                            a.time ||
+                            0
+                        ) -
+                        Number(
+                            b.time ||
+                            0
+                        )
                 );
 
-            }
 
-        }
-    );
+                const last =
+                    messages[
+                        messages.length -
+                        1
+                    ];
+
+
+                if(
+                    last.sender !==
+                    myRole
+                ) {
+
+                    showFloatingChat(
+
+                        (
+                            last.name ||
+                            opponentName ||
+                            "الطرف الآخر"
+                        ) +
+                        ": " +
+                        last.text
+
+                    );
+
+                }
+
+            }
+        );
 
 }
 
 
 /* =========================================================
-   إظهار رسالة
-   ========================================================= */
+   FLOATING MESSAGE
+========================================================= */
 
-function showFloatingChat(msg) {
+function showFloatingChat(
+    msg
+) {
 
-    const existing =
+    const old =
         document.querySelector(
             ".floating-chat-popup"
         );
 
 
-    if(existing) {
-        existing.remove();
+    if(old) {
+
+        old.remove();
+
     }
 
 
-    const pop =
-        document.createElement("div");
+    const popup =
+        document.createElement(
+            "div"
+        );
 
 
-    pop.className =
+    popup.className =
         "floating-chat-popup";
 
 
-    pop.innerText =
+    popup.innerText =
         msg;
 
 
-    document.body.appendChild(pop);
+    document.body.appendChild(
+        popup
+    );
 
 
     setTimeout(
-        () => pop.remove(),
+        () => {
+
+            if(
+                popup.parentNode
+            ) {
+
+                popup.remove();
+
+            }
+
+        },
         2800
     );
 
@@ -2547,8 +4636,8 @@ function showFloatingChat(msg) {
 
 
 /* =========================================================
-   قطع الاتصال
-   ========================================================= */
+   DISCONNECT
+========================================================= */
 
 function handleDisconnect() {
 
@@ -2556,17 +4645,21 @@ function handleDisconnect() {
         .classList
         .add("hidden");
 
+
     $("waiting-choice-area")
         .classList
         .add("hidden");
+
 
     $("result-area")
         .classList
         .add("hidden");
 
+
     $("qa-section")
         .classList
         .add("hidden");
+
 
     $("disconnect-msg")
         .classList
@@ -2576,15 +4669,18 @@ function handleDisconnect() {
 
 
 /* =========================================================
-   مغادرة اللعبة
-   ========================================================= */
+   LEAVE GAME
+========================================================= */
 
 window.leaveGame =
 async function() {
 
     try {
 
-        if(roomCode && myRole) {
+        if(
+            roomCode &&
+            myRole
+        ) {
 
             await update(
 
@@ -2597,7 +4693,10 @@ async function() {
                 ),
 
                 {
-                    online: false
+
+                    online:
+                        false
+
                 }
 
             );
@@ -2606,7 +4705,9 @@ async function() {
 
     } catch(error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
     }
 
@@ -2617,23 +4718,8 @@ async function() {
 
 
 /* =========================================================
-   تشغيل الشات عند دخول الغرفة
-   ========================================================= */
-
-const originalListenToRoom =
-    listenToRoom;
-
-
-/*
- * ملاحظة:
- * يتم استدعاء listenToChat من هنا
- * بعد تحميل الصفحة.
- */
-
-
-/* =========================================================
-   مراقبة الاتصال بقاعدة البيانات
-   ========================================================= */
+   FIREBASE CONNECTION
+========================================================= */
 
 const connectedRef =
     ref(
@@ -2646,13 +4732,18 @@ onValue(
     connectedRef,
     snapshot => {
 
-        if(snapshot.val() === true) {
+        if(
+            snapshot.val() ===
+            true
+        ) {
 
             console.log(
                 "Firebase Connected"
             );
 
-        } else {
+        }
+
+        else {
 
             console.log(
                 "Firebase Disconnected"
@@ -2663,39 +4754,9 @@ onValue(
     }
 );
 
-
-/* =========================================================
-   إصلاح تشغيل الشات بعد إنشاء/دخول الغرفة
-   ========================================================= */
-
-const oldCreateRoom =
-    window.createRoom;
-
-const oldJoinRoom =
-    window.joinRoom;
-
-
-/*
- * مراقبة بسيطة لتشغيل Listener الشات
- */
-
-setInterval(() => {
-
-    if(roomCode) {
-
-        if(!window.__chatStarted) {
-
-            window.__chatStarted = true;
-
-            listenToChat();
-
-        }
-
-    }
-
-}, 1000);
-
 </script>
 
+
 </body>
+
 </html>
