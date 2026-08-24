@@ -14,7 +14,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #fce7f3, #fae8ff, #f3e8ff);
-            --card-bg: rgba(255,255,255,.95);
+            --card-bg: rgba(255,255,255,.96);
             --primary-pink: #db2777;
             --accent-purple: #9333ea;
             --text-main: #4a044e;
@@ -22,6 +22,7 @@
             --border-color: #fbcfe8;
             --danger: #ef4444;
             --success: #16a34a;
+            --warning: #f59e0b;
             --radius: 20px;
             --shadow: 0 10px 30px rgba(219,39,119,.15);
         }
@@ -31,6 +32,11 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        html,
+        body {
+            min-height: 100%;
         }
 
         body {
@@ -43,6 +49,15 @@
             padding: 15px;
         }
 
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .app-container {
             width: 100%;
             max-width: 480px;
@@ -51,6 +66,7 @@
 
         .game-screen {
             display: none;
+            width: 100%;
         }
 
         .game-screen.active {
@@ -102,6 +118,10 @@
             margin-bottom: 15px;
         }
 
+        h3 {
+            color: var(--primary-pink);
+        }
+
         .subtitle {
             color: var(--text-muted);
             font-size: .9rem;
@@ -132,7 +152,11 @@
         }
 
         .primary-btn {
-            background: linear-gradient(135deg, var(--primary-pink), var(--accent-purple));
+            background: linear-gradient(
+                135deg,
+                var(--primary-pink),
+                var(--accent-purple)
+            );
             color: #fff;
         }
 
@@ -150,6 +174,14 @@
         .secondary-btn:active,
         .danger-btn:active {
             transform: scale(.98);
+        }
+
+        .primary-btn:disabled,
+        .secondary-btn:disabled,
+        .danger-btn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .text-btn {
@@ -182,6 +214,7 @@
             font-size: 1rem;
             text-align: center;
             outline: none;
+            background: #fff;
         }
 
         input:focus {
@@ -252,6 +285,10 @@
             background: #fdf2f8;
         }
 
+        .choice-btn:active {
+            transform: scale(.96);
+        }
+
         .choice-icon {
             font-size: 2.2rem;
         }
@@ -261,6 +298,7 @@
             justify-content: space-around;
             align-items: center;
             margin: 15px 0;
+            gap: 10px;
         }
 
         .reveal-box {
@@ -357,6 +395,8 @@
             z-index: 1000;
             box-shadow: 0 5px 15px rgba(0,0,0,.2);
             animation: fadeInOut 2.8s ease-in-out forwards;
+            max-width: 90%;
+            text-align: center;
         }
 
         @keyframes fadeInOut {
@@ -388,25 +428,57 @@
             font-weight: bold;
         }
 
-        .loading {
-            text-align: center;
-            padding: 15px;
-            color: var(--text-muted);
-        }
-
         .next-round-box {
             margin-top: 15px;
-            padding: 12px;
-            background: #f3e8ff;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                #fdf2f8,
+                #f3e8ff
+            );
             border: 2px solid var(--border-color);
         }
 
         .next-round-status {
-            font-size: .85rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
+            color: var(--success);
             font-weight: bold;
+            margin-top: 10px;
+            font-size: .9rem;
+        }
+
+        .waiting-other {
+            color: var(--text-muted);
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: .9rem;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: .8rem;
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        .question-display {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            word-break: break-word;
+        }
+
+        .answer-display {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            word-break: break-word;
         }
 
         @media(max-width:360px) {
@@ -422,6 +494,10 @@
             .scoreboard-bar {
                 font-size: .75rem;
             }
+
+            .reveal-box {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -430,12 +506,17 @@
 
 <div class="app-container">
 
-    <!-- HOME -->
+    <!-- =====================================================
+         HOME
+    ====================================================== -->
+
     <section id="screen-home" class="game-screen active">
 
         <div class="hero-card">
 
-            <div style="font-size:2.5rem;margin-bottom:10px;">❤️</div>
+            <div style="font-size:2.5rem;margin-bottom:10px;">
+                ❤️
+            </div>
 
             <h1>LoveDuel</h1>
 
@@ -445,8 +526,9 @@
 
             <div class="menu-buttons">
 
-                <button class="primary-btn"
-                        onclick="showScreen('screen-create')">
+                <button
+                    class="primary-btn"
+                    onclick="showScreen('screen-create')">
 
                     <i class="fa-solid fa-user-plus"></i>
 
@@ -454,8 +536,9 @@
 
                 </button>
 
-                <button class="secondary-btn"
-                        onclick="showScreen('screen-join')">
+                <button
+                    class="secondary-btn"
+                    onclick="showScreen('screen-join')">
 
                     <i class="fa-solid fa-door-open"></i>
 
@@ -470,7 +553,10 @@
     </section>
 
 
-    <!-- CREATE -->
+    <!-- =====================================================
+         CREATE
+    ====================================================== -->
+
     <section id="screen-create" class="game-screen">
 
         <div class="hero-card">
@@ -509,7 +595,10 @@
     </section>
 
 
-    <!-- WAITING -->
+    <!-- =====================================================
+         WAITING
+    ====================================================== -->
+
     <section id="screen-waiting" class="game-screen">
 
         <div class="hero-card">
@@ -527,21 +616,15 @@
             </div>
 
             <p class="subtitle">
-
                 ابعت الكود للطرف التاني ❤️
-
             </p>
 
             <p id="waiting-text">
-
                 ⏳ في انتظار انضمامه...
-
             </p>
 
             <div class="connection-status">
-
                 🟢 متصل بقاعدة البيانات
-
             </div>
 
             <button
@@ -558,7 +641,10 @@
     </section>
 
 
-    <!-- JOIN -->
+    <!-- =====================================================
+         JOIN
+    ====================================================== -->
+
     <section id="screen-join" class="game-screen">
 
         <div class="hero-card">
@@ -599,7 +685,7 @@
 
             <p
                 id="join-error"
-                style="color:red;font-size:.8rem;margin-top:8px;">
+                class="error-text">
             </p>
 
             <button
@@ -615,16 +701,23 @@
     </section>
 
 
-    <!-- GAME -->
+    <!-- =====================================================
+         GAME
+    ====================================================== -->
+
     <section id="screen-game" class="game-screen">
 
         <div class="scoreboard-bar">
 
             <div>
 
-                <span id="lbl-p1">اللاعب 1</span>:
+                <span id="lbl-p1">
+                    اللاعب 1
+                </span>:
 
-                <strong id="score-p1">0</strong>
+                <strong id="score-p1">
+                    0
+                </strong>
 
             </div>
 
@@ -638,9 +731,13 @@
 
             <div>
 
-                <span id="lbl-p2">اللاعب 2</span>:
+                <span id="lbl-p2">
+                    اللاعب 2
+                </span>:
 
-                <strong id="score-p2">0</strong>
+                <strong id="score-p2">
+                    0
+                </strong>
 
             </div>
 
@@ -650,6 +747,7 @@
         <div class="gameplay-card">
 
             <!-- CHAT -->
+
             <button
                 class="chat-float-btn"
                 onclick="toggleChatMenu()">
@@ -682,7 +780,10 @@
             </p>
 
 
-            <!-- CHOICE -->
+            <!-- =================================================
+                 CHOICE
+            ================================================== -->
+
             <div id="choice-area">
 
                 <p
@@ -735,7 +836,10 @@
             </div>
 
 
-            <!-- WAIT -->
+            <!-- =================================================
+                 WAITING CHOICE
+            ================================================== -->
+
             <div
                 id="waiting-choice-area"
                 class="hidden">
@@ -754,7 +858,10 @@
             </div>
 
 
-            <!-- RESULT -->
+            <!-- =================================================
+                 RESULT
+            ================================================== -->
+
             <div
                 id="result-area"
                 class="hidden">
@@ -806,18 +913,25 @@
             </div>
 
 
-            <!-- QA -->
+            <!-- =================================================
+                 QUESTION / ANSWER
+            ================================================== -->
+
             <div
                 id="qa-section"
                 class="qa-container hidden">
 
-                <!-- WINNER -->
+
+                <!-- WINNER QUESTION -->
+
                 <div
                     id="winner-question-box"
                     class="hidden">
 
                     <p
-                        style="color:var(--primary-pink);font-weight:bold;margin-bottom:8px;">
+                        style="color:var(--primary-pink);
+                               font-weight:bold;
+                               margin-bottom:8px;">
 
                         🎉 أنت الفائز!
                         اسأل الخاسر سؤال أو اطلب منه طلب:
@@ -846,13 +960,15 @@
                 </div>
 
 
-                <!-- LOSER WAIT -->
+                <!-- LOSER WAITING -->
+
                 <div
                     id="loser-waiting-box"
                     class="hidden">
 
                     <p
-                        style="color:var(--danger);font-weight:bold;">
+                        style="color:var(--danger);
+                               font-weight:bold;">
 
                         ⏳ في انتظار الفائز عشان يكتب لك سؤال...
 
@@ -862,12 +978,15 @@
 
 
                 <!-- LOSER ANSWER -->
+
                 <div
                     id="loser-answer-box"
                     class="hidden">
 
                     <p
-                        style="color:var(--danger);font-weight:bold;margin-bottom:5px;">
+                        style="color:var(--danger);
+                               font-weight:bold;
+                               margin-bottom:5px;">
 
                         سؤال الفائز:
 
@@ -875,7 +994,7 @@
 
                     <p
                         id="displayed-question"
-                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:10px;font-weight:600;">
+                        class="question-display">
                     </p>
 
                     <div
@@ -901,69 +1020,132 @@
 
 
                 <!-- WINNER WAIT ANSWER -->
+
                 <div
                     id="winner-waiting-answer"
                     class="hidden">
 
                     <p
-                        style="color:var(--text-muted);font-weight:bold;">
+                        style="color:var(--text-muted);
+                               font-weight:bold;">
 
                         ⏳ في انتظار رد الخاسر على سؤالك...
 
+                    </p>
+
+                    <p
+                        id="winner-question-preview"
+                        class="question-display">
                     </p>
 
                 </div>
 
 
                 <!-- QA RESULT -->
+
                 <div
                     id="qa-result-display"
                     class="hidden"
                     style="text-align:center;">
 
                     <p
-                        style="color:var(--accent-purple);font-weight:bold;margin-bottom:5px;">
+                        style="color:var(--accent-purple);
+                               font-weight:bold;
+                               margin-bottom:5px;">
 
-                        💬 الرد:
+                        💬 السؤال:
+
+                    </p>
+
+                    <p
+                        id="qa-result-question"
+                        class="question-display">
+                    </p>
+
+                    <p
+                        style="color:var(--accent-purple);
+                               font-weight:bold;
+                               margin-bottom:5px;">
+
+                        ❤️ الرد:
 
                     </p>
 
                     <p
                         id="final-qa-summary"
-                        style="background:#fff;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:600;">
+                        class="answer-display">
                     </p>
-
-                    <div class="next-round-box">
-
-                        <p
-                            id="next-round-status"
-                            class="next-round-status">
-
-                            كل لاعب يضغط على زر الجولة التالية من عنده ❤️
-
-                        </p>
-
-                        <button
-                            id="next-round-btn"
-                            class="primary-btn w-100"
-                            onclick="startNextRoundFromQA()">
-
-                            الجولة اللي بعدها 🚀
-
-                        </button>
-
-                    </div>
 
                 </div>
 
             </div>
 
 
-            <!-- DISCONNECT -->
+            <!-- =================================================
+                 NEXT ROUND
+            ================================================== -->
+
+            <div
+                id="next-round-box"
+                class="next-round-box hidden">
+
+                <h3>
+                    🚀 الجولة التالية
+                </h3>
+
+                <p
+                    style="margin-top:7px;
+                           color:var(--text-muted);
+                           font-size:.9rem;">
+
+                    كل لاعب يضغط الزر عنده بنفسه.
+                    الجولة تبدأ لما الاثنين يكونوا جاهزين.
+
+                </p>
+
+                <button
+                    id="next-round-btn"
+                    class="primary-btn w-100"
+                    style="margin-top:12px;"
+                    onclick="readyForNextRound()">
+
+                    أنا جاهز للجولة التالية 🚀
+
+                </button>
+
+                <p
+                    id="next-round-status"
+                    class="next-round-status hidden">
+
+                    ✅ أنت جاهز! في انتظار الطرف الآخر...
+
+                </p>
+
+                <p
+                    id="next-round-other-status"
+                    class="waiting-other">
+
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 DISCONNECT
+            ================================================== -->
+
             <div
                 id="disconnect-msg"
                 class="hidden"
-                style="margin-top:15px;color:var(--danger);font-weight:bold;font-size:1.1rem;background:#fee2e2;padding:12px;border-radius:10px;">
+                style="
+                    margin-top:15px;
+                    color:var(--danger);
+                    font-weight:bold;
+                    font-size:1.1rem;
+                    background:#fee2e2;
+                    padding:12px;
+                    border-radius:10px;
+                ">
 
                 ⚠️ الطرف الآخر قد خرج من اللعبة!
 
@@ -986,6 +1168,10 @@
 </div>
 
 
+<!-- =========================================================
+     FIREBASE
+========================================================= -->
+
 <script type="module">
 
 import {
@@ -1005,19 +1191,22 @@ import {
 
 
 /* =========================================================
-   FIREBASE
+   FIREBASE CONFIG
 ========================================================= */
 
 const firebaseConfig = {
 
-    apiKey: "AIzaSyAUV_pAXMCjUVNPVNUGnAGkbu9De39nEEU",
+    apiKey:
+        "AIzaSyAUV_pAXMCjUVLPVNUGnAGkbu9De39nEEU",
 
-    authDomain: "rps-online-785fc.firebaseapp.com",
+    authDomain:
+        "rps-online-785fc.firebaseapp.com",
 
     databaseURL:
         "https://rps-online-785fc-default-rtdb.firebaseio.com",
 
-    projectId: "rps-online-785fc",
+    projectId:
+        "rps-online-785fc",
 
     storageBucket:
         "rps-online-785fc.firebasestorage.app",
@@ -1041,29 +1230,33 @@ const db =
 
 
 /* =========================================================
-   VARIABLES
+   GLOBAL VARIABLES
 ========================================================= */
 
 let myRole = "";
 let myName = "";
 let opponentName = "";
 let roomCode = "";
-let roomListener = null;
+
+let roomUnsubscribe = null;
+let chatUnsubscribe = null;
+
 let currentRoomData = null;
+
 let myChoice = null;
+
 let currentRound = 1;
-let chatStarted = false;
 
+let processingRound = false;
+let processingAdvance = false;
 
-/*
- * هل ضغط اللاعب الحالي على
- * زر الجولة التالية؟
- */
-let nextRoundPressed = false;
+let lastChatTime = 0;
+
+let answerLoadedRound = null;
 
 
 /* =========================================================
-   DOM
+   DOM HELPER
 ========================================================= */
 
 const $ = id =>
@@ -1084,7 +1277,12 @@ window.showScreen = function(id) {
 
         });
 
-    $(id).classList.add("active");
+    const screen =
+        $(id);
+
+    if(screen) {
+        screen.classList.add("active");
+    }
 };
 
 
@@ -1109,12 +1307,15 @@ function generateRoomCode() {
 window.createRoom = async function() {
 
     myName =
-        $("create-name").value.trim() ||
+        $("create-name")
+        .value
+        .trim() ||
         "اللاعب 1";
 
     myRole = "p1";
 
-    $("code-display").innerText =
+    $("code-display")
+        .innerText =
         "جاري الإنشاء...";
 
     showScreen("screen-waiting");
@@ -1129,7 +1330,11 @@ window.createRoom = async function() {
             generateRoomCode();
 
         const roomRef =
-            ref(db, "rooms/" + code);
+            ref(
+                db,
+                "rooms/" +
+                code
+            );
 
         try {
 
@@ -1140,51 +1345,102 @@ window.createRoom = async function() {
                 continue;
             }
 
-            roomCode = code;
+            roomCode =
+                code;
 
-            await set(roomRef, {
+            await set(
+                roomRef,
+                {
 
-                createdAt:
-                    Date.now(),
+                    createdAt:
+                        Date.now(),
 
-                status:
-                    "waiting",
+                    status:
+                        "waiting",
 
-                round:
-                    1,
+                    round:
+                        1,
 
-                phase:
-                    "choosing",
+                    phase:
+                        "choosing",
 
-                scores: {
-                    p1: 0,
-                    p2: 0
-                },
+                    winner:
+                        "",
 
-                players: {
+                    resultReady:
+                        false,
 
-                    p1: {
-                        name: myName,
-                        online: true
-                    }
+                    scores: {
 
-                },
+                        p1: 0,
 
-                choices: {},
+                        p2: 0
 
-                rounds: {},
+                    },
 
-                qa: {},
+                    ready: {
 
-                nextRound: {
-                    p1: false,
-                    p2: false
+                        p1: false,
+
+                        p2: false
+
+                    },
+
+                    players: {
+
+                        p1: {
+
+                            name:
+                                myName,
+
+                            online:
+                                true
+
+                        }
+
+                    },
+
+                    choices: {
+
+                        1: {}
+
+                    },
+
+                    rounds: {
+
+                        1: {
+
+                            processed:
+                                false,
+
+                            advanced:
+                                false
+
+                        }
+
+                    },
+
+                    qa: {
+
+                        round:
+                            1,
+
+                        question:
+                            "",
+
+                        answer:
+                            ""
+
+                    },
+
+                    chat: {}
+
                 }
+            );
 
-            });
 
-
-            $("code-display").innerText =
+            $("code-display")
+                .innerText =
                 roomCode;
 
 
@@ -1202,7 +1458,7 @@ window.createRoom = async function() {
             ).set(false);
 
 
-            listenToRoom();
+            startRoomListeners();
 
             return;
 
@@ -1214,14 +1470,21 @@ window.createRoom = async function() {
                 "حصل خطأ في إنشاء الغرفة."
             );
 
-            showScreen("screen-home");
+            showScreen(
+                "screen-home"
+            );
 
             return;
         }
     }
 
+
     alert(
-        "لم نستطع إنشاء غرفة، حاول مرة أخرى."
+        "لم نستطع إنشاء الغرفة، حاول مرة أخرى."
+    );
+
+    showScreen(
+        "screen-home"
     );
 
 };
@@ -1234,18 +1497,35 @@ window.createRoom = async function() {
 window.joinRoom = async function() {
 
     myName =
-        $("join-name").value.trim() ||
+        $("join-name")
+        .value
+        .trim() ||
         "اللاعب 2";
 
     roomCode =
-        $("join-code").value.trim();
+        $("join-code")
+        .value
+        .trim();
 
-    $("join-error").innerText = "";
+    $("join-error")
+        .innerText = "";
+
 
     if(!roomCode) {
 
-        $("join-error").innerText =
+        $("join-error")
+            .innerText =
             "❌ اكتب كود الغرفة الأول!";
+
+        return;
+    }
+
+
+    if(!/^\d{6}$/.test(roomCode)) {
+
+        $("join-error")
+            .innerText =
+            "❌ كود الغرفة لازم يكون 6 أرقام.";
 
         return;
     }
@@ -1260,14 +1540,32 @@ window.joinRoom = async function() {
                 roomCode
             );
 
+
         const snapshot =
             await get(roomRef);
 
 
         if(!snapshot.exists()) {
 
-            $("join-error").innerText =
+            $("join-error")
+                .innerText =
                 "❌ الغرفة غير موجودة.";
+
+            return;
+        }
+
+
+        const room =
+            snapshot.val();
+
+
+        if(
+            room.players?.p2?.online
+        ) {
+
+            $("join-error")
+                .innerText =
+                "❌ الغرفة ممتلئة بالفعل.";
 
             return;
         }
@@ -1282,21 +1580,28 @@ window.joinRoom = async function() {
             );
 
 
-        const transactionResult =
+        const transaction =
             await runTransaction(
                 playersRef,
                 players => {
 
-                    if(players === null) {
+                    if(!players) {
 
                         return {
-                            p2: {
-                                name: myName,
-                                online: true
-                            }
-                        };
 
+                            p2: {
+
+                                name:
+                                    myName,
+
+                                online:
+                                    true
+
+                            }
+
+                        };
                     }
+
 
                     if(
                         players.p2 &&
@@ -1307,13 +1612,17 @@ window.joinRoom = async function() {
 
                     }
 
+
                     players.p2 = {
 
-                        name: myName,
+                        name:
+                            myName,
 
-                        online: true
+                        online:
+                            true
 
                     };
+
 
                     return players;
 
@@ -1321,22 +1630,27 @@ window.joinRoom = async function() {
             );
 
 
-        if(!transactionResult.committed) {
+        if(!transaction.committed) {
 
-            $("join-error").innerText =
+            $("join-error")
+                .innerText =
                 "❌ الغرفة ممتلئة.";
 
             return;
         }
 
 
-        myRole = "p2";
+        myRole =
+            "p2";
 
 
         await update(
             roomRef,
             {
-                status: "playing"
+
+                status:
+                    "playing"
+
             }
         );
 
@@ -1355,16 +1669,18 @@ window.joinRoom = async function() {
         ).set(false);
 
 
-        listenToRoom();
+        startRoomListeners();
 
-        showScreen("screen-game");
-
+        showScreen(
+            "screen-game"
+        );
 
     } catch(error) {
 
         console.error(error);
 
-        $("join-error").innerText =
+        $("join-error")
+            .innerText =
             "❌ حصل خطأ في الاتصال بقاعدة البيانات.";
 
     }
@@ -1373,15 +1689,26 @@ window.joinRoom = async function() {
 
 
 /* =========================================================
-   LISTEN ROOM
+   ROOM LISTENERS
 ========================================================= */
 
-function listenToRoom() {
+function startRoomListeners() {
 
-    if(roomListener) {
+    if(roomUnsubscribe) {
 
-        roomListener();
+        roomUnsubscribe();
 
+        roomUnsubscribe =
+            null;
+    }
+
+
+    if(chatUnsubscribe) {
+
+        chatUnsubscribe();
+
+        chatUnsubscribe =
+            null;
     }
 
 
@@ -1393,7 +1720,7 @@ function listenToRoom() {
         );
 
 
-    roomListener =
+    roomUnsubscribe =
         onValue(
             roomRef,
             snapshot => {
@@ -1414,43 +1741,53 @@ function listenToRoom() {
                     data;
 
 
+                currentRound =
+                    Number(
+                        data.round ||
+                        1
+                    );
+
+
                 updateNames(data);
 
-                updateScore(data);
+                updateScores(data);
 
-                updateRound(data);
+                updateRoundLabel(data);
 
                 handlePlayers(data);
 
                 handleGameState(data);
 
 
+                /*
+                 * اللاعب الأول فقط يعالج
+                 * نتيجة الاختيارات.
+                 */
+
                 if(myRole === "p1") {
 
-                    processRoundAsHost(data);
+                    processRoundAsHost(
+                        data
+                    );
 
+                    processNextRoundAsHost(
+                        data
+                    );
                 }
-
-
-                checkNextRound(data);
 
             },
             error => {
 
-                console.error(error);
+                console.error(
+                    "Room listener:",
+                    error
+                );
 
             }
         );
 
 
-    if(!chatStarted) {
-
-        chatStarted = true;
-
-        listenToChat();
-
-    }
-
+    startChatListener();
 }
 
 
@@ -1475,57 +1812,59 @@ function updateNames(data) {
             : p1;
 
 
-    $("lbl-p1").innerText =
+    $("lbl-p1")
+        .innerText =
         p1;
 
-    $("lbl-p2").innerText =
+    $("lbl-p2")
+        .innerText =
         p2;
 
-    $("res-p1-name").innerText =
+    $("res-p1-name")
+        .innerText =
         p1;
 
-    $("res-p2-name").innerText =
+    $("res-p2-name")
+        .innerText =
         p2;
-
 }
 
 
 /* =========================================================
-   SCORE
+   SCORES
 ========================================================= */
 
-function updateScore(data) {
+function updateScores(data) {
 
     const scores =
-        data.scores || {
-            p1: 0,
-            p2: 0
-        };
+        data.scores || {};
 
+    $("score-p1")
+        .innerText =
+        Number(
+            scores.p1 || 0
+        );
 
-    $("score-p1").innerText =
-        scores.p1 || 0;
-
-    $("score-p2").innerText =
-        scores.p2 || 0;
-
+    $("score-p2")
+        .innerText =
+        Number(
+            scores.p2 || 0
+        );
 }
 
 
 /* =========================================================
-   ROUND
+   ROUND LABEL
 ========================================================= */
 
-function updateRound(data) {
+function updateRoundLabel(data) {
 
-    currentRound =
-        Number(data.round || 1);
-
-
-    $("lbl-round").innerText =
+    $("lbl-round")
+        .innerText =
         "الجولة " +
-        currentRound;
-
+        Number(
+            data.round || 1
+        );
 }
 
 
@@ -1536,10 +1875,10 @@ function updateRound(data) {
 function handlePlayers(data) {
 
     const p1Online =
-        data.players?.p1?.online;
+        !!data.players?.p1?.online;
 
     const p2Online =
-        data.players?.p2?.online;
+        !!data.players?.p2?.online;
 
 
     if(
@@ -1547,16 +1886,18 @@ function handlePlayers(data) {
         p2Online
     ) {
 
-        $("waiting-text").innerText =
-            "❤️ اللاعب الثاني دخل! جاري بدء اللعبة...";
+        $("waiting-text")
+            .innerText =
+            "❤️ اللاعب الثاني دخل!";
 
+        /*
+         * فقط ننتقل للعبة.
+         * لا يوجد reload.
+         */
 
-        setTimeout(() => {
-
-            showScreen("screen-game");
-
-        }, 200);
-
+        showScreen(
+            "screen-game"
+        );
     }
 
 
@@ -1565,18 +1906,297 @@ function handlePlayers(data) {
         p1Online
     ) {
 
-        showScreen("screen-game");
-
+        showScreen(
+            "screen-game"
+        );
     }
 
+
+    if(
+        !p1Online ||
+        !p2Online
+    ) {
+
+        if(
+            data.status === "playing"
+        ) {
+
+            /*
+             * لا نظهر رسالة قطع الاتصال
+             * لو اللاعب الثاني لم يدخل
+             * أصلًا.
+             */
+
+            if(
+                data.players?.p1 &&
+                data.players?.p2
+            ) {
+
+                /*
+                 * اللاعب الذي خرج بالفعل.
+                 */
+            }
+        }
+    }
 }
 
 
 /* =========================================================
-   HOST PROCESS ROUND
+   GAME STATE
+========================================================= */
+
+function handleGameState(data) {
+
+    if(
+        !data.players?.p2
+    ) {
+
+        if(myRole === "p1") {
+
+            showScreen(
+                "screen-waiting"
+            );
+
+        }
+
+        return;
+    }
+
+
+    showScreen(
+        "screen-game"
+    );
+
+
+    switch(data.phase) {
+
+        case "choosing":
+
+            showChoosingState(
+                data
+            );
+
+            break;
+
+
+        case "result":
+
+            showResultState(
+                data
+            );
+
+            break;
+
+
+        case "qa":
+
+            showQAState(
+                data
+            );
+
+            break;
+
+
+        case "question":
+
+            showQuestionState(
+                data
+            );
+
+            break;
+
+
+        case "answer":
+
+            showAnswerState(
+                data
+            );
+
+            break;
+
+
+        case "qaDone":
+
+            showQADoneState(
+                data
+            );
+
+            break;
+
+
+        default:
+
+            showChoosingState(
+                data
+            );
+
+            break;
+    }
+}
+
+
+/* =========================================================
+   CHOOSING STATE
+========================================================= */
+
+function showChoosingState(data) {
+
+    resetChoiceUIOnly();
+
+
+    $("next-round-box")
+        .classList
+        .add("hidden");
+
+
+    $("qa-section")
+        .classList
+        .add("hidden");
+
+
+    $("result-area")
+        .classList
+        .add("hidden");
+
+
+    const myCurrentChoice =
+        data.choices?.[
+            Number(data.round)
+        ]?.[myRole];
+
+
+    if(myCurrentChoice) {
+
+        myChoice =
+            myCurrentChoice;
+
+        $("choice-area")
+            .classList
+            .add("hidden");
+
+        $("waiting-choice-area")
+            .classList
+            .remove("hidden");
+
+    } else {
+
+        myChoice =
+            null;
+
+        $("choice-area")
+            .classList
+            .remove("hidden");
+
+        $("waiting-choice-area")
+            .classList
+            .add("hidden");
+    }
+
+
+    $("disconnect-msg")
+        .classList
+        .add("hidden");
+}
+
+
+/* =========================================================
+   MAKE CHOICE
+========================================================= */
+
+window.makeChoice =
+async function(move) {
+
+    if(!roomCode) {
+        return;
+    }
+
+
+    if(
+        !currentRoomData ||
+        currentRoomData.phase !== "choosing"
+    ) {
+
+        return;
+    }
+
+
+    const round =
+        Number(
+            currentRoomData.round
+        );
+
+
+    const already =
+        currentRoomData
+            .choices?.[round]?.[myRole];
+
+
+    if(already) {
+        return;
+    }
+
+
+    myChoice =
+        move;
+
+
+    $("choice-area")
+        .classList
+        .add("hidden");
+
+
+    $("waiting-choice-area")
+        .classList
+        .remove("hidden");
+
+
+    try {
+
+        await set(
+            ref(
+                db,
+                "rooms/" +
+                roomCode +
+                "/choices/" +
+                round +
+                "/" +
+                myRole
+            ),
+            move
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+        myChoice =
+            null;
+
+        $("choice-area")
+            .classList
+            .remove("hidden");
+
+        $("waiting-choice-area")
+            .classList
+            .add("hidden");
+
+        alert(
+            "حصل خطأ أثناء تسجيل اختيارك."
+        );
+    }
+};
+
+
+/* =========================================================
+   PROCESS ROUND HOST
 ========================================================= */
 
 async function processRoundAsHost(data) {
+
+    if(processingRound) {
+        return;
+    }
+
 
     if(data.phase !== "choosing") {
         return;
@@ -1584,7 +2204,9 @@ async function processRoundAsHost(data) {
 
 
     const round =
-        Number(data.round || 1);
+        Number(
+            data.round || 1
+        );
 
 
     const choices =
@@ -1603,12 +2225,16 @@ async function processRoundAsHost(data) {
         choices.p2;
 
 
-    if(!p1Choice || !p2Choice) {
+    if(
+        !p1Choice ||
+        !p2Choice
+    ) {
+
         return;
     }
 
 
-    const processingRef =
+    const processedRef =
         ref(
             db,
             "rooms/" +
@@ -1619,441 +2245,168 @@ async function processRoundAsHost(data) {
         );
 
 
-    const result =
-        await runTransaction(
-            processingRef,
-            value => {
+    processingRound =
+        true;
 
-                if(value === true) {
-                    return;
+
+    try {
+
+        const transaction =
+            await runTransaction(
+                processedRef,
+                value => {
+
+                    if(value === true) {
+
+                        return;
+
+                    }
+
+                    return true;
+
                 }
-
-                return true;
-
-            }
-        );
+            );
 
 
-    if(!result.committed) {
-        return;
-    }
+        if(!transaction.committed) {
+            return;
+        }
 
 
-    let winner = "tie";
+        let winner =
+            "tie";
 
 
-    if(p1Choice === p2Choice) {
+        if(
+            p1Choice === p2Choice
+        ) {
 
-        winner = "tie";
+            winner =
+                "tie";
 
-    }
+        } else if(
 
-    else if(
+            (
+                p1Choice === "حجر" &&
+                p2Choice === "مقص"
+            ) ||
 
-        (p1Choice === "حجر" &&
-         p2Choice === "مقص") ||
+            (
+                p1Choice === "مقص" &&
+                p2Choice === "ورقة"
+            ) ||
 
-        (p1Choice === "مقص" &&
-         p2Choice === "ورقة") ||
+            (
+                p1Choice === "ورقة" &&
+                p2Choice === "حجر"
+            )
 
-        (p1Choice === "ورقة" &&
-         p2Choice === "حجر")
+        ) {
 
-    ) {
+            winner =
+                "p1";
 
-        winner = "p1";
+        } else {
 
-    }
-
-    else {
-
-        winner = "p2";
-
-    }
-
-
-    const oldScores =
-        data.scores || {
-            p1: 0,
-            p2: 0
-        };
-
-
-    let newP1 =
-        Number(oldScores.p1 || 0);
-
-    let newP2 =
-        Number(oldScores.p2 || 0);
+            winner =
+                "p2";
+        }
 
 
-    if(winner === "p1") {
-        newP1++;
-    }
-
-    if(winner === "p2") {
-        newP2++;
-    }
+        const oldScores =
+            data.scores || {};
 
 
-    /*
-     * التعادل:
-     * لا يوجد سؤال.
-     * النتيجة تظهر ثم ننتظر
-     * ضغط كل لاعب على الجولة التالية.
-     */
+        let p1Score =
+            Number(
+                oldScores.p1 || 0
+            );
 
-    if(winner === "tie") {
+        let p2Score =
+            Number(
+                oldScores.p2 || 0
+            );
+
+
+        if(winner === "p1") {
+            p1Score++;
+        }
+
+
+        if(winner === "p2") {
+            p2Score++;
+        }
+
+
+        /*
+         * التعادل = result
+         * الفوز = qa
+         */
+
+        const nextPhase =
+            winner === "tie"
+                ? "result"
+                : "qa";
+
 
         await update(
-
             ref(
                 db,
                 "rooms/" +
                 roomCode
             ),
-
             {
 
-                phase: "result",
+                phase:
+                    nextPhase,
 
-                winner: "tie",
+                winner:
+                    winner,
 
                 scores: {
 
-                    p1: newP1,
+                    p1:
+                        p1Score,
 
-                    p2: newP2
+                    p2:
+                        p2Score
 
                 },
 
-                resultReady: true,
+                resultReady:
+                    true,
 
-                nextRound: {
+                /*
+                 * السؤال والإجابة
+                 * خاصين بالجولة الحالية.
+                 */
 
-                    p1: false,
+                qa: {
 
-                    p2: false
+                    round:
+                        round,
+
+                    question:
+                        "",
+
+                    answer:
+                        ""
 
                 }
 
             }
-
         );
 
-        return;
-    }
-
-
-    /*
-     * لو فيه فائز:
-     * ننتقل للسؤال.
-     */
-
-    await update(
-
-        ref(
-            db,
-            "rooms/" +
-            roomCode
-        ),
-
-        {
-
-            phase: "qa",
-
-            winner: winner,
-
-            scores: {
-
-                p1: newP1,
-
-                p2: newP2
-
-            },
-
-            resultReady: true,
-
-            qa: {
-
-                [round]: {
-
-                    question: "",
-
-                    answer: ""
-
-                }
-
-            },
-
-            nextRound: {
-
-                p1: false,
-
-                p2: false
-
-            }
-
-        }
-
-    );
-
-}
-
-
-/* =========================================================
-   GAME STATE
-========================================================= */
-
-function handleGameState(data) {
-
-    if(!data.players?.p2) {
-
-        showScreen("screen-waiting");
-
-        return;
-
-    }
-
-
-    if(data.phase === "choosing") {
-
-        showScreen("screen-game");
-
-        resetRoundUI(true);
-
-        return;
-
-    }
-
-
-    if(data.phase === "result") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showNextRoundArea(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "qa") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        setupQAStageFromFirebase(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "question") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showQuestionStage(data);
-
-        return;
-
-    }
-
-
-    if(data.phase === "qaDone") {
-
-        showScreen("screen-game");
-
-        displayRoundResult(data);
-
-        showQAResultFromFirebase(data);
-
-        return;
-
-    }
-
-}
-
-
-/* =========================================================
-   MAKE CHOICE
-========================================================= */
-
-window.makeChoice = async function(move) {
-
-    if(!roomCode) {
-        return;
-    }
-
-
-    if(currentRoomData?.phase !== "choosing") {
-        return;
-    }
-
-
-    /*
-     * منع تغيير الاختيار
-     */
-
-    if(myChoice) {
-        return;
-    }
-
-
-    myChoice = move;
-
-
-    $("choice-area")
-        .classList
-        .add("hidden");
-
-
-    $("waiting-choice-area")
-        .classList
-        .remove("hidden");
-
-
-    const choiceRef =
-        ref(
-            db,
-            "rooms/" +
-            roomCode +
-            "/choices/" +
-            currentRound +
-            "/" +
-            myRole
-        );
-
-
-    try {
-
-        await set(
-            choiceRef,
-            move
-        );
-
-    } catch(error) {
-
-        console.error(error);
-
-        alert(
-            "حصل خطأ أثناء تسجيل اختيارك."
-        );
-
-        myChoice = null;
-
-    }
-
-};
-
-
-/* =========================================================
-   DISPLAY RESULT
-========================================================= */
-
-function displayRoundResult(data) {
-
-    const round =
-        Number(data.round || 1);
-
-
-    const choices =
-        data.choices?.[round];
-
-
-    if(!choices) {
-        return;
-    }
-
-
-    const p1Move =
-        choices.p1;
-
-    const p2Move =
-        choices.p2;
-
-
-    if(!p1Move || !p2Move) {
-        return;
-    }
-
-
-    const emojis = {
-
-        "حجر": "🪨",
-
-        "ورقة": "📄",
-
-        "مقص": "✂️"
-
-    };
-
-
-    $("res-p1-emoji").innerText =
-        emojis[p1Move];
-
-    $("res-p2-emoji").innerText =
-        emojis[p2Move];
-
-
-    let text = "";
-
-
-    if(data.winner === "tie") {
-
-        text =
-            "تعادل... نفس الاختيار 😂❤️";
-
-    }
-
-    else {
-
-        const winnerName =
-            data.winner === "p1"
-                ? data.players.p1.name
-                : data.players.p2.name;
-
-
-        text =
-            winnerName +
-            " كسب الجولة! 🎉";
-
-    }
-
-
-    $("round-winner-text").innerText =
-        text;
-
-
-    $("choice-area")
-        .classList
-        .add("hidden");
-
-
-    $("waiting-choice-area")
-        .classList
-        .add("hidden");
-
-
-    $("result-area")
-        .classList
-        .remove("hidden");
-
-
-    if(data.winner !== "tie") {
 
         try {
 
             confetti({
 
-                particleCount: 80,
+                particleCount:
+                    80,
 
-                spread: 70,
+                spread:
+                    70,
 
                 origin: {
                     y: .6
@@ -2063,19 +2416,151 @@ function displayRoundResult(data) {
 
         } catch(e) {}
 
-    }
+    } catch(error) {
 
+        console.error(
+            "processRoundAsHost:",
+            error
+        );
+
+    } finally {
+
+        processingRound =
+            false;
+    }
 }
 
 
 /* =========================================================
-   QA STAGE
+   RESULT STATE
 ========================================================= */
 
-function setupQAStageFromFirebase(data) {
+function showResultState(data) {
+
+    displayRoundResult(
+        data
+    );
+
+
+    $("qa-section")
+        .classList
+        .add("hidden");
+
+
+    showNextRoundUI(
+        data
+    );
+}
+
+
+/* =========================================================
+   DISPLAY RESULT
+========================================================= */
+
+function displayRoundResult(data) {
 
     const round =
-        Number(data.round || 1);
+        Number(
+            data.round || 1
+        );
+
+
+    const choices =
+        data.choices?.[round];
+
+
+    if(
+        !choices?.p1 ||
+        !choices?.p2
+    ) {
+
+        return;
+    }
+
+
+    const emojis = {
+
+        "حجر":
+            "🪨",
+
+        "ورقة":
+            "📄",
+
+        "مقص":
+            "✂️"
+
+    };
+
+
+    $("res-p1-emoji")
+        .innerText =
+        emojis[
+            choices.p1
+        ] || "❓";
+
+
+    $("res-p2-emoji")
+        .innerText =
+        emojis[
+            choices.p2
+        ] || "❓";
+
+
+    let text = "";
+
+
+    if(data.winner === "tie") {
+
+        text =
+            "تعادل! نفس الحركة 😂❤️";
+
+    } else {
+
+        const winnerName =
+            data.winner === "p1"
+                ? data.players?.p1?.name
+                : data.players?.p2?.name;
+
+
+        text =
+            (
+                winnerName ||
+                "اللاعب"
+            ) +
+            " كسب الجولة! 🎉";
+    }
+
+
+    $("round-winner-text")
+        .innerText =
+        text;
+
+
+    $("result-area")
+        .classList
+        .remove("hidden");
+
+
+    $("choice-area")
+        .classList
+        .add("hidden");
+
+
+    $("waiting-choice-area")
+        .classList
+        .add("hidden");
+}
+
+
+/* =========================================================
+   QA STATE
+========================================================= */
+
+function showQAState(data) {
+
+    displayRoundResult(
+        data
+    );
 
 
     $("qa-section")
@@ -2083,61 +2568,47 @@ function setupQAStageFromFirebase(data) {
         .remove("hidden");
 
 
-    $("winner-question-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-waiting-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-answer-box")
-        .classList
-        .add("hidden");
-
-
-    $("winner-waiting-answer")
-        .classList
-        .add("hidden");
-
-
-    $("qa-result-display")
-        .classList
-        .add("hidden");
+    hideAllQABoxes();
 
 
     /*
-     * تنظيف الخانات قبل عرض
-     * الجولة الحالية
+     * مهم جدًا:
+     * السؤال فارغ في بداية كل جولة.
      */
 
-    $("winner-question-input").value = "";
-
-    $("loser-answer-input").value = "";
-
-    $("displayed-question").innerText = "";
-
-    $("final-qa-summary").innerText = "";
+    const qa =
+        data.qa || {};
 
 
-    if(data.winner === myRole) {
+    if(
+        Number(qa.round) !==
+        Number(data.round)
+    ) {
+
+        clearQAInputs();
+
+    }
+
+
+    if(
+        data.winner === myRole
+    ) {
 
         $("winner-question-box")
             .classList
             .remove("hidden");
 
-    }
-
-    else {
+    } else {
 
         $("loser-waiting-box")
             .classList
             .remove("hidden");
-
     }
 
+
+    $("next-round-box")
+        .classList
+        .add("hidden");
 }
 
 
@@ -2145,10 +2616,30 @@ function setupQAStageFromFirebase(data) {
    SEND QUESTION
 ========================================================= */
 
-window.sendQuestion = async function() {
+window.sendQuestion =
+async function() {
+
+    if(
+        !currentRoomData ||
+        currentRoomData.phase !== "qa"
+    ) {
+
+        return;
+    }
+
+
+    if(
+        currentRoomData.winner !== myRole
+    ) {
+
+        return;
+    }
+
 
     const round =
-        Number(currentRound);
+        Number(
+            currentRoomData.round
+        );
 
 
     let question =
@@ -2160,49 +2651,42 @@ window.sendQuestion = async function() {
     if(!question) {
 
         question =
-            "قول بحبك قد ايه؟ 😂❤️";
-
+            "قول بحبك قد إيه؟ 😂❤️";
     }
 
 
     try {
 
         await update(
-
             ref(
                 db,
                 "rooms/" +
                 roomCode
             ),
-
             {
 
                 phase:
                     "question",
 
-                [`qa/${round}`]: {
+                "qa/round":
+                    round,
 
-                    question:
-                        question,
+                "qa/question":
+                    question,
 
-                    answer:
-                        ""
-
-                }
+                "qa/answer":
+                    ""
 
             }
-
         );
 
 
         /*
-         * مسح خانة السؤال
-         * بعد الإرسال
+         * نمسح الخانة محليًا.
          */
 
         $("winner-question-input")
             .value = "";
-
 
     } catch(error) {
 
@@ -2211,28 +2695,19 @@ window.sendQuestion = async function() {
         alert(
             "حصل خطأ أثناء إرسال السؤال."
         );
-
     }
-
 };
 
 
 /* =========================================================
-   SHOW QUESTION
+   QUESTION STATE
 ========================================================= */
 
-function showQuestionStage(data) {
+function showQuestionState(data) {
 
-    const round =
-        Number(data.round || 1);
-
-
-    const qaData =
-        data.qa?.[round] || {};
-
-
-    const question =
-        qaData.question || "";
+    displayRoundResult(
+        data
+    );
 
 
     $("qa-section")
@@ -2240,69 +2715,66 @@ function showQuestionStage(data) {
         .remove("hidden");
 
 
-    /*
-     * الفائز
-     */
+    hideAllQABoxes();
+
+
+    const question =
+        data.qa?.question || "";
+
 
     if(data.winner === myRole) {
 
-        $("winner-question-box")
-            .classList
-            .add("hidden");
-
-
-        $("loser-waiting-box")
-            .classList
-            .add("hidden");
-
-
-        $("loser-answer-box")
-            .classList
-            .add("hidden");
-
+        /*
+         * الفائز ينتظر الإجابة.
+         */
 
         $("winner-waiting-answer")
             .classList
             .remove("hidden");
 
 
-        return;
+        $("winner-question-preview")
+            .innerText =
+            question;
+
+    } else {
+
+        /*
+         * الخاسر يرى السؤال.
+         */
+
+        $("loser-answer-box")
+            .classList
+            .remove("hidden");
+
+
+        $("displayed-question")
+            .innerText =
+            question;
+
+
+        /*
+         * لا نمسح الإجابة بشكل متكرر
+         * بسبب onValue.
+         */
+
+        if(
+            answerLoadedRound !==
+            Number(data.round)
+        ) {
+
+            $("loser-answer-input")
+                .value = "";
+
+            answerLoadedRound =
+                Number(data.round);
+        }
     }
 
 
-    /*
-     * الخاسر
-     */
-
-    $("winner-question-box")
+    $("next-round-box")
         .classList
         .add("hidden");
-
-
-    $("loser-waiting-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-answer-box")
-        .classList
-        .remove("hidden");
-
-
-    $("displayed-question")
-        .innerText =
-        question;
-
-
-    /*
-     * مهم جدًا:
-     * لا نمسح خانة الإجابة إذا
-     * كان اللاعب كتب فيها بالفعل.
-     *
-     * لكن عند دخول مرحلة جديدة
-     * تكون قد تصفرت.
-     */
-
 }
 
 
@@ -2310,10 +2782,30 @@ function showQuestionStage(data) {
    SEND ANSWER
 ========================================================= */
 
-window.sendAnswer = async function() {
+window.sendAnswer =
+async function() {
+
+    if(
+        !currentRoomData ||
+        currentRoomData.phase !== "question"
+    ) {
+
+        return;
+    }
+
+
+    if(
+        currentRoomData.winner === myRole
+    ) {
+
+        return;
+    }
+
 
     const round =
-        Number(currentRound);
+        Number(
+            currentRoomData.round
+        );
 
 
     let answer =
@@ -2326,36 +2818,39 @@ window.sendAnswer = async function() {
 
         answer =
             "ماشي خلاص 😂❤️";
-
     }
 
 
     try {
 
         await update(
-
             ref(
                 db,
                 "rooms/" +
                 roomCode
             ),
-
             {
 
                 phase:
                     "qaDone",
 
-                [`qa/${round}/answer`]:
+                "qa/round":
+                    round,
+
+                "qa/answer":
                     answer
 
             }
-
         );
 
 
+        /*
+         * مسح خانة الإجابة
+         * بعد الإرسال.
+         */
+
         $("loser-answer-input")
             .value = "";
-
 
     } catch(error) {
 
@@ -2364,24 +2859,36 @@ window.sendAnswer = async function() {
         alert(
             "حصل خطأ أثناء إرسال الإجابة."
         );
-
     }
-
 };
 
 
 /* =========================================================
-   QA RESULT
+   ANSWER STATE
 ========================================================= */
 
-function showQAResultFromFirebase(data) {
+function showAnswerState(data) {
 
-    const round =
-        Number(data.round || 1);
+    /*
+     * احتياطي لو phase أصبحت answer
+     * في نسخة قديمة من الغرفة.
+     */
+
+    showQuestionState(
+        data
+    );
+}
 
 
-    const qaData =
-        data.qa?.[round] || {};
+/* =========================================================
+   QA DONE
+========================================================= */
+
+function showQADoneState(data) {
+
+    displayRoundResult(
+        data
+    );
 
 
     $("qa-section")
@@ -2389,24 +2896,7 @@ function showQAResultFromFirebase(data) {
         .remove("hidden");
 
 
-    $("winner-question-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-waiting-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-answer-box")
-        .classList
-        .add("hidden");
-
-
-    $("winner-waiting-answer")
-        .classList
-        .add("hidden");
+    hideAllQABoxes();
 
 
     $("qa-result-display")
@@ -2414,372 +2904,464 @@ function showQAResultFromFirebase(data) {
         .remove("hidden");
 
 
+    $("qa-result-question")
+        .innerText =
+        data.qa?.question ||
+        "";
+
+
     $("final-qa-summary")
         .innerText =
-        qaData.answer ||
+        data.qa?.answer ||
         "تم إرسال الإجابة ❤️";
 
 
     /*
-     * إظهار زر الجولة التالية
-     * لكل لاعب بشكل مستقل.
+     * بعد انتهاء السؤال والإجابة
+     * يظهر لكل لاعب زر الجولة التالية.
      */
 
-    showNextRoundArea(data);
-
+    showNextRoundUI(
+        data
+    );
 }
 
 
 /* =========================================================
-   NEXT ROUND UI
+   HIDE QA BOXES
 ========================================================= */
 
-function showNextRoundArea(data) {
+function hideAllQABoxes() {
 
-    /*
-     * في حالة التعادل لا يوجد QA
-     * لذلك نظهر زر الجولة التالية
-     * تحت النتيجة.
-     */
+    $("winner-question-box")
+        .classList
+        .add("hidden");
 
-    if(data.winner === "tie") {
+    $("loser-waiting-box")
+        .classList
+        .add("hidden");
 
-        $("qa-section")
-            .classList
-            .remove("hidden");
+    $("loser-answer-box")
+        .classList
+        .add("hidden");
 
-        $("winner-question-box")
-            .classList
-            .add("hidden");
+    $("winner-waiting-answer")
+        .classList
+        .add("hidden");
 
-        $("loser-waiting-box")
-            .classList
-            .add("hidden");
-
-        $("loser-answer-box")
-            .classList
-            .add("hidden");
-
-        $("winner-waiting-answer")
-            .classList
-            .add("hidden");
-
-        $("qa-result-display")
-            .classList
-            .remove("hidden");
-
-        $("final-qa-summary")
-            .innerText =
-            "تعادل! اضغط الجولة التالية للعب من جديد ❤️";
-
-    }
+    $("qa-result-display")
+        .classList
+        .add("hidden");
+}
 
 
-    const next =
-        data.nextRound || {
-            p1: false,
-            p2: false
-        };
+/* =========================================================
+   CLEAR QA
+========================================================= */
+
+function clearQAInputs() {
+
+    $("winner-question-input")
+        .value = "";
+
+    $("loser-answer-input")
+        .value = "";
+
+    $("displayed-question")
+        .innerText = "";
+
+    $("winner-question-preview")
+        .innerText = "";
+
+    $("qa-result-question")
+        .innerText = "";
+
+    $("final-qa-summary")
+        .innerText = "";
+}
 
 
-    const alreadyPressed =
-        next[myRole] === true;
+/* =========================================================
+   SHOW NEXT ROUND
+========================================================= */
+
+function showNextRoundUI(data) {
+
+    $("next-round-box")
+        .classList
+        .remove("hidden");
+
+
+    updateReadyUI(
+        data
+    );
+}
+
+
+/* =========================================================
+   UPDATE READY UI
+========================================================= */
+
+function updateReadyUI(data) {
+
+    const myReady =
+        !!data.ready?.[myRole];
+
+    const otherRole =
+        myRole === "p1"
+            ? "p2"
+            : "p1";
+
+
+    const otherReady =
+        !!data.ready?.[otherRole];
 
 
     const button =
         $("next-round-btn");
 
+    const status =
+        $("next-round-status");
 
-    if(alreadyPressed) {
+    const otherStatus =
+        $("next-round-other-status");
 
-        button.disabled = true;
 
-        button.innerText =
-            "✅ تم اختيار الجولة التالية";
+    if(myReady) {
 
-        button.style.opacity =
-            ".6";
+        button
+            .classList
+            .add("hidden");
 
+        status
+            .classList
+            .remove("hidden");
+
+        status.innerText =
+            "✅ أنت جاهز! في انتظار الطرف الآخر...";
+
+    } else {
+
+        button
+            .classList
+            .remove("hidden");
+
+        status
+            .classList
+            .add("hidden");
     }
 
-    else {
 
-        button.disabled = false;
+    if(otherReady) {
 
-        button.innerText =
-            "الجولة اللي بعدها 🚀";
+        otherStatus.innerText =
+            "❤️ الطرف الآخر جاهز للجولة التالية.";
 
-        button.style.opacity =
-            "1";
+    } else {
 
-    }
-
-
-    if(
-        next.p1 &&
-        next.p2
-    ) {
-
-        $("next-round-status")
-            .innerText =
-            "❤️ الاثنين جاهزين! جاري بدء الجولة الجديدة...";
+        otherStatus.innerText =
+            "⏳ الطرف الآخر لم يضغط بعد.";
 
     }
-
-    else if(alreadyPressed) {
-
-        $("next-round-status")
-            .innerText =
-            "⏳ مستني الطرف التاني يضغط الجولة التالية...";
-
-    }
-
-    else {
-
-        $("next-round-status")
-            .innerText =
-            "كل لاعب يضغط على زر الجولة التالية من عنده ❤️";
-
-    }
-
 }
 
 
 /* =========================================================
-   PLAYER PRESSES NEXT ROUND
+   READY FOR NEXT ROUND
 ========================================================= */
 
-window.startNextRoundFromQA =
+window.readyForNextRound =
 async function() {
 
-    if(!roomCode || !myRole) {
-        return;
-    }
-
-
-    if(nextRoundPressed) {
-        return;
-    }
-
-
-    const current =
-        currentRoomData;
-
-
-    if(!current) {
-        return;
-    }
-
-
-    /*
-     * لازم نكون في result
-     * أو qaDone.
-     */
-
     if(
-        current.phase !== "result" &&
-        current.phase !== "qaDone"
+        !roomCode ||
+        !myRole ||
+        !currentRoomData
     ) {
 
         return;
-
     }
 
 
-    nextRoundPressed = true;
+    const phase =
+        currentRoomData.phase;
+
+
+    /*
+     * الزر مسموح فقط بعد النتيجة
+     * أو بعد انتهاء السؤال.
+     */
+
+    if(
+        phase !== "result" &&
+        phase !== "qaDone"
+    ) {
+
+        return;
+    }
+
+
+    const round =
+        Number(
+            currentRoomData.round
+        );
 
 
     try {
 
-        /*
-         * كل لاعب يكتب جاهزيته
-         * في مكان مستقل.
-         */
-
-        await update(
-
+        await set(
             ref(
                 db,
                 "rooms/" +
                 roomCode +
-                "/nextRound"
+                "/ready/" +
+                myRole
             ),
-
-            {
-
-                [myRole]: true
-
-            }
-
+            true
         );
 
+
+        /*
+         * لا نبدأ الجولة من هنا.
+         *
+         * اللاعب الأول هو الذي ينفذ
+         * عملية الانتقال عندما يرى
+         * أن الاثنين أصبحوا جاهزين.
+         */
 
     } catch(error) {
 
         console.error(error);
 
-        nextRoundPressed = false;
-
-        return;
-
+        alert(
+            "حصل خطأ أثناء الاستعداد للجولة التالية."
+        );
     }
-
 };
 
 
 /* =========================================================
-   CHECK BOTH PLAYERS READY
+   HOST START NEXT ROUND
 ========================================================= */
 
-let startingNextRound = false;
+async function processNextRoundAsHost(data) {
 
-
-async function checkNextRound(data) {
-
-    if(data.phase !== "result" &&
-       data.phase !== "qaDone") {
-
+    if(processingAdvance) {
         return;
     }
-
-
-    const next =
-        data.nextRound || {};
 
 
     if(
-        next.p1 === true &&
-        next.p2 === true
+        data.phase !== "result" &&
+        data.phase !== "qaDone"
     ) {
 
-        /*
-         * اللاعب الأول فقط
-         * ينفذ الانتقال فعليًا.
-         */
-
-        if(
-            myRole === "p1" &&
-            !startingNextRound
-        ) {
-
-            startingNextRound = true;
-
-            await startNextRoundHost();
-
-            startingNextRound = false;
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   START NEXT ROUND
-========================================================= */
-
-async function startNextRoundHost() {
-
-    if(myRole !== "p1") {
         return;
     }
 
 
-    const nextRound =
-        Number(currentRound) + 1;
+    const p1Ready =
+        !!data.ready?.p1;
+
+    const p2Ready =
+        !!data.ready?.p2;
 
 
     /*
-     * إنشاء QA جديد للجولة الجديدة
-     * بدون أي سؤال أو إجابة قديمة.
+     * لازم الاثنين يضغطوا.
      */
 
-    const updates = {
+    if(
+        !p1Ready ||
+        !p2Ready
+    ) {
 
-        round:
-            nextRound,
-
-        phase:
-            "choosing",
-
-        winner:
-            null,
-
-        resultReady:
-            false,
-
-        nextRound: {
-
-            p1: false,
-
-            p2: false
-
-        },
-
-        [`rounds/${nextRound}`]: {
-
-            processed: false
-
-        },
-
-        [`qa/${nextRound}`]: {
-
-            question: "",
-
-            answer: ""
-
-        }
-
-    };
+        return;
+    }
 
 
-    await update(
+    const round =
+        Number(
+            data.round || 1
+        );
 
+
+    const advancedRef =
         ref(
             db,
             "rooms/" +
-            roomCode
-        ),
-
-        updates
-
-    );
-
-
-    /*
-     * مهم:
-     * كل لاعب عنده متغير محلي مستقل.
-     */
-
-    nextRoundPressed = false;
-
-    myChoice = null;
+            roomCode +
+            "/rounds/" +
+            round +
+            "/advanced"
+        );
 
 
-    /*
-     * تنظيف الواجهة فورًا.
-     */
+    processingAdvance =
+        true;
 
-    resetRoundUI(true);
 
+    try {
+
+        const transaction =
+            await runTransaction(
+                advancedRef,
+                value => {
+
+                    if(value === true) {
+
+                        return;
+
+                    }
+
+                    return true;
+
+                }
+            );
+
+
+        if(!transaction.committed) {
+            return;
+        }
+
+
+        const nextRound =
+            round + 1;
+
+
+        /*
+         * هنا أهم نقطة:
+         *
+         * لا Reload.
+         *
+         * فقط نغير حالة Firebase.
+         *
+         * السؤال القديم والإجابة القديمة
+         * يتم استبدالهم ببيانات الجولة الجديدة.
+         */
+
+        await update(
+            ref(
+                db,
+                "rooms/" +
+                roomCode
+            ),
+            {
+
+                round:
+                    nextRound,
+
+                phase:
+                    "choosing",
+
+                winner:
+                    "",
+
+                resultReady:
+                    false,
+
+                ready: {
+
+                    p1:
+                        false,
+
+                    p2:
+                        false
+
+                },
+
+                /*
+                 * اختيارات الجولة الجديدة
+                 * منفصلة عن القديمة.
+                 */
+
+                ["choices/" + nextRound]:
+                    {},
+
+                /*
+                 * QA جديد وفارغ.
+                 */
+
+                qa: {
+
+                    round:
+                        nextRound,
+
+                    question:
+                        "",
+
+                    answer:
+                        ""
+
+                },
+
+                /*
+                 * سجل الجولة الجديدة.
+                 */
+
+                ["rounds/" + nextRound]:
+                    {
+
+                        processed:
+                            false,
+
+                        advanced:
+                            false
+
+                    }
+
+            }
+        );
+
+
+        /*
+         * تنظيف محلي فوري.
+         */
+
+        resetLocalForNewRound();
+
+    } catch(error) {
+
+        console.error(
+            "processNextRoundAsHost:",
+            error
+        );
+
+
+        /*
+         * نسمح بالمحاولة مرة أخرى
+         * لو حصل خطأ.
+         */
+
+        try {
+
+            await set(
+                advancedRef,
+                false
+            );
+
+        } catch(e) {}
+
+    } finally {
+
+        processingAdvance =
+            false;
+    }
 }
 
 
 /* =========================================================
-   RESET ROUND UI
+   RESET LOCAL NEW ROUND
 ========================================================= */
 
-function resetRoundUI(showChoice = true) {
+function resetLocalForNewRound() {
 
-    myChoice = null;
+    myChoice =
+        null;
 
-    nextRoundPressed = false;
+    answerLoadedRound =
+        null;
 
-
-    /*
-     * إخفاء النتيجة
-     */
 
     $("result-area")
         .classList
@@ -2796,106 +3378,39 @@ function resetRoundUI(showChoice = true) {
         .add("hidden");
 
 
+    $("next-round-box")
+        .classList
+        .add("hidden");
+
+
     $("disconnect-msg")
         .classList
         .add("hidden");
 
 
-    /*
-     * الاختيارات
-     */
-
-    if(showChoice) {
-
-        $("choice-area")
-            .classList
-            .remove("hidden");
-
-    }
-
-    else {
-
-        $("choice-area")
-            .classList
-            .add("hidden");
-
-    }
+    clearQAInputs();
 
 
-    /*
-     * تنظيف السؤال والإجابة
-     */
-
-    $("winner-question-input")
-        .value = "";
-
-
-    $("loser-answer-input")
-        .value = "";
-
-
-    $("displayed-question")
-        .innerText = "";
-
-
-    $("final-qa-summary")
-        .innerText = "";
-
-
-    /*
-     * إخفاء مراحل السؤال
-     */
-
-    $("winner-question-box")
+    $("choice-area")
         .classList
-        .add("hidden");
-
-
-    $("loser-waiting-box")
-        .classList
-        .add("hidden");
-
-
-    $("loser-answer-box")
-        .classList
-        .add("hidden");
-
-
-    $("winner-waiting-answer")
-        .classList
-        .add("hidden");
-
-
-    $("qa-result-display")
-        .classList
-        .add("hidden");
-
-
-    /*
-     * إعادة زر الجولة التالية
-     */
-
-    const button =
-        $("next-round-btn");
-
-
-    if(button) {
-
-        button.disabled = false;
-
-        button.innerText =
-            "الجولة اللي بعدها 🚀";
-
-        button.style.opacity =
-            "1";
-
-    }
-
+        .remove("hidden");
 }
 
 
 /* =========================================================
-   QUICK CHAT
+   RESET CHOICE UI
+========================================================= */
+
+function resetChoiceUIOnly() {
+
+    $("disconnect-msg")
+        .classList
+        .add("hidden");
+}
+
+
+/* =========================================================
+   CHAT
 ========================================================= */
 
 window.toggleChatMenu =
@@ -2909,14 +3424,18 @@ function() {
         menu.style.display === "block"
             ? "none"
             : "block";
-
 };
 
+
+/* =========================================================
+   SEND QUICK CHAT
+========================================================= */
 
 window.sendQuickChat =
 async function(text) {
 
-    $("chatMenu").style.display =
+    $("chatMenu")
+        .style.display =
         "none";
 
 
@@ -2932,13 +3451,21 @@ async function(text) {
     }
 
 
+    const messageId =
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .slice(2,8);
+
+
     const chatRef =
         ref(
             db,
             "rooms/" +
             roomCode +
             "/chat/" +
-            Date.now()
+            messageId
         );
 
 
@@ -2966,9 +3493,7 @@ async function(text) {
     } catch(error) {
 
         console.error(error);
-
     }
-
 };
 
 
@@ -2976,7 +3501,16 @@ async function(text) {
    CHAT LISTENER
 ========================================================= */
 
-function listenToChat() {
+function startChatListener() {
+
+    if(chatUnsubscribe) {
+
+        chatUnsubscribe();
+
+        chatUnsubscribe =
+            null;
+    }
+
 
     if(!roomCode) {
         return;
@@ -2992,82 +3526,118 @@ function listenToChat() {
         );
 
 
-    onValue(
-        chatRef,
-        snapshot => {
-
-            const data =
-                snapshot.val();
+    lastChatTime =
+        Date.now();
 
 
-            if(!data) {
-                return;
+    chatUnsubscribe =
+        onValue(
+            chatRef,
+            snapshot => {
+
+                const data =
+                    snapshot.val();
+
+
+                if(!data) {
+                    return;
+                }
+
+
+                const messages =
+                    Object
+                        .values(data)
+                        .sort(
+                            (a,b) =>
+                                Number(
+                                    a.time || 0
+                                ) -
+                                Number(
+                                    b.time || 0
+                                )
+                        );
+
+
+                if(
+                    messages.length === 0
+                ) {
+
+                    return;
+                }
+
+
+                const last =
+                    messages[
+                        messages.length - 1
+                    ];
+
+
+                const messageTime =
+                    Number(
+                        last.time || 0
+                    );
+
+
+                if(
+                    messageTime <=
+                    lastChatTime
+                ) {
+
+                    return;
+                }
+
+
+                lastChatTime =
+                    messageTime;
+
+
+                if(
+                    last.sender !==
+                    myRole
+                ) {
+
+                    showFloatingChat(
+
+                        (
+                            last.name ||
+                            opponentName ||
+                            "الطرف الآخر"
+                        ) +
+                        ": " +
+                        (
+                            last.text ||
+                            ""
+                        )
+
+                    );
+                }
+
             }
-
-
-            const messages =
-                Object.values(data);
-
-
-            if(messages.length === 0) {
-                return;
-            }
-
-
-            messages.sort(
-                (a,b) =>
-                    (a.time || 0) -
-                    (b.time || 0)
-            );
-
-
-            const last =
-                messages[messages.length - 1];
-
-
-            if(
-                last.sender !== myRole
-            ) {
-
-                showFloatingChat(
-
-                    (last.name ||
-                     opponentName ||
-                     "الطرف الآخر") +
-
-                    ": " +
-
-                    last.text
-
-                );
-
-            }
-
-        }
-    );
-
+        );
 }
 
 
 /* =========================================================
-   FLOAT CHAT
+   FLOATING CHAT
 ========================================================= */
 
 function showFloatingChat(msg) {
 
-    const existing =
+    const old =
         document.querySelector(
             ".floating-chat-popup"
         );
 
 
-    if(existing) {
-        existing.remove();
+    if(old) {
+        old.remove();
     }
 
 
     const pop =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     pop.className =
@@ -3078,7 +3648,8 @@ function showFloatingChat(msg) {
         msg;
 
 
-    document.body.appendChild(pop);
+    document.body
+        .appendChild(pop);
 
 
     setTimeout(
@@ -3093,7 +3664,6 @@ function showFloatingChat(msg) {
         },
         2800
     );
-
 }
 
 
@@ -3123,10 +3693,19 @@ function handleDisconnect() {
         .add("hidden");
 
 
+    $("next-round-box")
+        .classList
+        .add("hidden");
+
+
     $("disconnect-msg")
         .classList
         .remove("hidden");
 
+
+    showScreen(
+        "screen-game"
+    );
 }
 
 
@@ -3139,10 +3718,12 @@ async function() {
 
     try {
 
-        if(roomCode && myRole) {
+        if(
+            roomCode &&
+            myRole
+        ) {
 
             await update(
-
                 ref(
                     db,
                     "rooms/" +
@@ -3150,26 +3731,29 @@ async function() {
                     "/players/" +
                     myRole
                 ),
-
                 {
 
-                    online: false
+                    online:
+                        false
 
                 }
-
             );
-
         }
 
     } catch(error) {
 
         console.error(error);
-
     }
 
 
-    location.reload();
+    /*
+     * Reload مسموح هنا فقط
+     * عند إنهاء اللعبة بالكامل.
+     *
+     * لا يوجد Reload بين الجولات.
+     */
 
+    location.reload();
 };
 
 
@@ -3188,22 +3772,20 @@ onValue(
     connectedRef,
     snapshot => {
 
-        if(snapshot.val() === true) {
+        if(
+            snapshot.val() === true
+        ) {
 
             console.log(
                 "Firebase Connected"
             );
 
-        }
-
-        else {
+        } else {
 
             console.log(
                 "Firebase Disconnected"
             );
-
         }
-
     }
 );
 
